@@ -10,6 +10,7 @@ import WeatherKit
 import CoreLocation
 import Observation
 
+@MainActor
 @Observable
 class WeatherManager: ObservableObject {
     
@@ -19,12 +20,11 @@ class WeatherManager: ObservableObject {
     func updateCurrentWeather(userLocation: CLLocation) async {
         do {
             let forecast = try await weatherService.weather(for: userLocation, including: .current)
-            DispatchQueue.main.async {
-                print(forecast)
-                self.currentWeather = forecast
-            }
+            print(forecast)
+            self.currentWeather = forecast
         } catch {
             print(error.localizedDescription)
         }
     }
 }
+
