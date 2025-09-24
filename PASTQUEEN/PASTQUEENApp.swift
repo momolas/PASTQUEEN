@@ -10,14 +10,12 @@ import SwiftData
 
 @main
 struct PASTQUEENApp: App {
-	
-	@StateObject private var dataController = DataManager()
-
     var body: some Scene {
         WindowGroup {
+            // The main view could be a TabView to switch between Ammunition and Weather, for instance.
+            // For now, we'll keep LaunchView as the entry point.
             LaunchView()
-				.environment(\.managedObjectContext, dataController.persistentContainer.viewContext)
         }
-		.modelContainer(for: Ballistics.self)
+        .modelContainer(for: Ballistics.self)
     }
 }

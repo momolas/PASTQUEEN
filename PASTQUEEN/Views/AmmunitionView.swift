@@ -6,65 +6,62 @@
 //
 
 import SwiftUI
-import CoreData
+import SwiftData
 
 struct AmmunitionView: View {
-	@FetchRequest(sortDescriptors: [SortDescriptor(\.calibre)]) var ballisticSettings: FetchedResults<BallisticSettings>
-	
-	@Environment(\.managedObjectContext) var viewContext
-	@Environment(\.managedObjectContext) var moc
-	
-	@FocusState private var isFocused: Bool
-	@State private var showingAddScreen = false
-	
-	func deleteAmmunitions(at offsets: IndexSet) {
-		for offset in offsets {
-			let ballisticSetting = ballisticSettings[offset]
-			moc.delete(ballisticSetting)
-		}
-		//try? moc.save()
-	}
-	
-	var body: some View {
-		NavigationStack {
-			List {
-				ForEach(ballisticSettings) { ballisticSetting in
-					NavigationLink {
-						DetailView(ballisticSettings: ballisticSetting)
-					} label: {
-						VStack(alignment: .leading) {
-							Text(ballisticSetting.ammunitionName ?? "NA")
-								.font(.headline)
-						}
-					}
-				}
-				.onDelete(perform: deleteAmmunitions)
-			}
-		}
-		.navigationTitle("Ammunition")
-		.navigationBarTitleDisplayMode(.inline)
-		.toolbar {
-			ToolbarItem(placement: .navigationBarTrailing) {
-				EditButton()
-			}
-			
-			ToolbarItem(placement: .navigationBarTrailing) {
-				Button {
-					showingAddScreen.toggle()
-				} label: {
-					Label("Add Ammunition", systemImage: "plus")
-				}
-			}
-		}
-		.sheet(isPresented: $showingAddScreen) {
-			AddView()
-		}
-	}
+    @Query(sort: \Ballistics.ammunitionName) var ballistics: [Ballistics]
+    @Environment(\.modelContext) var modelContext
+
+    @State private var showingAddScreen = false
+
+    func deleteAmmunitions(at offsets: IndexSet) {
+        for offset in offsets {
+            let ballisticSetting = ballistics[offset]
+            modelContext.delete(ballisticSetting)
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(ballistics) { ballisticSetting in
+                    NavigationLink {
+                        DetailView(ballisticSettings: ballisticSetting)
+                    } label: {
+                        VStack(alignment: .leading) {
+                            Text(ballisticSetting.ammunitionName)
+                                .font(.headline)
+                            Text(ballisticSetting.calibre)
+                                .font(.subheadline)
+                        }
+                    }
+                }
+                .onDelete(perform: deleteAmmunitions)
+            }
+            .navigationTitle("Ammunition")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    EditButton()
+                }
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showingAddScreen.toggle()
+                    } label: {
+                        Label("Add Ammunition", systemImage: "plus")
+                    }
+                }
+            }
+            .sheet(isPresented: $showingAddScreen) {
+                AddView()
+            }
+        }
+    }
 }
 
-struct inputView_Previews: PreviewProvider {
-	static var previews: some View {
-		AmmunitionView()
-			.preferredColorScheme(.dark)
-	}
+struct AmmunitionView_Previews: PreviewProvider {
+    static var previews: some View {
+        AmmunitionView()
+            .modelContainer(for: Ballistics.self, inMemory: true)
+    }
 }
