@@ -17,11 +17,11 @@ struct SwiftUIView: View {
 		Form {
 			if let currentWeather = weatherManager.currentWeather {
 				Section {
-					Label(currentWeather.temperature.converted(to: .celsius).description, systemImage: "thermometer")
-					Label("\((currentWeather.humidity * 100).description) %", systemImage: "humidity.fill")
-					Label(currentWeather.pressure.converted(to: .hectopascals).description, systemImage: "barometer")
-					Label(currentWeather.wind.speed.converted(to: .kilometersPerHour).description, systemImage: "wind")
-					Label(currentWeather.wind.direction.converted(to: .degrees).description, systemImage: "safari")
+					Label(currentWeather.temperature.converted(to: .celsius).formatted(), systemImage: "thermometer")
+					Label("\((currentWeather.humidity * 100).formatted()) %", systemImage: "humidity.fill")
+					Label(currentWeather.pressure.converted(to: .hectopascals).formatted(), systemImage: "barometer")
+					Label(currentWeather.wind.speed.converted(to: .kilometersPerHour).formatted(), systemImage: "wind")
+					Label(currentWeather.wind.direction.converted(to: .degrees).formatted(), systemImage: "safari")
 					Label("\((locationManager.userLocation!.altitude.formatted())) m", systemImage: "mountain.2")
 					Label(currentWeather.isDaylight ? "Day time" : "Night time", systemImage: currentWeather.isDaylight ? "sun.max.fill" : "moon.stars.fill")
 				} header: {
