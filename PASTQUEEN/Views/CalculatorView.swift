@@ -7,22 +7,31 @@
 
 import SwiftUI
 import SwiftData
+import Charts
+
+struct TrajectoryDataPoint: Identifiable {
+    let id = UUID()
+    let distance: Double
+    let drop: Double
+}
 
 struct CalculatorView: View {
     let ballisticSettings: Ballistics
 
     @StateObject private var weatherManager = WeatherManager()
+    @StateObject private var locationManager = LocationManager()
     @State private var distance: Double = 100.0
     @State private var trajectoryResult: [Double] = []
+    @State private var trajectoryData: [TrajectoryDataPoint] = []
 
     private func getCalculator() -> BallisticCalculator {
         let weatherData = BallisticCalculator.WeatherData(
-            windSpeed: weatherManager.currentWeather?.wind.speed.converted(to: .milesPerHour).value ?? 0.0,
+            windSpeed: weatherManager.currentWeather?.wind.speed.converted(to: .kilometersPerHour).value ?? 0.0,
             windDirection: weatherManager.currentWeather?.wind.direction.value ?? 0.0,
-            pressure: weatherManager.currentWeather?.pressure.converted(to: .inchesOfMercury).value ?? 29.53,
-            temperatureF: weatherManager.currentWeather?.temperature.converted(to: .fahrenheit).value ?? 59.0,
+            pressure: weatherManager.currentWeather?.pressure.converted(to: .hectopascals).value ?? 1013.25,
+            temperature: weatherManager.currentWeather?.temperature.converted(to: .celsius).value ?? 15.0,
             humidity: weatherManager.currentWeather?.humidity ?? 0.78,
-            altitude: 0.0 // Altitude should be sourced from LocationManager
+            altitude: locationManager.altitude ?? 0.0
         )
         return BallisticCalculator(ballistics: ballisticSettings, weather: weatherData)
     }
@@ -30,7 +39,7 @@ struct CalculatorView: View {
     var body: some View {
         Form {
             Section(header: Text("Input")) {
-                TextField("Distance (yards)", value: $distance, format: .number)
+                TextField("Distance (meters)", value: $distance, format: .number)
                     .keyboardType(.decimalPad)
             }
 
@@ -41,11 +50,11 @@ struct CalculatorView: View {
             }
 
             if !trajectoryResult.isEmpty {
-                Section(header: Text("Results for \(distance, specifier: "%.0f") yards")) {
+                Section(header: Text("Results for \(distance, specifier: "%.0f") meters")) {
                     HStack {
                         Text("Drop:")
                         Spacer()
-                        Text("\(trajectoryResult[1], specifier: "%.2f") inches")
+                        Text("\(trajectoryResult[1], specifier: "%.2f") cm")
                     }
                     HStack {
                         Text("Drop (MOA):")
@@ -55,7 +64,7 @@ struct CalculatorView: View {
                     HStack {
                         Text("Windage:")
                         Spacer()
-                        Text("\(trajectoryResult[4], specifier: "%.2f") inches")
+                        Text("\(trajectoryResult[4], specifier: "%.2f") cm")
                     }
                     HStack {
                         Text("Windage (MOA):")
@@ -65,25 +74,59 @@ struct CalculatorView: View {
                     HStack {
                         Text("Velocity:")
                         Spacer()
-                        Text("\(trajectoryResult[6], specifier: "%.0f") ft/s")
+                        Text("\(trajectoryResult[6], specifier: "%.0f") m/s")
                     }
                     HStack {
                         Text("Energy:")
                         Spacer()
-                        Text("\(trajectoryResult[7], specifier: "%.0f") ft-lbs")
+                        Text("\(trajectoryResult[7], specifier: "%.0f") Joules")
                     }
+                }
+            }
+
+            if !trajectoryData.isEmpty {
+                Section(header: Text("Trajectory")) {
+                    Chart(trajectoryData) {
+                        LineMark(
+                            x: .value("Distance", $0.distance),
+                            y: .value("Drop", $0.drop)
+                        )
+                    }
+                    .frame(height: 200)
                 }
             }
         }
         .navigationTitle("Calculator")
         .onAppear {
+            locationManager.requestLocation()
             calculateTrajectory()
         }
     }
 
     private func calculateTrajectory() {
         let calculator = getCalculator()
-        trajectoryResult = calculator.solveTrajectory(for: distance)
+        let solution = calculator.solveFullTrajectory(upTo: distance)
+
+        if let point = solution.getPoint(at: Measurement(value: distance, unit: .meters)) {
+            trajectoryResult = [
+                distance,
+                point.drop.converted(to: .centimeters).value,
+                point.dropCorrection,
+                point.seconds,
+                point.windage.converted(to: .centimeters).value,
+                point.windageCorrection,
+                point.velocity.converted(to: .metersPerSecond).value,
+                point.energy.converted(to: .joules).value
+            ]
+        }
+
+        var data: [TrajectoryDataPoint] = []
+        for i in stride(from: 0, to: distance, by: 10) {
+            if let point = solution.getPoint(at: Measurement(value: i, unit: .meters)) {
+                data.append(TrajectoryDataPoint(distance: i, drop: point.drop.converted(to: .centimeters).value))
+            }
+        }
+        trajectoryData = data
     }
 }
 
@@ -95,15 +138,15 @@ struct CalculatorView_Previews: PreviewProvider {
             ballisticCoefficient: 0.45,
             calibre: ".308",
             date: Date().timeIntervalSince1970,
-            distanceYards: 100.0,
+            distanceMeters: 100.0,
             dragFunction: 1,
             id: UUID(),
-            muzzleEnergy: 2600.0,
-            muzzleVelocity: 2800.0,
+            muzzleEnergy: 3525.0,
+            muzzleVelocityMPS: 853.0,
             projectileManufacturer: "Preview Manufacturer",
-            projectileWeight: 168,
-            sightHeight: 1.5,
-            zeroRange: 100.0
+            projectileWeightGrams: 10.89,
+            sightHeightCM: 3.81,
+            zeroRangeMeters: 100.0
         )
 
         return NavigationView {

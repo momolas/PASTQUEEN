@@ -1,47 +1,36 @@
 //
-//  LocationData.swift
+//  LocationManager.swift
 //  PASTQUEEN
 //
-//  Created by Mo on 31/03/2023.
+//  Created by Jules on 26/10/2025.
 //
 
 import Foundation
 import CoreLocation
-import Observation
 
-@Observable
-class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-    
-    var userLocation: CLLocation?
-    let locationManager = CLLocationManager()
-    
+class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
+    private let locationManager = CLLocationManager()
+    @Published var altitude: Double?
+
     override init() {
         super.init()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
     }
-    
-    func requestPermission() {
-        locationManager.requestWhenInUseAuthorization()
-    }
-    
+
     func requestLocation() {
-        locationManager.requestLocation()
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
     }
-    
+
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else { return }
-        userLocation = location
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print(error.localizedDescription)
-    }
-    
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        if manager.authorizationStatus == .authorizedAlways ||
-            manager.authorizationStatus == .authorizedWhenInUse {
-            self.locationManager.requestLocation()
+        if let location = locations.last {
+            altitude = location.altitude
+            locationManager.stopUpdatingLocation()
         }
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Error getting location: \(error)")
     }
 }
