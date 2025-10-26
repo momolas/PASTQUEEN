@@ -1,0 +1,11 @@
+{
+    "calibers": [".308", ".22LR", ".223", "6.5CM", "9mm", ".300 Win Mag", ".338 Lapua"],
+    "dragFunctions": [
+        {"id": 1, "name": "G1"},
+        {"id": 2, "name": "G2"},
+        {"id": 5, "name": "G5"},
+        {"id": 6, "name": "G6"},
+        {"id": 7, "name": "G7"},
+        {"id": 8, "name": "G8"}
+    ]
+}

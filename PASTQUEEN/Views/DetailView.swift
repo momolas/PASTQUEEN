@@ -20,10 +20,10 @@ struct DetailView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text("Caliber: \(ballisticSettings.calibre)")
                 Text("BC: \(String(format: "%.3f", ballisticSettings.ballisticCoefficient))")
-                Text("Muzzle Velocity: \(String(format: "%.0f", ballisticSettings.muzzleVelocity)) ft/s")
-                Text("Projectile Weight: \(ballisticSettings.projectileWeight) gr")
-                Text("Sight Height: \(String(format: "%.2f", ballisticSettings.sightHeight)) in")
-                Text("Zero Range: \(String(format: "%.0f", ballisticSettings.zeroRange)) yds")
+                Text("Muzzle Velocity: \(String(format: "%.0f", ballisticSettings.muzzleVelocityMPS)) m/s")
+                Text("Projectile Weight: \(String(format: "%.0f", ballisticSettings.projectileWeightGrains)) gr")
+                Text("Sight Height: \(String(format: "%.2f", ballisticSettings.sightHeightCM)) cm")
+                Text("Zero Range: \(String(format: "%.0f", ballisticSettings.zeroRangeMeters)) m")
             }
             .font(.body)
 
@@ -54,15 +54,15 @@ struct DetailView_Previews: PreviewProvider {
             ballisticCoefficient: 0.45,
             calibre: ".308",
             date: Date().timeIntervalSince1970,
-            distanceYards: 100.0,
+            distanceMeters: 100.0,
             dragFunction: 1,
             id: UUID(),
-            muzzleEnergy: 2600.0,
-            muzzleVelocity: 2800.0,
+            muzzleEnergy: 3525.0,
+            muzzleVelocityMPS: 853.0,
             projectileManufacturer: "Preview Manufacturer",
-            projectileWeight: 168,
-            sightHeight: 1.5,
-            zeroRange: 100.0
+            projectileWeightGrains: 168,
+            sightHeightCM: 3.81,
+            zeroRangeMeters: 100.0
         )
         return DetailView(ballisticSettings: sampleBallistics)
             .modelContainer(container)
