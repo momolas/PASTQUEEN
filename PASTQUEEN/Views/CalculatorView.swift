@@ -1,5 +1,5 @@
 //
-//  SwiftUIView2.swift
+//  CalculatorView.swift
 //  PASTQUEEN
 //
 //  Created by Mo on 16/09/2022.
