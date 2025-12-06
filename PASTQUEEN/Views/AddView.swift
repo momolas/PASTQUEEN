@@ -64,7 +64,7 @@ struct AddView: View {
 
                     Section {
                         Button("Save") {
-                            let newAmmunition = Ballistics(
+                            let newAmmunition = BallisticSettings(
                                 ammunitionName: ammunitionName,
                                 ballisticCoefficient: ballisticCoefficient,
                                 calibre: calibre,
