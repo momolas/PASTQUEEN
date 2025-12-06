@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct LaunchView: View {
     var body: some View {
@@ -43,5 +44,6 @@ struct LaunchView_Previews: PreviewProvider {
     static var previews: some View {
         LaunchView()
             .preferredColorScheme(.dark)
+            .modelContainer(for: Ballistics.self, inMemory: true)
     }
 }
