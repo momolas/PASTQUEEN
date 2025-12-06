@@ -7,13 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CD196FD029A76592008E8B33 /* TrajectoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD196FCF29A76592008E8B33 /* TrajectoryManager.swift */; };
 		CD2FBF902909504C00387B0B /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2FBF8F2909504C00387B0B /* DetailView.swift */; };
 		CD2FBF9229095CC800387B0B /* AddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2FBF9129095CC800387B0B /* AddView.swift */; };
-		CD3858B02AF2A5D000819772 /* SwiftUIView3.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD3858AF2AF2A5D000819772 /* SwiftUIView3.swift */; };
-		CD81125D2A44878700239787 /* Ballistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81125C2A44878700239787 /* Ballistics.swift */; };
-		CD8639C728E1D74800052EF1 /* PASTQUEEN.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CD8639C528E1D74800052EF1 /* PASTQUEEN.xcdatamodeld */; };
-		CD8639C928E1D87E00052EF1 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD8639C828E1D87E00052EF1 /* DataManager.swift */; };
+		CD81125D2A44878700239787 /* BallisticSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81125C2A44878700239787 /* BallisticSettings.swift */; };
 		CD9973FB28D49B4600C9D3FD /* PASTQUEENApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9973FA28D49B4600C9D3FD /* PASTQUEENApp.swift */; };
 		CD9973FD28D49B4600C9D3FD /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9973FC28D49B4600C9D3FD /* LaunchView.swift */; };
 		CD9973FF28D49B4800C9D3FD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD9973FE28D49B4800C9D3FD /* Assets.xcassets */; };
@@ -21,22 +17,17 @@
 		CD99740A28D49B8000C9D3FD /* AmmunitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD99740928D49B8000C9D3FD /* AmmunitionView.swift */; };
 		CD9B27B428D4CE3800E28642 /* CalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9B27B328D4CE3800E28642 /* CalculatorView.swift */; };
 		CDA6EECF2919312C004196DF /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA6EECD2919312C004196DF /* WeatherManager.swift */; };
-		CDBA31F02AF3B19700732E08 /* BallisticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDBA31EF2AF3B19700732E08 /* BallisticManager.swift */; };
-		CDE045172C16E4EA00CFF54B /* SwiftUIView4.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE045162C16E4EA00CFF54B /* SwiftUIView4.swift */; };
+		CDE935BB2EE46EB7008DDD15 /* BallisticCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE935BA2EE46EB7008DDD15 /* BallisticCalculator.swift */; };
+		CDE935BC2EE46EB7008DDD15 /* AmmunitionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE935B92EE46EB7008DDD15 /* AmmunitionData.swift */; };
+		CDE935BF2EE46EDE008DDD15 /* SwiftBallistics in Frameworks */ = {isa = PBXBuildFile; productRef = CDE935BE2EE46EDE008DDD15 /* SwiftBallistics */; };
 		CDFD841029D6F39D00E9B274 /* GravityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFD840F29D6F39D00E9B274 /* GravityManager.swift */; };
 		CDFD841229D71F1C00E9B274 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFD841129D71F1C00E9B274 /* LocationManager.swift */; };
-		CDFD841429D72A8C00E9B274 /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFD841329D72A8C00E9B274 /* SwiftUIView.swift */; };
-		CDFD841629D730CB00E9B274 /* SwiftUIView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFD841529D730CB00E9B274 /* SwiftUIView2.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		CD196FCF29A76592008E8B33 /* TrajectoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrajectoryManager.swift; sourceTree = "<group>"; };
 		CD2FBF8F2909504C00387B0B /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		CD2FBF9129095CC800387B0B /* AddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddView.swift; sourceTree = "<group>"; };
-		CD3858AF2AF2A5D000819772 /* SwiftUIView3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView3.swift; sourceTree = "<group>"; };
-		CD81125C2A44878700239787 /* Ballistics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ballistics.swift; sourceTree = "<group>"; };
-		CD8639C628E1D74800052EF1 /* Ballistics.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Ballistics.xcdatamodel; sourceTree = "<group>"; };
-		CD8639C828E1D87E00052EF1 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
+		CD81125C2A44878700239787 /* BallisticSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallisticSettings.swift; sourceTree = "<group>"; };
 		CD9973F728D49B4600C9D3FD /* PASTQUEEN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PASTQUEEN.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD9973FA28D49B4600C9D3FD /* PASTQUEENApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PASTQUEENApp.swift; sourceTree = "<group>"; };
 		CD9973FC28D49B4600C9D3FD /* LaunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchView.swift; sourceTree = "<group>"; };
@@ -46,12 +37,10 @@
 		CD99740928D49B8000C9D3FD /* AmmunitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmmunitionView.swift; sourceTree = "<group>"; };
 		CD9B27B328D4CE3800E28642 /* CalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorView.swift; sourceTree = "<group>"; };
 		CDA6EECD2919312C004196DF /* WeatherManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeatherManager.swift; sourceTree = "<group>"; };
-		CDBA31EF2AF3B19700732E08 /* BallisticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallisticManager.swift; sourceTree = "<group>"; };
-		CDE045162C16E4EA00CFF54B /* SwiftUIView4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView4.swift; sourceTree = "<group>"; };
+		CDE935B92EE46EB7008DDD15 /* AmmunitionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmmunitionData.swift; sourceTree = "<group>"; };
+		CDE935BA2EE46EB7008DDD15 /* BallisticCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallisticCalculator.swift; sourceTree = "<group>"; };
 		CDFD840F29D6F39D00E9B274 /* GravityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GravityManager.swift; sourceTree = "<group>"; };
 		CDFD841129D71F1C00E9B274 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
-		CDFD841329D72A8C00E9B274 /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
-		CDFD841529D730CB00E9B274 /* SwiftUIView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView2.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +48,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDE935BF2EE46EDE008DDD15 /* SwiftBallistics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,13 +58,11 @@
 		CD495C3028E0A66E00620946 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				CD81125C2A44878700239787 /* Ballistics.swift */,
+				CDE935B92EE46EB7008DDD15 /* AmmunitionData.swift */,
+				CDE935BA2EE46EB7008DDD15 /* BallisticCalculator.swift */,
+				CD81125C2A44878700239787 /* BallisticSettings.swift */,
 				CDA6EECD2919312C004196DF /* WeatherManager.swift */,
 				CDFD841129D71F1C00E9B274 /* LocationManager.swift */,
-				CD8639C828E1D87E00052EF1 /* DataManager.swift */,
-				CD8639C528E1D74800052EF1 /* PASTQUEEN.xcdatamodeld */,
-				CD196FCF29A76592008E8B33 /* TrajectoryManager.swift */,
-				CDBA31EF2AF3B19700732E08 /* BallisticManager.swift */,
 				CDFD840F29D6F39D00E9B274 /* GravityManager.swift */,
 			);
 			path = Models;
@@ -88,10 +76,6 @@
 				CD2FBF8F2909504C00387B0B /* DetailView.swift */,
 				CD9B27B328D4CE3800E28642 /* CalculatorView.swift */,
 				CD2FBF9129095CC800387B0B /* AddView.swift */,
-				CDFD841329D72A8C00E9B274 /* SwiftUIView.swift */,
-				CDFD841529D730CB00E9B274 /* SwiftUIView2.swift */,
-				CD3858AF2AF2A5D000819772 /* SwiftUIView3.swift */,
-				CDE045162C16E4EA00CFF54B /* SwiftUIView4.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -177,6 +161,9 @@
 				Base,
 			);
 			mainGroup = CD9973EE28D49B4600C9D3FD;
+			packageReferences = (
+				CDE935BD2EE46EDE008DDD15 /* XCRemoteSwiftPackageReference "swift-ballistics" */,
+			);
 			productRefGroup = CD9973F828D49B4600C9D3FD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -204,23 +191,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD9973FD28D49B4600C9D3FD /* LaunchView.swift in Sources */,
+				CDE935BB2EE46EB7008DDD15 /* BallisticCalculator.swift in Sources */,
+				CDE935BC2EE46EB7008DDD15 /* AmmunitionData.swift in Sources */,
 				CD9B27B428D4CE3800E28642 /* CalculatorView.swift in Sources */,
 				CDFD841029D6F39D00E9B274 /* GravityManager.swift in Sources */,
-				CD196FD029A76592008E8B33 /* TrajectoryManager.swift in Sources */,
-				CD81125D2A44878700239787 /* Ballistics.swift in Sources */,
+				CD81125D2A44878700239787 /* BallisticSettings.swift in Sources */,
 				CDFD841229D71F1C00E9B274 /* LocationManager.swift in Sources */,
-				CD3858B02AF2A5D000819772 /* SwiftUIView3.swift in Sources */,
 				CD9973FB28D49B4600C9D3FD /* PASTQUEENApp.swift in Sources */,
 				CD2FBF902909504C00387B0B /* DetailView.swift in Sources */,
 				CDA6EECF2919312C004196DF /* WeatherManager.swift in Sources */,
-				CDFD841429D72A8C00E9B274 /* SwiftUIView.swift in Sources */,
 				CD2FBF9229095CC800387B0B /* AddView.swift in Sources */,
-				CD8639C928E1D87E00052EF1 /* DataManager.swift in Sources */,
-				CDFD841629D730CB00E9B274 /* SwiftUIView2.swift in Sources */,
-				CD8639C728E1D74800052EF1 /* PASTQUEEN.xcdatamodeld in Sources */,
 				CD99740A28D49B8000C9D3FD /* AmmunitionView.swift in Sources */,
-				CDBA31F02AF3B19700732E08 /* BallisticManager.swift in Sources */,
-				CDE045172C16E4EA00CFF54B /* SwiftUIView4.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -455,18 +436,24 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCVersionGroup section */
-		CD8639C528E1D74800052EF1 /* PASTQUEEN.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				CD8639C628E1D74800052EF1 /* Ballistics.xcdatamodel */,
-			);
-			currentVersion = CD8639C628E1D74800052EF1 /* Ballistics.xcdatamodel */;
-			path = PASTQUEEN.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
+/* Begin XCRemoteSwiftPackageReference section */
+		CDE935BD2EE46EDE008DDD15 /* XCRemoteSwiftPackageReference "swift-ballistics" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/momolas/swift-ballistics.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
 		};
-/* End XCVersionGroup section */
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CDE935BE2EE46EDE008DDD15 /* SwiftBallistics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CDE935BD2EE46EDE008DDD15 /* XCRemoteSwiftPackageReference "swift-ballistics" */;
+			productName = SwiftBallistics;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CD9973EF28D49B4600C9D3FD /* Project object */;
 }
