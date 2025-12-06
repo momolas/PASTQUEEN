@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct AmmunitionView: View {
-    @Query(sort: \Ballistics.ammunitionName) var ballistics: [Ballistics]
+    @Query(sort: \BallisticSettings.ammunitionName) var ballistics: [BallisticSettings]
     @Environment(\.modelContext) var modelContext
 
     @State private var showingAddScreen = false
@@ -62,6 +62,6 @@ struct AmmunitionView: View {
 struct AmmunitionView_Previews: PreviewProvider {
     static var previews: some View {
         AmmunitionView()
-            .modelContainer(for: Ballistics.self, inMemory: true)
+            .modelContainer(for: BallisticSettings.self, inMemory: true)
     }
 }

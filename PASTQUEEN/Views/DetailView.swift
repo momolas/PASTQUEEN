@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct DetailView: View {
-    let ballisticSettings: Ballistics
+    let ballisticSettings: BallisticSettings
 
     var body: some View {
         VStack(spacing: 20) {
@@ -48,8 +48,8 @@ struct DetailView: View {
 
 struct DetailView_Previews: PreviewProvider {
     static var previews: some View {
-        let container = try! ModelContainer(for: Ballistics.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
-        let sampleBallistics = Ballistics(
+        let container = try! ModelContainer(for: BallisticSettings.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+        let sampleBallistics = BallisticSettings(
             ammunitionName: "Preview Ammo",
             ballisticCoefficient: 0.45,
             calibre: ".308",

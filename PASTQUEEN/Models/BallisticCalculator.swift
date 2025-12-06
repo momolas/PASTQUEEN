@@ -11,7 +11,7 @@ import Ballistics
 struct BallisticCalculator {
     
     // Input parameters from the Ballistics model
-    private let ballistics: Ballistics
+    private let ballistics: BallisticSettings
 
     // Weather and environmental conditions
     private let weather: WeatherData
@@ -25,22 +25,22 @@ struct BallisticCalculator {
         var altitude: Double = 0.0
     }
     
-    init(ballistics: Ballistics, weather: WeatherData) {
+    init(ballistics: BallisticSettings, weather: WeatherData) {
         self.ballistics = ballistics
         self.weather = weather
     }
     
     public func solveTrajectory(for distance: Double) -> [Double] {
-        if let point = solveFullTrajectory(upTo: distance).getPoint(at: Measurement(value: distance, unit: .meters)) {
+        if let point = solveFullTrajectory(upTo: distance).getPoint(at: Measurement(value: distance, unit: UnitLength.meters)) {
             return [
                 distance,
-                point.drop.converted(to: .centimeters).value,
+                point.drop.converted(to: UnitLength.centimeters).value,
                 point.dropCorrection,
                 point.seconds,
-                point.windage.converted(to: .centimeters).value,
+                point.windage.converted(to: UnitLength.centimeters).value,
                 point.windageCorrection,
-                point.velocity.converted(to: .metersPerSecond).value,
-                point.energy.converted(to: .joules).value
+                point.velocity.converted(to: UnitSpeed.metersPerSecond).value,
+                point.energy.converted(to: UnitEnergy.joules).value
             ]
         }
         return Array(repeating: 0.0, count: 8)
@@ -61,19 +61,19 @@ struct BallisticCalculator {
         return Ballistics.solve(
             dragModel: dragModel,
             ballisticCoefficient: ballistics.ballisticCoefficient,
-            initialVelocity: Measurement(value: ballistics.muzzleVelocityMPS, unit: .metersPerSecond),
-            sightHeight: Measurement(value: ballistics.sightHeightCM, unit: .centimeters),
-            shootingAngle: Measurement(value: 0, unit: .degrees),
-            zeroRange: Measurement(value: ballistics.zeroRangeMeters, unit: .meters),
+            initialVelocity: Measurement(value: ballistics.muzzleVelocityMPS, unit: UnitSpeed.metersPerSecond),
+            sightHeight: Measurement(value: ballistics.sightHeightCM, unit: UnitLength.centimeters),
+            shootingAngle: Measurement(value: 0, unit: UnitAngle.degrees),
+            zeroRange: Measurement(value: ballistics.zeroRangeMeters, unit: UnitLength.meters),
             atmosphere: Atmosphere(
-                altitude: Measurement(value: weather.altitude, unit: .meters),
-                temperature: Measurement(value: weather.temperature, unit: .celsius),
+                altitude: Measurement(value: weather.altitude, unit: UnitLength.meters),
+                temperature: Measurement(value: weather.temperature, unit: UnitTemperature.celsius),
                 relativeHumidity: weather.humidity,
-                pressure: Measurement(value: weather.pressure, unit: .hectopascals)
+                pressure: Measurement(value: weather.pressure, unit: UnitPressure.hectopascals)
             ),
-            windSpeed: Measurement(value: weather.windSpeed, unit: .kilometersPerHour),
+            windSpeed: Measurement(value: weather.windSpeed, unit: UnitSpeed.kilometersPerHour),
             windAngle: weather.windDirection,
-            weight: Measurement(value: ballistics.projectileWeightGrains, unit: .grains)
+            weight: Measurement(value: ballistics.projectileWeightGrains, unit: UnitMass.grains)
         )
     }
 }

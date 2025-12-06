@@ -16,7 +16,7 @@ struct TrajectoryDataPoint: Identifiable {
 }
 
 struct CalculatorView: View {
-    let ballisticSettings: Ballistics
+    let ballisticSettings: BallisticSettings
 
     @StateObject private var weatherManager = WeatherManager()
     @StateObject private var locationManager = LocationManager()
@@ -26,10 +26,10 @@ struct CalculatorView: View {
 
     private func getCalculator() -> BallisticCalculator {
         let weatherData = BallisticCalculator.WeatherData(
-            windSpeed: weatherManager.currentWeather?.wind.speed.converted(to: .kilometersPerHour).value ?? 0.0,
+            windSpeed: weatherManager.currentWeather?.wind.speed.converted(to: UnitSpeed.kilometersPerHour).value ?? 0.0,
             windDirection: weatherManager.currentWeather?.wind.direction.value ?? 0.0,
-            pressure: weatherManager.currentWeather?.pressure.converted(to: .hectopascals).value ?? 1013.25,
-            temperature: weatherManager.currentWeather?.temperature.converted(to: .celsius).value ?? 15.0,
+            pressure: weatherManager.currentWeather?.pressure.converted(to: UnitPressure.hectopascals).value ?? 1013.25,
+            temperature: weatherManager.currentWeather?.temperature.converted(to: UnitTemperature.celsius).value ?? 15.0,
             humidity: weatherManager.currentWeather?.humidity ?? 0.78,
             altitude: locationManager.altitude ?? 0.0
         )
@@ -107,23 +107,23 @@ struct CalculatorView: View {
         let calculator = getCalculator()
         let solution = calculator.solveFullTrajectory(upTo: distance)
 
-        if let point = solution.getPoint(at: Measurement(value: distance, unit: .meters)) {
+        if let point = solution.getPoint(at: Measurement(value: distance, unit: UnitLength.meters)) {
             trajectoryResult = [
                 distance,
-                point.drop.converted(to: .centimeters).value,
+                point.drop.converted(to: UnitLength.centimeters).value,
                 point.dropCorrection,
                 point.seconds,
-                point.windage.converted(to: .centimeters).value,
+                point.windage.converted(to: UnitLength.centimeters).value,
                 point.windageCorrection,
-                point.velocity.converted(to: .metersPerSecond).value,
-                point.energy.converted(to: .joules).value
+                point.velocity.converted(to: UnitSpeed.metersPerSecond).value,
+                point.energy.converted(to: UnitEnergy.joules).value
             ]
         }
 
         var data: [TrajectoryDataPoint] = []
         for i in stride(from: 0, to: distance, by: 10) {
-            if let point = solution.getPoint(at: Measurement(value: i, unit: .meters)) {
-                data.append(TrajectoryDataPoint(distance: i, drop: point.drop.converted(to: .centimeters).value))
+            if let point = solution.getPoint(at: Measurement(value: i, unit: UnitLength.meters)) {
+                data.append(TrajectoryDataPoint(distance: i, drop: point.drop.converted(to: UnitLength.centimeters).value))
             }
         }
         trajectoryData = data
@@ -132,8 +132,8 @@ struct CalculatorView: View {
 
 struct CalculatorView_Previews: PreviewProvider {
     static var previews: some View {
-        let container = try! ModelContainer(for: Ballistics.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
-        let sampleBallistics = Ballistics(
+        let container = try! ModelContainer(for: BallisticSettings.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+        let sampleBallistics = BallisticSettings(
             ammunitionName: "Preview Ammo",
             ballisticCoefficient: 0.45,
             calibre: ".308",
@@ -144,7 +144,7 @@ struct CalculatorView_Previews: PreviewProvider {
             muzzleEnergy: 3525.0,
             muzzleVelocityMPS: 853.0,
             projectileManufacturer: "Preview Manufacturer",
-            projectileWeightGrams: 10.89,
+            projectileWeightGrains: 168.0,
             sightHeightCM: 3.81,
             zeroRangeMeters: 100.0
         )
