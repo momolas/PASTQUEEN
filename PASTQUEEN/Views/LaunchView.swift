@@ -40,10 +40,8 @@ struct LaunchView: View {
     }
 }
 
-struct LaunchView_Previews: PreviewProvider {
-    static var previews: some View {
-        LaunchView()
-            .preferredColorScheme(.dark)
-            .modelContainer(for: BallisticSettings.self, inMemory: true)
-    }
+#Preview {
+	LaunchView()
+		.preferredColorScheme(.dark)
+		.modelContainer(for: BallisticSettings.self, inMemory: true)
 }
