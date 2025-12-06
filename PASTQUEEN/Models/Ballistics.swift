@@ -10,7 +10,7 @@ import Foundation
 import SwiftData
 
 @Model
-class Ballistics {
+class BallisticSettings {
     var ammunitionName: String
     var ballisticCoefficient: Double
     var calibre: String

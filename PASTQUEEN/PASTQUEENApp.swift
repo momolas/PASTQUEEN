@@ -16,6 +16,6 @@ struct PASTQUEENApp: App {
             // For now, we'll keep LaunchView as the entry point.
             LaunchView()
         }
-        .modelContainer(for: Ballistics.self)
+        .modelContainer(for: BallisticSettings.self)
     }
 }
