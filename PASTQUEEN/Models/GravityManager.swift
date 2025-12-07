@@ -10,7 +10,7 @@ import CoreMotion
 import Observation
 
 @Observable
-class GravityManager: ObservableObject {
+class GravityManager {
 	
 	var acceleration: CMAcceleration?
 	let motionManager = CMMotionManager()

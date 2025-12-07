@@ -35,8 +35,8 @@ struct DetailView: View {
                     .padding()
                     .frame(maxWidth: .infinity)
                     .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+                    .foregroundStyle(.white)
+                    .clipShape(.rect(cornerRadius: 10))
             })
             .padding()
         }
