@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import Charts
+import CoreLocation
 
 struct TrajectoryDataPoint: Identifiable {
     let id = UUID()
@@ -18,10 +19,10 @@ struct TrajectoryDataPoint: Identifiable {
 struct CalculatorView: View {
     let ballisticSettings: BallisticSettings
 
-    @StateObject private var weatherManager = WeatherManager()
-    @StateObject private var locationManager = LocationManager()
+    @State private var weatherManager = WeatherManager()
+    @State private var locationManager = LocationManager()
     @State private var distance: Double = 100.0
-    @State private var trajectoryResult: [Double] = []
+    @State private var trajectoryResult: TrajectoryResult?
     @State private var trajectoryData: [TrajectoryDataPoint] = []
 
     private func getCalculator() -> BallisticCalculator {
@@ -49,37 +50,37 @@ struct CalculatorView: View {
                 }
             }
 
-            if !trajectoryResult.isEmpty {
+            if let result = trajectoryResult {
                 Section(header: Text("Results for \(distance, specifier: "%.0f") meters")) {
                     HStack {
                         Text("Drop:")
                         Spacer()
-                        Text("\(trajectoryResult[1], specifier: "%.2f") cm")
+                        Text("\(result.dropCM, specifier: "%.2f") cm")
                     }
                     HStack {
                         Text("Drop (MOA):")
                         Spacer()
-                        Text("\(trajectoryResult[2], specifier: "%.2f") MOA")
+                        Text("\(result.dropCorrectionMOA, specifier: "%.2f") MOA")
                     }
                     HStack {
                         Text("Windage:")
                         Spacer()
-                        Text("\(trajectoryResult[4], specifier: "%.2f") cm")
+                        Text("\(result.windageCM, specifier: "%.2f") cm")
                     }
                     HStack {
                         Text("Windage (MOA):")
                         Spacer()
-                        Text("\(trajectoryResult[5], specifier: "%.2f") MOA")
+                        Text("\(result.windageCorrectionMOA, specifier: "%.2f") MOA")
                     }
                     HStack {
                         Text("Velocity:")
                         Spacer()
-                        Text("\(trajectoryResult[6], specifier: "%.0f") m/s")
+                        Text("\(result.velocityMPS, specifier: "%.0f") m/s")
                     }
                     HStack {
                         Text("Energy:")
                         Spacer()
-                        Text("\(trajectoryResult[7], specifier: "%.0f") Joules")
+                        Text("\(result.energyJoules, specifier: "%.0f") Joules")
                     }
                 }
             }
@@ -101,57 +102,51 @@ struct CalculatorView: View {
             locationManager.requestLocation()
             calculateTrajectory()
         }
+        .onChange(of: locationManager.location) { _, newLocation in
+             if let location = newLocation {
+                 Task {
+                     await weatherManager.updateCurrentWeather(userLocation: location)
+                     calculateTrajectory()
+                 }
+             }
+        }
     }
 
     private func calculateTrajectory() {
         let calculator = getCalculator()
+        trajectoryResult = calculator.solveTrajectory(for: distance)
+
         let solution = calculator.solveFullTrajectory(upTo: distance)
-
-        if let point = solution.getPoint(at: Measurement(value: distance, unit: UnitLength.meters)) {
-            trajectoryResult = [
-                distance,
-                point.drop.converted(to: UnitLength.centimeters).value,
-                point.dropCorrection,
-                point.seconds,
-                point.windage.converted(to: UnitLength.centimeters).value,
-                point.windageCorrection,
-                point.velocity.converted(to: UnitSpeed.metersPerSecond).value,
-                point.energy.converted(to: UnitEnergy.joules).value
-            ]
-        }
-
         var data: [TrajectoryDataPoint] = []
         for i in stride(from: 0, to: distance, by: 10) {
             if let point = solution.getPoint(at: Measurement(value: i, unit: UnitLength.meters)) {
-                data.append(TrajectoryDataPoint(distance: i, drop: point.drop.converted(to: UnitLength.centimeters).value))
+                data.append(TrajectoryDataPoint(distance: i, drop: point.drop * 100.0))
             }
         }
         trajectoryData = data
     }
 }
 
-struct CalculatorView_Previews: PreviewProvider {
-    static var previews: some View {
-        let container = try! ModelContainer(for: BallisticSettings.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
-        let sampleBallistics = BallisticSettings(
-            ammunitionName: "Preview Ammo",
-            ballisticCoefficient: 0.45,
-            calibre: ".308",
-            date: Date().timeIntervalSince1970,
-            distanceMeters: 100.0,
-            dragFunction: 1,
-            id: UUID(),
-            muzzleEnergy: 3525.0,
-            muzzleVelocityMPS: 853.0,
-            projectileManufacturer: "Preview Manufacturer",
-            projectileWeightGrains: 168.0,
-            sightHeightCM: 3.81,
-            zeroRangeMeters: 100.0
-        )
+#Preview {
+    let container = try! ModelContainer(for: BallisticSettings.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+    let sampleBallistics = BallisticSettings(
+        ammunitionName: "Preview Ammo",
+        ballisticCoefficient: 0.45,
+        calibre: ".308",
+        date: Date().timeIntervalSince1970,
+        distanceMeters: 100.0,
+        dragFunction: 1,
+        id: UUID(),
+        muzzleEnergy: 3525.0,
+        muzzleVelocityMPS: 853.0,
+        projectileManufacturer: "Preview Manufacturer",
+        projectileWeightGrains: 168.0,
+        sightHeightCM: 3.81,
+        zeroRangeMeters: 100.0
+    )
 
-        return NavigationView {
-            CalculatorView(ballisticSettings: sampleBallistics)
-        }
-        .modelContainer(container)
+    return NavigationStack {
+        CalculatorView(ballisticSettings: sampleBallistics)
     }
+    .modelContainer(container)
 }

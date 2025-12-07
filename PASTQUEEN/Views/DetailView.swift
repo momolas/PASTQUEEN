@@ -35,8 +35,8 @@ struct DetailView: View {
                     .padding()
                     .frame(maxWidth: .infinity)
                     .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+                    .foregroundStyle(.white)
+                    .clipShape(.rect(cornerRadius: 10))
             })
             .padding()
         }
@@ -46,25 +46,23 @@ struct DetailView: View {
     }
 }
 
-struct DetailView_Previews: PreviewProvider {
-    static var previews: some View {
-        let container = try! ModelContainer(for: BallisticSettings.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
-        let sampleBallistics = BallisticSettings(
-            ammunitionName: "Preview Ammo",
-            ballisticCoefficient: 0.45,
-            calibre: ".308",
-            date: Date().timeIntervalSince1970,
-            distanceMeters: 100.0,
-            dragFunction: 1,
-            id: UUID(),
-            muzzleEnergy: 3525.0,
-            muzzleVelocityMPS: 853.0,
-            projectileManufacturer: "Preview Manufacturer",
-            projectileWeightGrains: 168,
-            sightHeightCM: 3.81,
-            zeroRangeMeters: 100.0
-        )
-        return DetailView(ballisticSettings: sampleBallistics)
-            .modelContainer(container)
-    }
+#Preview {
+    let container = try! ModelContainer(for: BallisticSettings.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+    let sampleBallistics = BallisticSettings(
+        ammunitionName: "Preview Ammo",
+        ballisticCoefficient: 0.45,
+        calibre: ".308",
+        date: Date().timeIntervalSince1970,
+        distanceMeters: 100.0,
+        dragFunction: 1,
+        id: UUID(),
+        muzzleEnergy: 3525.0,
+        muzzleVelocityMPS: 853.0,
+        projectileManufacturer: "Preview Manufacturer",
+        projectileWeightGrains: 168,
+        sightHeightCM: 3.81,
+        zeroRangeMeters: 100.0
+    )
+    return DetailView(ballisticSettings: sampleBallistics)
+        .modelContainer(container)
 }
