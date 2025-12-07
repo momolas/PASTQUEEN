@@ -46,16 +46,16 @@ struct BallisticCalculator {
         return Array(repeating: 0.0, count: 8)
     }
     
-    public func solveFullTrajectory(upTo distance: Double) -> BallisticSolution {
+    public func solveFullTrajectory(upTo distance: Double) -> Ballistics {
         let dragModel: DragModel
         switch ballistics.dragFunction {
-        case 1: dragModel = .G1
-        case 2: dragModel = .G2
-        case 5: dragModel = .G5
-        case 6: dragModel = .G6
-        case 7: dragModel = .G7
-        case 8: dragModel = .G8
-        default: dragModel = .G1
+        case 1: dragModel = .g1
+        case 2: dragModel = .g2
+        case 5: dragModel = .g5
+        case 6: dragModel = .g6
+        case 7: dragModel = .g7
+        case 8: dragModel = .g8
+        default: dragModel = .g1
         }
         
         return Ballistics.solve(
@@ -67,9 +67,9 @@ struct BallisticCalculator {
             zeroRange: Measurement(value: ballistics.zeroRangeMeters, unit: UnitLength.meters),
             atmosphere: Atmosphere(
                 altitude: Measurement(value: weather.altitude, unit: UnitLength.meters),
+				pressure: Measurement(value: weather.pressure, unit: UnitPressure.hectopascals),
                 temperature: Measurement(value: weather.temperature, unit: UnitTemperature.celsius),
                 relativeHumidity: weather.humidity,
-                pressure: Measurement(value: weather.pressure, unit: UnitPressure.hectopascals)
             ),
             windSpeed: Measurement(value: weather.windSpeed, unit: UnitSpeed.kilometersPerHour),
             windAngle: weather.windDirection,
