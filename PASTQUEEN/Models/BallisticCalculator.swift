@@ -58,13 +58,13 @@ struct BallisticCalculator {
         if let point = solveFullTrajectory(upTo: distance).getPoint(at: Measurement(value: distance, unit: UnitLength.meters)) {
             return TrajectoryResult(
                 distance: distance,
-                dropCM: point.drop.converted(to: UnitLength.centimeters).value,
-                dropCorrectionMOA: point.dropCorrection,
+                dropCM: point.drop * 100.0, // Meters to CM
+                dropCorrectionMOA: point.dropCorrection.converted(to: .degrees).value * 60.0,
                 timeSeconds: point.seconds,
-                windageCM: point.windage.converted(to: UnitLength.centimeters).value,
-                windageCorrectionMOA: point.windageCorrection,
-                velocityMPS: point.velocity.converted(to: UnitSpeed.metersPerSecond).value,
-                energyJoules: point.energy.converted(to: UnitEnergy.joules).value
+                windageCM: point.windage * 100.0, // Meters to CM
+                windageCorrectionMOA: point.windageCorrection.converted(to: .degrees).value * 60.0,
+                velocityMPS: point.velocity, // m/s
+                energyJoules: point.energy // Joules
             )
         }
         return .empty
@@ -74,11 +74,7 @@ struct BallisticCalculator {
         let dragModel: DragModel
         switch ballistics.dragFunction {
         case 1: dragModel = .g1
-        case 2: dragModel = .g2
-        case 5: dragModel = .g5
-        case 6: dragModel = .g6
         case 7: dragModel = .g7
-        case 8: dragModel = .g8
         default: dragModel = .g1
         }
         
