@@ -106,6 +106,7 @@ struct CalculatorView: View {
              if let location = newLocation {
                  Task {
                      await weatherManager.updateCurrentWeather(userLocation: location)
+                     calculateTrajectory()
                  }
              }
         }
@@ -126,28 +127,26 @@ struct CalculatorView: View {
     }
 }
 
-struct CalculatorView_Previews: PreviewProvider {
-    static var previews: some View {
-        let container = try! ModelContainer(for: BallisticSettings.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
-        let sampleBallistics = BallisticSettings(
-            ammunitionName: "Preview Ammo",
-            ballisticCoefficient: 0.45,
-            calibre: ".308",
-            date: Date().timeIntervalSince1970,
-            distanceMeters: 100.0,
-            dragFunction: 1,
-            id: UUID(),
-            muzzleEnergy: 3525.0,
-            muzzleVelocityMPS: 853.0,
-            projectileManufacturer: "Preview Manufacturer",
-            projectileWeightGrains: 168.0,
-            sightHeightCM: 3.81,
-            zeroRangeMeters: 100.0
-        )
+#Preview {
+    let container = try! ModelContainer(for: BallisticSettings.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+    let sampleBallistics = BallisticSettings(
+        ammunitionName: "Preview Ammo",
+        ballisticCoefficient: 0.45,
+        calibre: ".308",
+        date: Date().timeIntervalSince1970,
+        distanceMeters: 100.0,
+        dragFunction: 1,
+        id: UUID(),
+        muzzleEnergy: 3525.0,
+        muzzleVelocityMPS: 853.0,
+        projectileManufacturer: "Preview Manufacturer",
+        projectileWeightGrains: 168.0,
+        sightHeightCM: 3.81,
+        zeroRangeMeters: 100.0
+    )
 
-        return NavigationStack {
-            CalculatorView(ballisticSettings: sampleBallistics)
-        }
-        .modelContainer(container)
+    return NavigationStack {
+        CalculatorView(ballisticSettings: sampleBallistics)
     }
+    .modelContainer(container)
 }
