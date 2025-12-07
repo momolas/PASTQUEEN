@@ -12,7 +12,7 @@ import Observation
 
 @MainActor
 @Observable
-class WeatherManager: ObservableObject {
+class WeatherManager {
     
     var currentWeather: CurrentWeather?
     let weatherService = WeatherService()
@@ -27,4 +27,3 @@ class WeatherManager: ObservableObject {
         }
     }
 }
-

@@ -27,7 +27,7 @@ struct LaunchView: View {
                         .renderingMode(.original)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .foregroundColor(.green)
+                        .foregroundStyle(.green)
                         .frame(width: 200, height: 200)
                 }
 

@@ -8,6 +8,30 @@
 import Foundation
 import SwiftBallistics
 
+struct TrajectoryResult {
+    let distance: Double
+    let dropCM: Double
+    let dropCorrectionMOA: Double
+    let timeSeconds: Double
+    let windageCM: Double
+    let windageCorrectionMOA: Double
+    let velocityMPS: Double
+    let energyJoules: Double
+
+    static var empty: TrajectoryResult {
+        TrajectoryResult(
+            distance: 0,
+            dropCM: 0,
+            dropCorrectionMOA: 0,
+            timeSeconds: 0,
+            windageCM: 0,
+            windageCorrectionMOA: 0,
+            velocityMPS: 0,
+            energyJoules: 0
+        )
+    }
+}
+
 struct BallisticCalculator {
     
     // Input parameters from the Ballistics model
@@ -30,31 +54,27 @@ struct BallisticCalculator {
         self.weather = weather
     }
     
-    public func solveTrajectory(for distance: Double) -> [Double] {
+    public func solveTrajectory(for distance: Double) -> TrajectoryResult {
         if let point = solveFullTrajectory(upTo: distance).getPoint(at: Measurement(value: distance, unit: UnitLength.meters)) {
-            return [
-                distance,
-                point.drop.converted(to: UnitLength.centimeters).value,
-                point.dropCorrection,
-                point.seconds,
-                point.windage.converted(to: UnitLength.centimeters).value,
-                point.windageCorrection,
-                point.velocity.converted(to: UnitSpeed.metersPerSecond).value,
-                point.energy.converted(to: UnitEnergy.joules).value
-            ]
+            return TrajectoryResult(
+                distance: distance,
+                dropCM: point.drop * 100.0, // Meters to CM
+                dropCorrectionMOA: point.dropCorrection.converted(to: .degrees).value * 60.0,
+                timeSeconds: point.seconds,
+                windageCM: point.windage * 100.0, // Meters to CM
+                windageCorrectionMOA: point.windageCorrection.converted(to: .degrees).value * 60.0,
+                velocityMPS: point.velocity, // m/s
+                energyJoules: point.energy // Joules
+            )
         }
-        return Array(repeating: 0.0, count: 8)
+        return .empty
     }
     
     public func solveFullTrajectory(upTo distance: Double) -> Ballistics {
         let dragModel: DragModel
         switch ballistics.dragFunction {
         case 1: dragModel = .g1
-        case 2: dragModel = .g2
-        case 5: dragModel = .g5
-        case 6: dragModel = .g6
         case 7: dragModel = .g7
-        case 8: dragModel = .g8
         default: dragModel = .g1
         }
         

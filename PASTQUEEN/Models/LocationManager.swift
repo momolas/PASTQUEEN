@@ -7,10 +7,14 @@
 
 import Foundation
 import CoreLocation
+import Observation
 
-class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
+@MainActor
+@Observable
+class LocationManager: NSObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
-    @Published var altitude: Double?
+    var altitude: Double?
+    var location: CLLocation?
 
     override init() {
         super.init()
@@ -23,14 +27,17 @@ class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
         locationManager.startUpdatingLocation()
     }
 
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
-            altitude = location.altitude
-            locationManager.stopUpdatingLocation()
+            Task { @MainActor in
+                self.location = location
+                self.altitude = location.altitude
+                manager.stopUpdatingLocation()
+            }
         }
     }
 
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+    nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Error getting location: \(error)")
     }
 }
