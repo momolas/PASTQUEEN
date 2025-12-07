@@ -7,10 +7,14 @@
 
 import Foundation
 import CoreLocation
+import Observation
 
-class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
+@MainActor
+@Observable
+class LocationManager: NSObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
-    @Published var altitude: Double?
+    var altitude: Double?
+    var location: CLLocation?
 
     override init() {
         super.init()
@@ -25,7 +29,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
-            altitude = location.altitude
+            self.location = location
+            self.altitude = location.altitude
             locationManager.stopUpdatingLocation()
         }
     }
