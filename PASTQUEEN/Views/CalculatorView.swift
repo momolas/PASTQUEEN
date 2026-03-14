@@ -120,7 +120,7 @@ struct CalculatorView: View {
         var data: [TrajectoryDataPoint] = []
         for i in stride(from: 0, to: distance, by: 10) {
             if let point = solution.getPoint(at: Measurement(value: i, unit: UnitLength.meters)) {
-                data.append(TrajectoryDataPoint(distance: i, drop: point.drop * 100.0))
+                data.append(TrajectoryDataPoint(distance: i, drop: point.drop.converted(to: .centimeters).value))
             }
         }
         trajectoryData = data

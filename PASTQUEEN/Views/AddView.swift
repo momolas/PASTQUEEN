@@ -25,11 +25,7 @@ struct AddView: View {
 
     @State private var ammunitionData: AmmunitionData?
 
-    let formatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter
-    }()
+
 
     var body: some View {
         NavigationView {
@@ -43,13 +39,13 @@ struct AddView: View {
                                 Text($0)
                             }
                         }
-                        TextField("Projectile Weight (grains)", value: $projectileWeightGrains, formatter: formatter)
+                        TextField("Projectile Weight (grains)", value: $projectileWeightGrains, format: .number)
                     }
 
                     Section("Ballistic Data") {
-                        TextField("Ballistic Coefficient", value: $ballisticCoefficient, formatter: formatter)
-                        TextField("Muzzle Velocity (m/s)", value: $muzzleVelocityMPS, formatter: formatter)
-                        TextField("Muzzle Energy (Joules)", value: $muzzleEnergy, formatter: formatter)
+                        TextField("Ballistic Coefficient", value: $ballisticCoefficient, format: .number)
+                        TextField("Muzzle Velocity (m/s)", value: $muzzleVelocityMPS, format: .number)
+                        TextField("Muzzle Energy (Joules)", value: $muzzleEnergy, format: .number)
                         Picker("Drag Function", selection: $dragFunction) {
                             ForEach(ammunitionData.dragFunctions) { function in
                                 Text(function.name).tag(function.id)
@@ -58,8 +54,8 @@ struct AddView: View {
                     }
 
                     Section("Rifle Setup") {
-                        TextField("Sight Height (cm)", value: $sightHeightCM, formatter: formatter)
-                        TextField("Zero Range (meters)", value: $zeroRangeMeters, formatter: formatter)
+                        TextField("Sight Height (cm)", value: $sightHeightCM, format: .number)
+                        TextField("Zero Range (meters)", value: $zeroRangeMeters, format: .number)
                     }
 
                     Section {

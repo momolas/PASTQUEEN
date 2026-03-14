@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import SwiftBallistics
+import Ballistics
 
 struct TrajectoryResult {
     let distance: Double
@@ -58,29 +58,21 @@ struct BallisticCalculator {
         if let point = solveFullTrajectory(upTo: distance).getPoint(at: Measurement(value: distance, unit: UnitLength.meters)) {
             return TrajectoryResult(
                 distance: distance,
-                dropCM: point.drop * 100.0, // Meters to CM
+                dropCM: point.drop.converted(to: .centimeters).value,
                 dropCorrectionMOA: point.dropCorrection.converted(to: .degrees).value * 60.0,
-                timeSeconds: point.seconds,
-                windageCM: point.windage * 100.0, // Meters to CM
+                timeSeconds: point.travelTime.converted(to: .seconds).value,
+                windageCM: point.windage.converted(to: .centimeters).value,
                 windageCorrectionMOA: point.windageCorrection.converted(to: .degrees).value * 60.0,
-                velocityMPS: point.velocity, // m/s
-                energyJoules: point.energy // Joules
+                velocityMPS: point.velocity.converted(to: .metersPerSecond).value,
+                energyJoules: point.energy.converted(to: .joules).value
             )
         }
         return .empty
     }
     
     public func solveFullTrajectory(upTo distance: Double) -> Ballistics {
-        let dragModel: DragModel
-        switch ballistics.dragFunction {
-        case 1: dragModel = .g1
-        case 7: dragModel = .g7
-        default: dragModel = .g1
-        }
-        
         return Ballistics.solve(
-            dragModel: dragModel,
-            ballisticCoefficient: ballistics.ballisticCoefficient,
+            dragCoefficient: ballistics.ballisticCoefficient,
             initialVelocity: Measurement(value: ballistics.muzzleVelocityMPS, unit: UnitSpeed.metersPerSecond),
             sightHeight: Measurement(value: ballistics.sightHeightCM, unit: UnitLength.centimeters),
             shootingAngle: Measurement(value: 0, unit: UnitAngle.degrees),

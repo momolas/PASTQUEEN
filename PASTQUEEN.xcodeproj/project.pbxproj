@@ -17,9 +17,9 @@
 		CD99740A28D49B8000C9D3FD /* AmmunitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD99740928D49B8000C9D3FD /* AmmunitionView.swift */; };
 		CD9B27B428D4CE3800E28642 /* CalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9B27B328D4CE3800E28642 /* CalculatorView.swift */; };
 		CDA6EECF2919312C004196DF /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA6EECD2919312C004196DF /* WeatherManager.swift */; };
+		CDBEAE6A2F65E8B700D3A843 /* Ballistics in Frameworks */ = {isa = PBXBuildFile; productRef = CDBEAE692F65E8B700D3A843 /* Ballistics */; };
 		CDE935BB2EE46EB7008DDD15 /* BallisticCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE935BA2EE46EB7008DDD15 /* BallisticCalculator.swift */; };
 		CDE935BC2EE46EB7008DDD15 /* AmmunitionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE935B92EE46EB7008DDD15 /* AmmunitionData.swift */; };
-		CDE935BF2EE46EDE008DDD15 /* SwiftBallistics in Frameworks */ = {isa = PBXBuildFile; productRef = CDE935BE2EE46EDE008DDD15 /* SwiftBallistics */; };
 		CDFD841029D6F39D00E9B274 /* GravityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFD840F29D6F39D00E9B274 /* GravityManager.swift */; };
 		CDFD841229D71F1C00E9B274 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFD841129D71F1C00E9B274 /* LocationManager.swift */; };
 /* End PBXBuildFile section */
@@ -48,7 +48,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CDE935BF2EE46EDE008DDD15 /* SwiftBallistics in Frameworks */,
+				CDBEAE6A2F65E8B700D3A843 /* Ballistics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,7 +145,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1410;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					CD9973F628D49B4600C9D3FD = {
 						CreatedOnToolsVersion = 14.1;
@@ -162,7 +162,7 @@
 			);
 			mainGroup = CD9973EE28D49B4600C9D3FD;
 			packageReferences = (
-				CDE935BD2EE46EDE008DDD15 /* XCRemoteSwiftPackageReference "swift-ballistics" */,
+				CDBEAE682F65E8B700D3A843 /* XCRemoteSwiftPackageReference "swift-ballistics" */,
 			);
 			productRefGroup = CD9973F828D49B4600C9D3FD /* Products */;
 			projectDirPath = "";
@@ -244,6 +244,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = X8SJ59XXC8;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -265,6 +266,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -307,6 +309,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = YES;
+				DEVELOPMENT_TEAM = X8SJ59XXC8;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -321,6 +324,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
@@ -337,7 +341,6 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"PASTQUEEN/Preview Content\"";
-				DEVELOPMENT_TEAM = X8SJ59XXC8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -353,7 +356,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
@@ -381,7 +384,6 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"PASTQUEEN/Preview Content\"";
-				DEVELOPMENT_TEAM = X8SJ59XXC8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -397,7 +399,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
@@ -437,9 +439,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		CDE935BD2EE46EDE008DDD15 /* XCRemoteSwiftPackageReference "swift-ballistics" */ = {
+		CDBEAE682F65E8B700D3A843 /* XCRemoteSwiftPackageReference "swift-ballistics" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/momolas/swift-ballistics.git";
+			repositoryURL = "https://github.com/raydowe/swift-ballistics.git";
 			requirement = {
 				branch = main;
 				kind = branch;
@@ -448,10 +450,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		CDE935BE2EE46EDE008DDD15 /* SwiftBallistics */ = {
+		CDBEAE692F65E8B700D3A843 /* Ballistics */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = CDE935BD2EE46EDE008DDD15 /* XCRemoteSwiftPackageReference "swift-ballistics" */;
-			productName = SwiftBallistics;
+			package = CDBEAE682F65E8B700D3A843 /* XCRemoteSwiftPackageReference "swift-ballistics" */;
+			productName = Ballistics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

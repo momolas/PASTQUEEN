@@ -9,6 +9,7 @@ import Foundation
 import CoreMotion
 import Observation
 
+@MainActor
 @Observable
 class GravityManager {
 	
