@@ -10,12 +10,15 @@ import SwiftData
 
 @main
 struct PASTQUEENApp: App {
+    @State private var locationManager = LocationManager()
+    @State private var weatherManager = WeatherManager()
+
     var body: some Scene {
         WindowGroup {
-            // The main view could be a TabView to switch between Ammunition and Weather, for instance.
-            // For now, we'll keep LaunchView as the entry point.
             LaunchView()
         }
+        .environment(locationManager)
+        .environment(weatherManager)
         .modelContainer(for: BallisticSettings.self)
     }
 }

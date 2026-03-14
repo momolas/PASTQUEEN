@@ -19,11 +19,12 @@ struct TrajectoryDataPoint: Identifiable {
 struct CalculatorView: View {
     let ballisticSettings: BallisticSettings
 
-    @State private var weatherManager = WeatherManager()
-    @State private var locationManager = LocationManager()
+    @Environment(WeatherManager.self) private var weatherManager
+    @Environment(LocationManager.self) private var locationManager
     @State private var distance: Double = 100.0
     @State private var trajectoryResult: TrajectoryResult?
     @State private var trajectoryData: [TrajectoryDataPoint] = []
+    @State private var selectedDistance: Double?
 
     private func getCalculator() -> BallisticCalculator {
         let weatherData = BallisticCalculator.WeatherData(
@@ -39,6 +40,34 @@ struct CalculatorView: View {
 
     var body: some View {
         Form {
+            if let weather = weatherManager.currentWeather {
+                Section(header: Text("Weather Used")) {
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text("Temp")
+                            Text(weather.temperature.converted(to: .celsius).value, format: .number.precision(.fractionLength(1)))
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        VStack(alignment: .leading) {
+                            Text("Wind")
+                            Text(weather.wind.speed.converted(to: .kilometersPerHour).value, format: .number.precision(.fractionLength(1)))
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        VStack(alignment: .leading) {
+                            Text("Pressure")
+                            Text(weather.pressure.converted(to: .hectopascals).value, format: .number.precision(.fractionLength(0)))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            } else if let error = weatherManager.errorMessage {
+                Section(header: Text("Weather Error")) {
+                    Text(error).foregroundStyle(.red)
+                }
+            }
+
             Section(header: Text("Input")) {
                 TextField("Distance (meters)", value: $distance, format: .number)
                     .keyboardType(.decimalPad)
@@ -46,7 +75,7 @@ struct CalculatorView: View {
 
             Section {
                 Button("Calculate") {
-                    calculateTrajectory()
+                    Task { await calculateTrajectory() }
                 }
             }
 
@@ -87,66 +116,101 @@ struct CalculatorView: View {
 
             if !trajectoryData.isEmpty {
                 Section(header: Text("Trajectory")) {
-                    Chart(trajectoryData) {
+                    Chart(trajectoryData) { point in
                         LineMark(
-                            x: .value("Distance", $0.distance),
-                            y: .value("Drop", $0.drop)
+                            x: .value("Distance", point.distance),
+                            y: .value("Drop", point.drop)
                         )
+                        .interpolationMethod(.catmullRom)
+                        
+                        AreaMark(
+                            x: .value("Distance", point.distance),
+                            y: .value("Drop", point.drop)
+                        )
+                        .interpolationMethod(.catmullRom)
+                        .foregroundStyle(Gradient(colors: [.blue.opacity(0.3), .blue.opacity(0.0)]))
+                        
+                        if let selectedDistance, let selectedDrop = trajectoryData.first(where: { abs($0.distance - selectedDistance) < 5.0 })?.drop {
+                            RuleMark(x: .value("Distance", selectedDistance))
+                                .foregroundStyle(.red)
+                                .annotation(position: .top) {
+                                    Text("\(selectedDrop, specifier: "%.1f") cm")
+                                        .font(.caption)
+                                        .padding(4)
+                                        .background(.regularMaterial, in: .rect(cornerRadius: 4))
+                                }
+                        }
                     }
+                    .chartXSelection(value: $selectedDistance)
                     .frame(height: 200)
                 }
             }
         }
         .navigationTitle("Calculator")
         .onAppear {
-            locationManager.requestLocation()
-            calculateTrajectory()
+            if locationManager.authorizationStatus == .notDetermined {
+                locationManager.requestLocation()
+            }
+            Task { await calculateTrajectory() }
         }
         .onChange(of: locationManager.location) { _, newLocation in
              if let location = newLocation {
                  Task {
                      await weatherManager.updateCurrentWeather(userLocation: location)
-                     calculateTrajectory()
+                     await calculateTrajectory()
                  }
              }
         }
     }
 
-    private func calculateTrajectory() {
+    private func calculateTrajectory() async {
         let calculator = getCalculator()
-        trajectoryResult = calculator.solveTrajectory(for: distance)
+        let result = calculator.solveTrajectory(for: distance)
 
         let solution = calculator.solveFullTrajectory(upTo: distance)
-        var data: [TrajectoryDataPoint] = []
-        for i in stride(from: 0, to: distance, by: 10) {
-            if let point = solution.getPoint(at: Measurement(value: i, unit: UnitLength.meters)) {
-                data.append(TrajectoryDataPoint(distance: i, drop: point.drop.converted(to: .centimeters).value))
+        let data: [TrajectoryDataPoint] = await Task.detached {
+            var dataPoints: [TrajectoryDataPoint] = []
+            for i in stride(from: 0, to: distance, by: 10) {
+                if let point = solution.getPoint(at: Measurement(value: i, unit: UnitLength.meters)) {
+                    dataPoints.append(TrajectoryDataPoint(distance: i, drop: point.drop.converted(to: .centimeters).value))
+                }
             }
+            return dataPoints
+        }.value
+        
+        await MainActor.run {
+            self.trajectoryResult = result
+            self.trajectoryData = data
         }
-        trajectoryData = data
     }
 }
 
 #Preview {
-    let container = try! ModelContainer(for: BallisticSettings.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
-    let sampleBallistics = BallisticSettings(
-        ammunitionName: "Preview Ammo",
-        ballisticCoefficient: 0.45,
-        calibre: ".308",
-        date: Date().timeIntervalSince1970,
-        distanceMeters: 100.0,
-        dragFunction: 1,
-        id: UUID(),
-        muzzleEnergy: 3525.0,
-        muzzleVelocityMPS: 853.0,
-        projectileManufacturer: "Preview Manufacturer",
-        projectileWeightGrains: 168.0,
-        sightHeightCM: 3.81,
-        zeroRangeMeters: 100.0
-    )
+    do {
+        let container = try ModelContainer(for: BallisticSettings.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+        let sampleBallistics = BallisticSettings(
+            ammunitionName: "Preview Ammo",
+            ballisticCoefficient: 0.45,
+            calibre: ".308",
+            date: Date().timeIntervalSince1970,
+            distanceMeters: 100.0,
+            dragFunction: 1,
+            id: UUID(),
+            muzzleEnergy: 3525.0,
+            muzzleVelocityMPS: 853.0,
+            projectileManufacturer: "Preview Manufacturer",
+            projectileWeightGrains: 168.0,
+            sightHeightCM: 3.81,
+            zeroRangeMeters: 100.0
+        )
 
-    return NavigationStack {
-        CalculatorView(ballisticSettings: sampleBallistics)
+        return NavigationStack {
+            CalculatorView(ballisticSettings: sampleBallistics)
+                .environment(LocationManager())
+                .environment(WeatherManager())
+        }
+        .modelContainer(container)
+    } catch {
+        return Text("Failed to create container: \(error.localizedDescription)")
     }
-    .modelContainer(container)
 }

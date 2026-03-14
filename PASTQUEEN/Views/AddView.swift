@@ -106,6 +106,11 @@ struct AddView: View {
 }
 
 #Preview {
-    AddView()
-        .modelContainer(for: BallisticSettings.self, inMemory: true)
+    do {
+        let container = try ModelContainer(for: BallisticSettings.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+        return AddView()
+            .modelContainer(container)
+    } catch {
+        return Text("Failed to create container: \(error.localizedDescription)")
+    }
 }
