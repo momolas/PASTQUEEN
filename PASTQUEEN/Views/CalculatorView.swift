@@ -63,18 +63,24 @@ struct CalculatorView: View {
                         VStack(alignment: .leading) {
                             Text(.temp)
                             Text(weather.temperature.converted(to: .celsius).value, format: .number.precision(.fractionLength(1)))
+                                .fontDesign(.rounded)
+                                .fontWeight(.light)
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
                         VStack(alignment: .leading) {
                             Text(.wind)
                             Text(weather.wind.speed.converted(to: .kilometersPerHour).value, format: .number.precision(.fractionLength(1)))
+                                .fontDesign(.rounded)
+                                .fontWeight(.light)
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
                         VStack(alignment: .leading) {
                             Text(.pressure)
                             Text(weather.pressure.converted(to: .hectopascals).value, format: .number.precision(.fractionLength(0)))
+                                .fontDesign(.rounded)
+                                .fontWeight(.light)
                                 .foregroundStyle(.secondary)
                         }
                     }
@@ -141,31 +147,43 @@ struct CalculatorView: View {
                         Text(.drop)
                         Spacer()
                         Text("\(result.dropCM, specifier: "%.2f") cm")
+                            .fontDesign(.rounded)
+                            .fontWeight(.light)
                     }
                     HStack {
                         Text(.dropMOA)
                         Spacer()
                         Text("\(result.dropCorrectionMOA, specifier: "%.2f") MOA")
+                            .fontDesign(.rounded)
+                            .fontWeight(.light)
                     }
                     HStack {
                         Text(.windage)
                         Spacer()
                         Text("\(result.windageCM, specifier: "%.2f") cm")
+                            .fontDesign(.rounded)
+                            .fontWeight(.light)
                     }
                     HStack {
                         Text(.windageMOA)
                         Spacer()
                         Text("\(result.windageCorrectionMOA, specifier: "%.2f") MOA")
+                            .fontDesign(.rounded)
+                            .fontWeight(.light)
                     }
                     HStack {
                         Text(.velocity)
                         Spacer()
                         Text("\(result.velocityMPS, specifier: "%.0f") m/s")
+                            .fontDesign(.rounded)
+                            .fontWeight(.light)
                     }
                     HStack {
                         Text(.energy)
                         Spacer()
                         Text("\(result.energyJoules, specifier: "%.0f") Joules")
+                            .fontDesign(.rounded)
+                            .fontWeight(.light)
                     }
                 }
             }
@@ -192,8 +210,10 @@ struct CalculatorView: View {
                                 .annotation(position: .top) {
                                     Text("\(selectedDrop, specifier: "%.1f") cm")
                                         .font(.caption)
+                                        .fontDesign(.rounded)
+                                        .fontWeight(.light)
                                         .padding(4)
-                                        .background(.regularMaterial, in: .rect(cornerRadius: 4))
+                                        .background(.thinMaterial, in: .rect(cornerRadius: 10))
                                 }
                         }
                     }

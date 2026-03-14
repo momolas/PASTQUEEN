@@ -25,9 +25,13 @@ struct AmmunitionListView: View {
                         VStack(alignment: .leading) {
                             Text(ammo.ammunitionName)
                                 .font(.headline)
+                                .fontDesign(.rounded)
+                                .fontWeight(.light)
                                 .foregroundStyle(.primary)
                             Text("\(ammo.calibre) - \(ammo.projectileWeightGrains, format: .number)gr")
                                 .font(.subheadline)
+                                .fontDesign(.rounded)
+                                .fontWeight(.light)
                                 .foregroundStyle(.secondary)
                         }
                         if selectedAmmunition == ammo || (selectedAmmunition == nil && ammo == ammunitions.first) {

@@ -40,8 +40,12 @@ struct LaunchView: View {
                         .padding(.bottom, 8)
                     Text(.noAmmunitionProfiles)
                         .font(.headline)
+                        .fontDesign(.rounded)
+                        .fontWeight(.light)
                     Text(.tapToAdd)
                         .font(.subheadline)
+                        .fontDesign(.rounded)
+                        .fontWeight(.light)
                         .foregroundStyle(.secondary)
                 }
                 .navigationBarTitleDisplayMode(.large)

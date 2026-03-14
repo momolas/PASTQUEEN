@@ -16,6 +16,7 @@ struct PASTQUEENApp: App {
     var body: some Scene {
         WindowGroup {
             LaunchView()
+                .preferredColorScheme(.dark)
         }
         .environment(locationManager)
         .environment(weatherManager)
