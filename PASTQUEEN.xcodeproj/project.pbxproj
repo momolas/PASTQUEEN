@@ -22,10 +22,12 @@
 		CDE935BC2EE46EB7008DDD15 /* AmmunitionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE935B92EE46EB7008DDD15 /* AmmunitionData.swift */; };
 		CDFD841029D6F39D00E9B274 /* GravityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFD840F29D6F39D00E9B274 /* GravityManager.swift */; };
 		CDFD841229D71F1C00E9B274 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFD841129D71F1C00E9B274 /* LocationManager.swift */; };
+		F8F7E2D3F7B4F5C2B0EC9067 /* AmmunitionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64490F2424B9909B430E02E8 /* AmmunitionListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		5801502FE6AFF46FA004B664 /* Localizable.xcstrings */ = {isa = PBXFileReference; includeInIndex = 1; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		64490F2424B9909B430E02E8 /* AmmunitionListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AmmunitionListView.swift; sourceTree = "<group>"; };
 		CD2FBF8F2909504C00387B0B /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		CD2FBF9129095CC800387B0B /* AddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddView.swift; sourceTree = "<group>"; };
 		CD81125C2A44878700239787 /* BallisticSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallisticSettings.swift; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 				CD2FBF8F2909504C00387B0B /* DetailView.swift */,
 				CD9B27B328D4CE3800E28642 /* CalculatorView.swift */,
 				CD2FBF9129095CC800387B0B /* AddView.swift */,
+				64490F2424B9909B430E02E8 /* AmmunitionListView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -210,6 +213,7 @@
 				CD2FBF902909504C00387B0B /* DetailView.swift in Sources */,
 				CDA6EECF2919312C004196DF /* WeatherManager.swift in Sources */,
 				CD2FBF9229095CC800387B0B /* AddView.swift in Sources */,
+				F8F7E2D3F7B4F5C2B0EC9067 /* AmmunitionListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
