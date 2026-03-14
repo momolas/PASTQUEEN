@@ -22,10 +22,7 @@ struct AddView: View {
     @State private var zeroRangeMeters: Double = 100.0
     @State private var dragFunction: Int32 = 1
     @State private var projectileManufacturer: String = ""
-
     @State private var ammunitionData: AmmunitionData?
-
-
 
     var body: some View {
         NavigationView {
