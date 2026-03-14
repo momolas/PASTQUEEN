@@ -22,84 +22,78 @@ struct AddView: View {
     @State private var zeroRangeMeters: Double = 100.0
     @State private var dragFunction: Int32 = 1
     @State private var projectileManufacturer: String = ""
-    @State private var ammunitionData: AmmunitionData?
+
+    private var isFormValid: Bool {
+        guard !ammunitionName.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
+        guard !projectileManufacturer.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
+        guard ballisticCoefficient > 0 else { return false }
+        guard muzzleVelocityMPS > 0 else { return false }
+        guard muzzleEnergy > 0 else { return false }
+        guard projectileWeightGrains > 0 else { return false }
+        return true
+    }
 
     var body: some View {
         NavigationView {
             Form {
-                if let ammunitionData = ammunitionData {
-                    Section("Ammunition Details") {
-                        TextField("Ammunition Name", text: $ammunitionName)
-                        TextField("Manufacturer", text: $projectileManufacturer)
-                        Picker("Caliber", selection: $calibre) {
-                            ForEach(ammunitionData.calibers, id: \.self) {
-                                Text($0)
-                            }
-                        }
-                        TextField("Projectile Weight (grains)", value: $projectileWeightGrains, format: .number)
-                    }
-
-                    Section("Ballistic Data") {
-                        TextField("Ballistic Coefficient", value: $ballisticCoefficient, format: .number)
-                        TextField("Muzzle Velocity (m/s)", value: $muzzleVelocityMPS, format: .number)
-                        TextField("Muzzle Energy (Joules)", value: $muzzleEnergy, format: .number)
-                        Picker("Drag Function", selection: $dragFunction) {
-                            ForEach(ammunitionData.dragFunctions) { function in
-                                Text(function.name).tag(function.id)
-                            }
+                Section(.ammunitionDetails) {
+                    TextField(String(localized: .ammunitionName), text: $ammunitionName)
+                    TextField(String(localized: .manufacturer), text: $projectileManufacturer)
+                    Picker(.caliber, selection: $calibre) {
+                        ForEach(AmmunitionData.calibers, id: \.self) {
+                            Text($0)
                         }
                     }
+                    TextField(String(localized: .projectileWeightGrains), value: $projectileWeightGrains, format: .number)
+                }
 
-                    Section("Rifle Setup") {
-                        TextField("Sight Height (cm)", value: $sightHeightCM, format: .number)
-                        TextField("Zero Range (meters)", value: $zeroRangeMeters, format: .number)
-                    }
-
-                    Section {
-                        Button("Save") {
-                            let newAmmunition = BallisticSettings(
-                                ammunitionName: ammunitionName,
-                                ballisticCoefficient: ballisticCoefficient,
-                                calibre: calibre,
-                                date: Date().timeIntervalSince1970,
-                                distanceMeters: 0,
-                                dragFunction: dragFunction,
-                                id: UUID(),
-                                muzzleEnergy: muzzleEnergy,
-                                muzzleVelocityMPS: muzzleVelocityMPS,
-                                projectileManufacturer: projectileManufacturer,
-                                projectileWeightGrains: projectileWeightGrains,
-                                sightHeightCM: sightHeightCM,
-                                zeroRangeMeters: zeroRangeMeters
-                            )
-                            modelContext.insert(newAmmunition)
-                            dismiss()
+                Section(.ballisticData) {
+                    TextField(String(localized: .ballisticCoefficient), value: $ballisticCoefficient, format: .number)
+                    TextField(String(localized: .muzzleVelocity), value: $muzzleVelocityMPS, format: .number)
+                    TextField(String(localized: .muzzleEnergy), value: $muzzleEnergy, format: .number)
+                    Picker(.dragFunction, selection: $dragFunction) {
+                        ForEach(AmmunitionData.dragFunctions) { function in
+                            Text(function.name).tag(function.id)
                         }
                     }
-                } else {
-                    Text("Loading ammunition data...")
+                }
+
+                Section(.rifleSetup) {
+                    TextField(String(localized: .sightHeight), value: $sightHeightCM, format: .number)
+                    TextField(String(localized: .zeroRange), value: $zeroRangeMeters, format: .number)
+                }
+
+                Section {
+                    Button(.save) {
+                        let newAmmunition = BallisticSettings(
+                            ammunitionName: ammunitionName,
+                            ballisticCoefficient: ballisticCoefficient,
+                            calibre: calibre,
+                            date: Date().timeIntervalSince1970,
+                            distanceMeters: 0,
+                            dragFunction: dragFunction,
+                            id: UUID(),
+                            muzzleEnergy: muzzleEnergy,
+                            muzzleVelocityMPS: muzzleVelocityMPS,
+                            projectileManufacturer: projectileManufacturer,
+                            projectileWeightGrains: projectileWeightGrains,
+                            sightHeightCM: sightHeightCM,
+                            zeroRangeMeters: zeroRangeMeters
+                        )
+                        modelContext.insert(newAmmunition)
+                        dismiss()
+                    }
+                    .disabled(!isFormValid)
                 }
             }
-            .navigationBarTitle("Add Ammunition", displayMode: .inline)
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(String(localized: .addAmmunition))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(.cancel) {
                         dismiss()
                     }
                 }
-            }
-            .onAppear(perform: loadData)
-        }
-    }
-
-    func loadData() {
-        if let url = Bundle.main.url(forResource: "AmmunitionData", withExtension: "json") {
-            do {
-                let data = try Data(contentsOf: url)
-                let decoder = JSONDecoder()
-                ammunitionData = try decoder.decode(AmmunitionData.self, from: data)
-            } catch {
-                print("Error loading ammunition data: \(error)")
             }
         }
     }

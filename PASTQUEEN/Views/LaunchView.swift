@@ -9,33 +9,67 @@ import SwiftUI
 import SwiftData
 
 struct LaunchView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query private var ammunitions: [BallisticSettings]
+
     var body: some View {
         NavigationStack {
-            VStack {
-                Spacer()
-
-                Text("PASTQUEEN")
-                    .font(.largeTitle)
-
-                Text("Another Ballistic Calculator")
-                    .font(.caption)
-
-                Spacer()
-
-                NavigationLink(destination: AmmunitionView()) {
-                    Image(systemName: "target")
-                        .renderingMode(.original)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .foregroundStyle(.green)
-                        .frame(width: 200, height: 200)
+            List {
+                ForEach(ammunitions) { ammo in
+                    NavigationLink(value: ammo) {
+                        HStack {
+                            Image(systemName: "target")
+                                .foregroundStyle(.green)
+                            VStack(alignment: .leading) {
+                                Text(ammo.ammunitionName)
+                                    .font(.headline)
+                                Text("\(ammo.calibre) - \(ammo.projectileWeightGrains, format: .number)gr")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
                 }
-
-                Spacer()
-                Spacer()
+                .onDelete(perform: deleteAmmunition)
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle("Welcome")
+            .overlay {
+                if ammunitions.isEmpty {
+                    VStack(spacing: 8) {
+                        Image(systemName: "scope")
+                            .font(.system(size: 60))
+                            .foregroundStyle(.tertiary)
+                            .padding(.bottom, 8)
+                        Text(.noAmmunitionProfiles)
+                            .font(.headline)
+                        Text(.tapToAdd)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .navigationBarTitleDisplayMode(.large)
+            .navigationTitle(String(localized: .ammunitions))
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    NavigationLink(value: "AddAmmunition") {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+            .navigationDestination(for: BallisticSettings.self) { ammo in
+                CalculatorView(ballisticSettings: ammo)
+            }
+            .navigationDestination(for: String.self) { value in
+                if value == "AddAmmunition" {
+                    AddView()
+                }
+            }
+        }
+    }
+
+    private func deleteAmmunition(offsets: IndexSet) {
+        for index in offsets {
+            modelContext.delete(ammunitions[index])
         }
     }
 }

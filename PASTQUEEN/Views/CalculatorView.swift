@@ -41,40 +41,96 @@ struct CalculatorView: View {
     var body: some View {
         Form {
             if let weather = weatherManager.currentWeather {
-                Section(header: Text("Weather Used")) {
+                Section(header: HStack {
+                    Text(.weatherUsed)
+                    Spacer()
+                    Button {
+                        if let loc = locationManager.location {
+                             Task {
+                                 await weatherManager.updateCurrentWeather(userLocation: loc)
+                                 await calculateTrajectory()
+                             }
+                        } else {
+                             locationManager.requestLocation()
+                        }
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.blue)
+                }) {
                     HStack {
                         VStack(alignment: .leading) {
-                            Text("Temp")
+                            Text(.temp)
                             Text(weather.temperature.converted(to: .celsius).value, format: .number.precision(.fractionLength(1)))
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
                         VStack(alignment: .leading) {
-                            Text("Wind")
+                            Text(.wind)
                             Text(weather.wind.speed.converted(to: .kilometersPerHour).value, format: .number.precision(.fractionLength(1)))
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
                         VStack(alignment: .leading) {
-                            Text("Pressure")
+                            Text(.pressure)
                             Text(weather.pressure.converted(to: .hectopascals).value, format: .number.precision(.fractionLength(0)))
                                 .foregroundStyle(.secondary)
                         }
                     }
                 }
             } else if let error = weatherManager.errorMessage {
-                Section(header: Text("Weather Error")) {
+                Section(header: HStack {
+                    Text(.weatherError)
+                    Spacer()
+                    Button {
+                        if let loc = locationManager.location {
+                             Task {
+                                 await weatherManager.updateCurrentWeather(userLocation: loc)
+                                 await calculateTrajectory()
+                             }
+                        } else {
+                             locationManager.requestLocation()
+                        }
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.blue)
+                }) {
                     Text(error).foregroundStyle(.red)
+                }
+            } else {
+                Section(header: HStack {
+                    Text(.weather)
+                    Spacer()
+                    Button {
+                        if let loc = locationManager.location {
+                             Task {
+                                 await weatherManager.updateCurrentWeather(userLocation: loc)
+                                 await calculateTrajectory()
+                             }
+                        } else {
+                             locationManager.requestLocation()
+                        }
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.blue)
+                }) {
+                    Text(.pressRefreshWeather)
+                        .foregroundStyle(.secondary)
                 }
             }
 
-            Section(header: Text("Input")) {
-                TextField("Distance (meters)", value: $distance, format: .number)
+            Section(header: Text(String(localized: .input))) {
+                TextField(String(localized: .distanceMeters), value: $distance, format: .number)
                     .keyboardType(.decimalPad)
             }
 
             Section {
-                Button("Calculate") {
+                Button(.calculate) {
                     Task { await calculateTrajectory() }
                 }
             }
@@ -82,32 +138,32 @@ struct CalculatorView: View {
             if let result = trajectoryResult {
                 Section(header: Text("Results for \(distance, specifier: "%.0f") meters")) {
                     HStack {
-                        Text("Drop:")
+                        Text(.drop)
                         Spacer()
                         Text("\(result.dropCM, specifier: "%.2f") cm")
                     }
                     HStack {
-                        Text("Drop (MOA):")
+                        Text(.dropMOA)
                         Spacer()
                         Text("\(result.dropCorrectionMOA, specifier: "%.2f") MOA")
                     }
                     HStack {
-                        Text("Windage:")
+                        Text(.windage)
                         Spacer()
                         Text("\(result.windageCM, specifier: "%.2f") cm")
                     }
                     HStack {
-                        Text("Windage (MOA):")
+                        Text(.windageMOA)
                         Spacer()
                         Text("\(result.windageCorrectionMOA, specifier: "%.2f") MOA")
                     }
                     HStack {
-                        Text("Velocity:")
+                        Text(.velocity)
                         Spacer()
                         Text("\(result.velocityMPS, specifier: "%.0f") m/s")
                     }
                     HStack {
-                        Text("Energy:")
+                        Text(.energy)
                         Spacer()
                         Text("\(result.energyJoules, specifier: "%.0f") Joules")
                     }
@@ -115,7 +171,7 @@ struct CalculatorView: View {
             }
 
             if !trajectoryData.isEmpty {
-                Section(header: Text("Trajectory")) {
+                Section(header: Text(String(localized: .trajectory))) {
                     Chart(trajectoryData) { point in
                         LineMark(
                             x: .value("Distance", point.distance),
@@ -146,20 +202,15 @@ struct CalculatorView: View {
                 }
             }
         }
-        .navigationTitle("Calculator")
+        .navigationTitle(String(localized: .calculator))
         .onAppear {
             if locationManager.authorizationStatus == .notDetermined {
                 locationManager.requestLocation()
             }
             Task { await calculateTrajectory() }
         }
-        .onChange(of: locationManager.location) { _, newLocation in
-             if let location = newLocation {
-                 Task {
-                     await weatherManager.updateCurrentWeather(userLocation: location)
-                     await calculateTrajectory()
-                 }
-             }
+        .onChange(of: locationManager.location) { _, _ in
+             Task { await calculateTrajectory() }
         }
     }
 
