@@ -16,19 +16,30 @@ class GravityManager {
 	var acceleration: CMAcceleration?
 	let motionManager = CMMotionManager()
 	
-	func getGravityData(completion: @escaping (Double?, Error?) -> Void) {
-		if motionManager.isDeviceMotionAvailable {
-			motionManager.deviceMotionUpdateInterval = 0.1
-			motionManager.startDeviceMotionUpdates(to: .main) { (motion, error) in
-				if let gravity = motion?.gravity {
-					let g = sqrt(pow(gravity.x, 2) + pow(gravity.y, 2) + pow(gravity.z, 2))
-					completion(g, nil)
-				} else {
-					completion(nil, error)
+	func getGravityData() async throws -> Double {
+		return try await withCheckedThrowingContinuation { continuation in
+			if motionManager.isDeviceMotionAvailable {
+				motionManager.deviceMotionUpdateInterval = 0.1
+				var hasResumed = false
+				motionManager.startDeviceMotionUpdates(to: .main) { [weak self] (motion, error) in
+					guard !hasResumed else { return }
+					hasResumed = true
+					self?.motionManager.stopDeviceMotionUpdates()
+
+					if let error = error {
+						continuation.resume(throwing: error)
+						return
+					}
+					if let gravity = motion?.gravity {
+						let g = sqrt(pow(gravity.x, 2) + pow(gravity.y, 2) + pow(gravity.z, 2))
+						continuation.resume(returning: g)
+					} else {
+						continuation.resume(throwing: NSError(domain: "com.example.app", code: 2, userInfo: [NSLocalizedDescriptionKey: "No gravity data available"]))
+					}
 				}
+			} else {
+				continuation.resume(throwing: NSError(domain: "com.example.app", code: 1, userInfo: [NSLocalizedDescriptionKey: "Device motion is not available"]))
 			}
-		} else {
-			completion(nil, NSError(domain: "com.example.app", code: 1, userInfo: [NSLocalizedDescriptionKey: "Device motion is not available"]))
 		}
 	}
 }
