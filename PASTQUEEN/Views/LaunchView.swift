@@ -20,11 +20,10 @@ struct LaunchView: View {
                 CalculatorView(ballisticSettings: ammo)
                     .toolbar {
                         ToolbarItem(placement: .topBarLeading) {
-                            Button {
+                            Button("Profiles", systemImage: "list.bullet") {
                                 showingProfiles = true
-                            } label: {
-                                Image(systemName: "list.bullet")
                             }
+                            .labelStyle(.iconOnly)
                         }
                     }
                     .sheet(isPresented: $showingProfiles) {
@@ -53,8 +52,9 @@ struct LaunchView: View {
                 .toolbar {
                     ToolbarItem(placement: .primaryAction) {
                         NavigationLink(value: "AddAmmunition") {
-                            Image(systemName: "plus")
+                            Label("Add", systemImage: "plus")
                         }
+                        .labelStyle(.iconOnly)
                     }
                 }
                 .navigationDestination(for: String.self) { value in

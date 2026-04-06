@@ -15,39 +15,41 @@ struct DetailView: View {
         VStack(spacing: 20) {
             Text(ballisticSettings.ammunitionName)
                 .font(.largeTitle)
-                .fontWeight(.bold)
+                .bold()
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("Caliber: \(ballisticSettings.calibre)")
-                Text("BC: \(String(format: "%.3f", ballisticSettings.ballisticCoefficient))")
-                Text("Muzzle Velocity: \(String(format: "%.0f", ballisticSettings.muzzleVelocityMPS)) m/s")
-                Text("Projectile Weight: \(String(format: "%.0f", ballisticSettings.projectileWeightGrains)) gr")
-                Text("Sight Height: \(String(format: "%.2f", ballisticSettings.sightHeightCM)) cm")
-                Text("Zero Range: \(String(format: "%.0f", ballisticSettings.zeroRangeMeters)) m")
+                Text("BC: \(ballisticSettings.ballisticCoefficient, format: .number.precision(.fractionLength(3)))")
+                Text("Muzzle Velocity: \(ballisticSettings.muzzleVelocityMPS, format: .number.precision(.fractionLength(0))) m/s")
+                Text("Projectile Weight: \(ballisticSettings.projectileWeightGrains, format: .number.precision(.fractionLength(0))) gr")
+                Text("Sight Height: \(ballisticSettings.sightHeightCM, format: .number.precision(.fractionLength(2))) cm")
+                Text("Zero Range: \(ballisticSettings.zeroRangeMeters, format: .number.precision(.fractionLength(0))) m")
             }
             .font(.body)
 
             Spacer()
 
-            NavigationLink(destination: CalculatorView(ballisticSettings: ballisticSettings), label: {
+            NavigationLink(value: ballisticSettings) {
                 Text("Calculate Range Card")
                     .bold()
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(Color.blue)
+                    .background(.blue)
                     .foregroundStyle(.white)
                     .clipShape(.rect(cornerRadius: 10))
-            })
+            }
             .padding()
         }
         .padding()
         .navigationTitle("Details")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(for: BallisticSettings.self) { settings in
+            CalculatorView(ballisticSettings: settings)
+        }
     }
 }
 
 #Preview {
-    let container = try! ModelContainer(for: BallisticSettings.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
     let sampleBallistics = BallisticSettings(
         ammunitionName: "Preview Ammo",
         ballisticCoefficient: 0.45,
@@ -63,6 +65,6 @@ struct DetailView: View {
         sightHeightCM: 3.81,
         zeroRangeMeters: 100.0
     )
-    return DetailView(ballisticSettings: sampleBallistics)
-        .modelContainer(container)
+    DetailView(ballisticSettings: sampleBallistics)
+        .modelContainer(for: BallisticSettings.self, inMemory: true)
 }

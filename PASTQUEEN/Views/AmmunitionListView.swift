@@ -49,8 +49,9 @@ struct AmmunitionListView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 NavigationLink(value: "AddAmmunition") {
-                    Image(systemName: "plus")
+                    Label("Add", systemImage: "plus")
                 }
+                .labelStyle(.iconOnly)
             }
             ToolbarItem(placement: .cancellationAction) {
                 Button(.cancel) {

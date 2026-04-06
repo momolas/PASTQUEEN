@@ -44,7 +44,7 @@ struct CalculatorView: View {
                 Section(header: HStack {
                     Text(.weatherUsed)
                     Spacer()
-                    Button {
+                    Button("Refresh weather", systemImage: "arrow.clockwise") {
                         if let loc = locationManager.location {
                              Task {
                                  await weatherManager.updateCurrentWeather(userLocation: loc)
@@ -53,9 +53,8 @@ struct CalculatorView: View {
                         } else {
                              locationManager.requestLocation()
                         }
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
                     }
+                    .labelStyle(.iconOnly)
                     .buttonStyle(.plain)
                     .foregroundStyle(.blue)
                 }) {
@@ -89,7 +88,7 @@ struct CalculatorView: View {
                 Section(header: HStack {
                     Text(.weatherError)
                     Spacer()
-                    Button {
+                    Button("Refresh weather", systemImage: "arrow.clockwise") {
                         if let loc = locationManager.location {
                              Task {
                                  await weatherManager.updateCurrentWeather(userLocation: loc)
@@ -98,9 +97,8 @@ struct CalculatorView: View {
                         } else {
                              locationManager.requestLocation()
                         }
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
                     }
+                    .labelStyle(.iconOnly)
                     .buttonStyle(.plain)
                     .foregroundStyle(.blue)
                 }) {
@@ -110,7 +108,7 @@ struct CalculatorView: View {
                 Section(header: HStack {
                     Text(.weather)
                     Spacer()
-                    Button {
+                    Button("Refresh weather", systemImage: "arrow.clockwise") {
                         if let loc = locationManager.location {
                              Task {
                                  await weatherManager.updateCurrentWeather(userLocation: loc)
@@ -119,9 +117,8 @@ struct CalculatorView: View {
                         } else {
                              locationManager.requestLocation()
                         }
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
                     }
+                    .labelStyle(.iconOnly)
                     .buttonStyle(.plain)
                     .foregroundStyle(.blue)
                 }) {
@@ -142,46 +139,46 @@ struct CalculatorView: View {
             }
 
             if let result = trajectoryResult {
-                Section(header: Text("Results for \(distance, specifier: "%.0f") meters")) {
+                Section(header: Text("Results for \(distance, format: .number.precision(.fractionLength(0))) meters")) {
                     HStack {
                         Text(.drop)
                         Spacer()
-                        Text("\(result.dropCM, specifier: "%.2f") cm")
+                        Text("\(result.dropCM, format: .number.precision(.fractionLength(2))) cm")
                             .fontDesign(.rounded)
                             .fontWeight(.light)
                     }
                     HStack {
                         Text(.dropMOA)
                         Spacer()
-                        Text("\(result.dropCorrectionMOA, specifier: "%.2f") MOA")
+                        Text("\(result.dropCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
                             .fontDesign(.rounded)
                             .fontWeight(.light)
                     }
                     HStack {
                         Text(.windage)
                         Spacer()
-                        Text("\(result.windageCM, specifier: "%.2f") cm")
+                        Text("\(result.windageCM, format: .number.precision(.fractionLength(2))) cm")
                             .fontDesign(.rounded)
                             .fontWeight(.light)
                     }
                     HStack {
                         Text(.windageMOA)
                         Spacer()
-                        Text("\(result.windageCorrectionMOA, specifier: "%.2f") MOA")
+                        Text("\(result.windageCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
                             .fontDesign(.rounded)
                             .fontWeight(.light)
                     }
                     HStack {
                         Text(.velocity)
                         Spacer()
-                        Text("\(result.velocityMPS, specifier: "%.0f") m/s")
+                        Text("\(result.velocityMPS, format: .number.precision(.fractionLength(0))) m/s")
                             .fontDesign(.rounded)
                             .fontWeight(.light)
                     }
                     HStack {
                         Text(.energy)
                         Spacer()
-                        Text("\(result.energyJoules, specifier: "%.0f") Joules")
+                        Text("\(result.energyJoules, format: .number.precision(.fractionLength(0))) Joules")
                             .fontDesign(.rounded)
                             .fontWeight(.light)
                     }
@@ -208,7 +205,7 @@ struct CalculatorView: View {
                             RuleMark(x: .value("Distance", selectedDistance))
                                 .foregroundStyle(.red)
                                 .annotation(position: .top) {
-                                    Text("\(selectedDrop, specifier: "%.1f") cm")
+                                    Text("\(selectedDrop, format: .number.precision(.fractionLength(1))) cm")
                                         .font(.caption)
                                         .fontDesign(.rounded)
                                         .fontWeight(.light)
@@ -257,31 +254,26 @@ struct CalculatorView: View {
 }
 
 #Preview {
-    do {
-        let container = try ModelContainer(for: BallisticSettings.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
-        let sampleBallistics = BallisticSettings(
-            ammunitionName: "Preview Ammo",
-            ballisticCoefficient: 0.45,
-            calibre: ".308",
-            date: Date().timeIntervalSince1970,
-            distanceMeters: 100.0,
-            dragFunction: 1,
-            id: UUID(),
-            muzzleEnergy: 3525.0,
-            muzzleVelocityMPS: 853.0,
-            projectileManufacturer: "Preview Manufacturer",
-            projectileWeightGrains: 168.0,
-            sightHeightCM: 3.81,
-            zeroRangeMeters: 100.0
-        )
+    let sampleBallistics = BallisticSettings(
+        ammunitionName: "Preview Ammo",
+        ballisticCoefficient: 0.45,
+        calibre: ".308",
+        date: Date().timeIntervalSince1970,
+        distanceMeters: 100.0,
+        dragFunction: 1,
+        id: UUID(),
+        muzzleEnergy: 3525.0,
+        muzzleVelocityMPS: 853.0,
+        projectileManufacturer: "Preview Manufacturer",
+        projectileWeightGrains: 168.0,
+        sightHeightCM: 3.81,
+        zeroRangeMeters: 100.0
+    )
 
-        return NavigationStack {
-            CalculatorView(ballisticSettings: sampleBallistics)
-                .environment(LocationManager())
-                .environment(WeatherManager())
-        }
-        .modelContainer(container)
-    } catch {
-        return Text("Failed to create container: \(error.localizedDescription)")
+    NavigationStack {
+        CalculatorView(ballisticSettings: sampleBallistics)
+            .environment(LocationManager())
+            .environment(WeatherManager())
     }
+    .modelContainer(for: BallisticSettings.self, inMemory: true)
 }
