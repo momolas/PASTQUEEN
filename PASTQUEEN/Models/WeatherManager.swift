@@ -10,9 +10,19 @@ import WeatherKit
 import CoreLocation
 import Observation
 
+import SwiftUI
+
+@MainActor
+protocol AppWeatherService: AnyObject, Observable {
+    var currentWeather: CurrentWeather? { get set }
+    var errorMessage: String? { get set }
+    
+    func updateCurrentWeather(userLocation: CLLocation) async
+}
+
 @MainActor
 @Observable
-class WeatherManager {
+class WeatherManager: AppWeatherService {
     
     var currentWeather: CurrentWeather?
     var errorMessage: String?
@@ -29,4 +39,8 @@ class WeatherManager {
             self.errorMessage = "Impossible de récupérer la météo : \(error.localizedDescription)"
         }
     }
+}
+
+extension EnvironmentValues {
+    @Entry var weatherService: (any AppWeatherService)? = nil
 }

@@ -1,38 +1,38 @@
 //
-//  AmmunitionListView.swift
+//  WeaponListView.swift
 //  PASTQUEEN
 //
 
 import SwiftUI
 import SwiftData
 
-struct AmmunitionListView: View {
+struct WeaponListView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @Query(sort: \BallisticSettings.date, order: .reverse) private var ammunitions: [BallisticSettings]
-    @Binding var selectedAmmunition: BallisticSettings?
+    @Query(sort: \Weapon.name) private var weapons: [Weapon]
+    @Binding var selectedWeapon: Weapon?
 
     var body: some View {
         List {
-            ForEach(ammunitions) { ammo in
+            ForEach(weapons) { weapon in
                 Button {
-                    selectedAmmunition = ammo
+                    selectedWeapon = weapon
                     dismiss()
                 } label: {
                     HStack {
-                        Image(systemName: "target")
-                            .foregroundStyle(.green)
+                        Image(systemName: "scope")
+                            .foregroundStyle(.blue)
                         VStack(alignment: .leading) {
-                            Text(ammo.ammunitionName)
+                            Text(weapon.name)
                                 .font(.headline)
                                 .fontDesign(.rounded)
                                 .foregroundStyle(.primary)
-                            Text("\(ammo.calibre) - \(ammo.projectileWeightGrains, format: .number)gr")
+                            Text("\(weapon.calibre) - Zero: \(weapon.zeroRangeMeters, format: .number)m")
                                 .font(.subheadline)
                                 .fontDesign(.rounded)
                                 .foregroundStyle(.secondary)
                         }
-                        if selectedAmmunition == ammo || (selectedAmmunition == nil && ammo == ammunitions.first) {
+                        if selectedWeapon == weapon || (selectedWeapon == nil && weapon == weapons.first) {
                             Spacer()
                             Image(systemName: "checkmark")
                                 .foregroundStyle(.blue)
@@ -40,13 +40,13 @@ struct AmmunitionListView: View {
                     }
                 }
             }
-            .onDelete(perform: deleteAmmunition)
+            .onDelete(perform: deleteWeapon)
         }
-        .navigationTitle(String(localized: .ammunitions))
+        .navigationTitle(String(localized: .ammunitions)) // Localized header
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                NavigationLink(value: "AddAmmunition") {
+                NavigationLink(value: "AddWeapon") {
                     Label("Add", systemImage: "plus")
                 }
                 .labelStyle(.iconOnly)
@@ -58,24 +58,24 @@ struct AmmunitionListView: View {
             }
         }
         .navigationDestination(for: String.self) { value in
-            if value == "AddAmmunition" {
-                AddView()
+            if value == "AddWeapon" {
+                AddWeaponView()
             }
         }
     }
 
-    private func deleteAmmunition(offsets: IndexSet) {
-        let deletedSelected = offsets.contains { ammunitions[$0] == selectedAmmunition }
+    private func deleteWeapon(offsets: IndexSet) {
+        let deletedSelected = offsets.contains { weapons[$0] == selectedWeapon }
         for index in offsets {
-            modelContext.delete(ammunitions[index])
+            modelContext.delete(weapons[index])
         }
         do {
             try modelContext.save()
         } catch {
-            print("Failed to save context after deleting ammunition: \(error)")
+            print("Failed to save context after deleting weapon: \(error)")
         }
         if deletedSelected {
-            selectedAmmunition = nil
+            selectedWeapon = nil
         }
     }
 }

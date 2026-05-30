@@ -2,20 +2,19 @@
 //  CalculatorView.swift
 //  PASTQUEEN
 //
-//  Created by Mo on 16/09/2022.
-//
 
 import SwiftUI
 import SwiftData
 import Charts
 import CoreLocation
 
-
 struct CalculatorView: View {
-    let ballisticSettings: BallisticSettings
+    let weapon: Weapon
 
-    @Environment(WeatherManager.self) private var weatherManager
-    @Environment(LocationManager.self) private var locationManager
+    @Environment(\.weatherService) private var weatherManager
+    @Environment(\.locationService) private var locationManager
+    
+    @State private var selectedAmmunition: Ammunition?
     @State private var distance: Double = 100.0
     @State private var trajectoryResult: TrajectoryResult?
     @State private var trajectoryData: [TrajectoryDataPoint] = []
@@ -24,19 +23,66 @@ struct CalculatorView: View {
 
     private func getCalculator() -> BallisticCalculator {
         let weatherData = BallisticCalculator.WeatherData(
-            windSpeed: weatherManager.currentWeather?.wind.speed.converted(to: UnitSpeed.kilometersPerHour).value ?? 0.0,
-            windDirection: weatherManager.currentWeather?.wind.direction.value ?? 0.0,
-            pressure: weatherManager.currentWeather?.pressure.converted(to: UnitPressure.hectopascals).value ?? 1013.25,
-            temperature: weatherManager.currentWeather?.temperature.converted(to: UnitTemperature.celsius).value ?? 15.0,
-            humidity: weatherManager.currentWeather?.humidity ?? 0.78,
-            altitude: locationManager.altitude ?? 0.0
+            windSpeed: weatherManager?.currentWeather?.wind.speed.converted(to: UnitSpeed.kilometersPerHour).value ?? 0.0,
+            windDirection: weatherManager?.currentWeather?.wind.direction.value ?? 0.0,
+            pressure: weatherManager?.currentWeather?.pressure.converted(to: UnitPressure.hectopascals).value ?? 1013.25,
+            temperature: weatherManager?.currentWeather?.temperature.converted(to: UnitTemperature.celsius).value ?? 15.0,
+            humidity: weatherManager?.currentWeather?.humidity ?? 0.78,
+            altitude: locationManager?.altitude ?? 0.0
         )
-        return BallisticCalculator(ballistics: ballisticSettings, weather: weatherData)
+        
+        let settings = BallisticSettings(
+            ammunitionName: selectedAmmunition?.name ?? "Default",
+            ballisticCoefficient: selectedAmmunition?.ballisticCoefficient ?? 0.45,
+            calibre: weapon.calibre,
+            date: selectedAmmunition?.date ?? Date().timeIntervalSince1970,
+            distanceMeters: distance,
+            dragFunction: selectedAmmunition?.dragFunction ?? 1,
+            id: selectedAmmunition?.id ?? UUID(),
+            muzzleEnergy: selectedAmmunition?.muzzleEnergy ?? 3500.0,
+            muzzleVelocityMPS: selectedAmmunition?.muzzleVelocityMPS ?? 800.0,
+            projectileManufacturer: selectedAmmunition?.projectileManufacturer ?? "Default",
+            projectileWeightGrains: selectedAmmunition?.projectileWeightGrains ?? 168.0,
+            sightHeightCM: weapon.sightHeightCM,
+            zeroRangeMeters: weapon.zeroRangeMeters
+        )
+        
+        return BallisticCalculator(ballistics: settings, weather: weatherData)
     }
 
     var body: some View {
         Form {
-            if let weather = weatherManager.currentWeather {
+            Section(header: Text("Rifle & Setup")) {
+                LabeledContent("Rifle", value: weapon.name)
+                LabeledContent(String(localized: .caliber), value: weapon.calibre)
+                LabeledContent("Sight Height", value: "\(weapon.sightHeightCM.formatted()) cm")
+                LabeledContent("Zero Range", value: "\(weapon.zeroRangeMeters.formatted()) m")
+            }
+
+            Section(header: Text("Ammunition Load")) {
+                let ammoList = weapon.ammunitions?.sorted(by: { $0.date > $1.date }) ?? []
+                if ammoList.isEmpty {
+                    NavigationLink(destination: AddAmmunitionView(weapon: weapon)) {
+                        Label("Add Ammunition Load", systemImage: "plus.circle")
+                            .bold()
+                            .foregroundStyle(.blue)
+                    }
+                } else {
+                    Picker("Selected Load", selection: $selectedAmmunition) {
+                        ForEach(ammoList) { ammo in
+                            Text(ammo.name).tag(ammo as Ammunition?)
+                        }
+                    }
+                    .pickerStyle(.navigationLink)
+                    
+                    NavigationLink(destination: AddAmmunitionView(weapon: weapon)) {
+                        Label("Add New Load", systemImage: "plus.circle")
+                            .foregroundStyle(.blue)
+                    }
+                }
+            }
+
+            if let weather = weatherManager?.currentWeather {
                 Section(header: HStack {
                     Text(.weatherUsed)
                     Spacer()
@@ -68,7 +114,7 @@ struct CalculatorView: View {
                         }
                     }
                 }
-            } else if let error = weatherManager.errorMessage {
+            } else if let error = weatherManager?.errorMessage {
                 Section(header: HStack {
                     Text(.weatherError)
                     Spacer()
@@ -178,25 +224,44 @@ struct CalculatorView: View {
         }
         .navigationTitle(String(localized: .calculator))
         .task {
-            if locationManager.authorizationStatus == .notDetermined {
-                locationManager.requestLocation()
+            if locationManager?.authorizationStatus == .notDetermined {
+                locationManager?.requestLocation()
             }
+            setupDefaultAmmunition()
             await calculateTrajectory()
         }
-        .onChange(of: locationManager.location) { _, _ in
+        .onChange(of: weapon) { _, _ in
+            setupDefaultAmmunition()
+            triggerCalculation()
+        }
+        .onChange(of: weapon.ammunitions) { _, _ in
+            setupDefaultAmmunition()
+            triggerCalculation()
+        }
+        .onChange(of: selectedAmmunition) { _, _ in
+            triggerCalculation()
+        }
+        .onChange(of: locationManager?.location) { _, _ in
              triggerCalculation()
+        }
+    }
+
+    private func setupDefaultAmmunition() {
+        let ammoList = weapon.ammunitions?.sorted(by: { $0.date > $1.date }) ?? []
+        if selectedAmmunition == nil || !ammoList.contains(where: { $0.id == selectedAmmunition?.id }) {
+            selectedAmmunition = ammoList.first
         }
     }
 
     @MainActor
     private func refreshWeather() {
-        guard let loc = locationManager.location else {
-            locationManager.requestLocation()
+        guard let loc = locationManager?.location else {
+            locationManager?.requestLocation()
             return
         }
         calculationTask?.cancel()
         calculationTask = Task {
-            await weatherManager.updateCurrentWeather(userLocation: loc)
+            await weatherManager?.updateCurrentWeather(userLocation: loc)
             await calculateTrajectory()
         }
     }
@@ -235,26 +300,11 @@ struct CalculatorView: View {
 }
 
 #Preview {
-    let sampleBallistics = BallisticSettings(
-        ammunitionName: "Preview Ammo",
-        ballisticCoefficient: 0.45,
-        calibre: ".308",
-        date: Date().timeIntervalSince1970,
-        distanceMeters: 100.0,
-        dragFunction: 1,
-        id: UUID(),
-        muzzleEnergy: 3525.0,
-        muzzleVelocityMPS: 853.0,
-        projectileManufacturer: "Preview Manufacturer",
-        projectileWeightGrains: 168.0,
-        sightHeightCM: 3.81,
-        zeroRangeMeters: 100.0
-    )
-
+    let sampleWeapon = Weapon(name: "Preview Rifle", calibre: ".308", sightHeightCM: 4.5, zeroRangeMeters: 100.0)
     NavigationStack {
-        CalculatorView(ballisticSettings: sampleBallistics)
-            .environment(LocationManager())
-            .environment(WeatherManager())
+        CalculatorView(weapon: sampleWeapon)
+            .environment(\.locationService, LocationManager())
+            .environment(\.weatherService, WeatherManager())
     }
-    .modelContainer(for: BallisticSettings.self, inMemory: true)
+    .modelContainer(for: Weapon.self, inMemory: true)
 }

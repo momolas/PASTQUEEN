@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CDDF00012EE46EB7008DDD15 /* Weapon.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00022EE46EB7008DDD15 /* Weapon.swift */; };
+		CDDF00032EE46EB7008DDD15 /* Ammunition.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00042EE46EB7008DDD15 /* Ammunition.swift */; };
+		CDDF00052EE46EB7008DDD15 /* AddWeaponView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00062EE46EB7008DDD15 /* AddWeaponView.swift */; };
+		CDDF00072EE46EB7008DDD15 /* AddAmmunitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00082EE46EB7008DDD15 /* AddAmmunitionView.swift */; };
 		05233FBFD43403BCED8DA45F /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 5801502FE6AFF46FA004B664 /* Localizable.xcstrings */; };
 		CD2FBF902909504C00387B0B /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2FBF8F2909504C00387B0B /* DetailView.swift */; };
-		CD2FBF9229095CC800387B0B /* AddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2FBF9129095CC800387B0B /* AddView.swift */; };
-		CD81125D2A44878700239787 /* BallisticSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81125C2A44878700239787 /* BallisticSettings.swift */; };
 		CD9973FB28D49B4600C9D3FD /* PASTQUEENApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9973FA28D49B4600C9D3FD /* PASTQUEENApp.swift */; };
 		CD9973FD28D49B4600C9D3FD /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9973FC28D49B4600C9D3FD /* LaunchView.swift */; };
 		CD9973FF28D49B4800C9D3FD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD9973FE28D49B4800C9D3FD /* Assets.xcassets */; };
@@ -29,11 +31,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CDDF00022EE46EB7008DDD15 /* Weapon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weapon.swift; sourceTree = "<group>"; };
+		CDDF00042EE46EB7008DDD15 /* Ammunition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ammunition.swift; sourceTree = "<group>"; };
+		CDDF00062EE46EB7008DDD15 /* AddWeaponView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWeaponView.swift; sourceTree = "<group>"; };
+		CDDF00082EE46EB7008DDD15 /* AddAmmunitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAmmunitionView.swift; sourceTree = "<group>"; };
 		5801502FE6AFF46FA004B664 /* Localizable.xcstrings */ = {isa = PBXFileReference; includeInIndex = 1; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		64490F2424B9909B430E02E8 /* AmmunitionListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AmmunitionListView.swift; sourceTree = "<group>"; };
 		CD2FBF8F2909504C00387B0B /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
-		CD2FBF9129095CC800387B0B /* AddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddView.swift; sourceTree = "<group>"; };
-		CD81125C2A44878700239787 /* BallisticSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallisticSettings.swift; sourceTree = "<group>"; };
 		CD9973F728D49B4600C9D3FD /* PASTQUEEN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PASTQUEEN.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD9973FA28D49B4600C9D3FD /* PASTQUEENApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PASTQUEENApp.swift; sourceTree = "<group>"; };
 		CD9973FC28D49B4600C9D3FD /* LaunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchView.swift; sourceTree = "<group>"; };
@@ -73,12 +77,13 @@
 		CD495C3028E0A66E00620946 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				CDDF00022EE46EB7008DDD15 /* Weapon.swift */,
+				CDDF00042EE46EB7008DDD15 /* Ammunition.swift */,
 				CDE935B92EE46EB7008DDD15 /* AmmunitionData.swift */,
 				CDDE00012EE46EB7008DDD15 /* DragFunction.swift */,
 				CDE935BA2EE46EB7008DDD15 /* BallisticCalculator.swift */,
 				CDDE00032EE46EB7008DDD15 /* TrajectoryResult.swift */,
 				CDDE00052EE46EB7008DDD15 /* TrajectoryDataPoint.swift */,
-				CD81125C2A44878700239787 /* BallisticSettings.swift */,
 				CDA6EECD2919312C004196DF /* WeatherManager.swift */,
 				CDFD841129D71F1C00E9B274 /* LocationManager.swift */,
 				CDFD840F29D6F39D00E9B274 /* GravityManager.swift */,
@@ -89,10 +94,11 @@
 		CD495C3928E0A6DD00620946 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				CDDF00062EE46EB7008DDD15 /* AddWeaponView.swift */,
+				CDDF00082EE46EB7008DDD15 /* AddAmmunitionView.swift */,
 				CD9973FC28D49B4600C9D3FD /* LaunchView.swift */,
 				CD2FBF8F2909504C00387B0B /* DetailView.swift */,
 				CD9B27B328D4CE3800E28642 /* CalculatorView.swift */,
-				CD2FBF9129095CC800387B0B /* AddView.swift */,
 				64490F2424B9909B430E02E8 /* AmmunitionListView.swift */,
 			);
 			path = Views;
@@ -211,6 +217,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDDF00012EE46EB7008DDD15 /* Weapon.swift in Sources */,
+				CDDF00032EE46EB7008DDD15 /* Ammunition.swift in Sources */,
+				CDDF00052EE46EB7008DDD15 /* AddWeaponView.swift in Sources */,
+				CDDF00072EE46EB7008DDD15 /* AddAmmunitionView.swift in Sources */,
 				CD9973FD28D49B4600C9D3FD /* LaunchView.swift in Sources */,
 				CDE935BB2EE46EB7008DDD15 /* BallisticCalculator.swift in Sources */,
 				CDDE00042EE46EB7008DDD15 /* TrajectoryResult.swift in Sources */,
@@ -219,12 +229,10 @@
 				CD9B27B428D4CE3800E28642 /* CalculatorView.swift in Sources */,
 				CDDE00062EE46EB7008DDD15 /* TrajectoryDataPoint.swift in Sources */,
 				CDFD841029D6F39D00E9B274 /* GravityManager.swift in Sources */,
-				CD81125D2A44878700239787 /* BallisticSettings.swift in Sources */,
 				CDFD841229D71F1C00E9B274 /* LocationManager.swift in Sources */,
 				CD9973FB28D49B4600C9D3FD /* PASTQUEENApp.swift in Sources */,
 				CD2FBF902909504C00387B0B /* DetailView.swift in Sources */,
 				CDA6EECF2919312C004196DF /* WeatherManager.swift in Sources */,
-				CD2FBF9229095CC800387B0B /* AddView.swift in Sources */,
 				F8F7E2D3F7B4F5C2B0EC9067 /* AmmunitionListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

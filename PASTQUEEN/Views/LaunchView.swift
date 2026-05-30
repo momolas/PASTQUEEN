@@ -2,26 +2,24 @@
 //  LaunchView.swift
 //  PASTQUEEN
 //
-//  Created by Mo on 16/09/2022.
-//
 
 import SwiftUI
 import SwiftData
 
 struct LaunchView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \BallisticSettings.date, order: .reverse) private var ammunitions: [BallisticSettings]
-    @State private var selectedAmmunition: BallisticSettings?
+    @Query(sort: \Weapon.name) private var weapons: [Weapon]
+    @State private var selectedWeapon: Weapon?
     @State private var showingProfiles = false
     @ScaledMetric(relativeTo: .largeTitle) private var iconSize: CGFloat = 60
 
     var body: some View {
         NavigationStack {
-            if let ammo = selectedAmmunition ?? ammunitions.first {
-                CalculatorView(ballisticSettings: ammo)
+            if let weapon = selectedWeapon ?? weapons.first {
+                CalculatorView(weapon: weapon)
                     .toolbar {
                         ToolbarItem(placement: .topBarLeading) {
-                            Button("Profiles", systemImage: "list.bullet") {
+                            Button("Rifles", systemImage: "list.bullet") {
                                 showingProfiles = true
                             }
                             .labelStyle(.iconOnly)
@@ -29,7 +27,7 @@ struct LaunchView: View {
                     }
                     .sheet(isPresented: $showingProfiles) {
                         NavigationStack {
-                            AmmunitionListView(selectedAmmunition: $selectedAmmunition)
+                            WeaponListView(selectedWeapon: $selectedWeapon)
                         }
                     }
             } else {
@@ -50,15 +48,15 @@ struct LaunchView: View {
                 .navigationTitle(String(localized: .ammunitions))
                 .toolbar {
                     ToolbarItem(placement: .primaryAction) {
-                        NavigationLink(value: "AddAmmunition") {
+                        NavigationLink(value: "AddWeapon") {
                             Label("Add", systemImage: "plus")
                         }
                         .labelStyle(.iconOnly)
                     }
                 }
                 .navigationDestination(for: String.self) { value in
-                    if value == "AddAmmunition" {
-                        AddView()
+                    if value == "AddWeapon" {
+                        AddWeaponView()
                     }
                 }
             }
@@ -66,9 +64,8 @@ struct LaunchView: View {
     }
 }
 
-
 #Preview {
-	LaunchView()
-		.preferredColorScheme(.dark)
-		.modelContainer(for: BallisticSettings.self, inMemory: true)
+    LaunchView()
+        .preferredColorScheme(.dark)
+        .modelContainer(for: Weapon.self, inMemory: true)
 }

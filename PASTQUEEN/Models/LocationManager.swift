@@ -9,9 +9,21 @@ import Foundation
 import CoreLocation
 import Observation
 
+import SwiftUI
+
+@MainActor
+protocol AppLocationService: AnyObject, Observable {
+    var altitude: Double? { get set }
+    var location: CLLocation? { get set }
+    var authorizationStatus: CLAuthorizationStatus { get set }
+    var errorMessage: String? { get set }
+
+    func requestLocation()
+}
+
 @MainActor
 @Observable
-class LocationManager: NSObject, CLLocationManagerDelegate {
+class LocationManager: NSObject, AppLocationService, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
     var altitude: Double?
     var location: CLLocation?
@@ -53,4 +65,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
             self.authorizationStatus = manager.authorizationStatus
         }
     }
+}
+
+extension EnvironmentValues {
+    @Entry var locationService: (any AppLocationService)? = nil
 }
