@@ -15,37 +15,50 @@ class GravityManager {
 	
 	var acceleration: CMAcceleration?
 	let motionManager = CMMotionManager()
+	private var activeContinuation: CheckedContinuation<Double, any Error>?
 	
 	func getGravityData() async throws -> Double {
-		try await withTaskCancellationHandler {
+		cancelActiveUpdates()
+		
+		return try await withTaskCancellationHandler {
 			try await withCheckedThrowingContinuation { continuation in
-				if motionManager.isDeviceMotionAvailable {
-					motionManager.deviceMotionUpdateInterval = 0.1
-					var hasResumed = false
-					motionManager.startDeviceMotionUpdates(to: .main) { [weak self] (motion, error) in
-						guard !hasResumed else { return }
-						hasResumed = true
-						self?.motionManager.stopDeviceMotionUpdates()
-
-						if let error = error {
-							continuation.resume(throwing: error)
-							return
-						}
-						if let gravity = motion?.gravity {
-							let g = sqrt(pow(gravity.x, 2) + pow(gravity.y, 2) + pow(gravity.z, 2))
-							continuation.resume(returning: g)
-						} else {
-							continuation.resume(throwing: NSError(domain: "com.example.app", code: 2, userInfo: [NSLocalizedDescriptionKey: "No gravity data available"]))
-						}
-					}
-				} else {
+				guard motionManager.isDeviceMotionAvailable else {
 					continuation.resume(throwing: NSError(domain: "com.example.app", code: 1, userInfo: [NSLocalizedDescriptionKey: "Device motion is not available"]))
+					return
+				}
+				
+				self.activeContinuation = continuation
+				motionManager.deviceMotionUpdateInterval = 0.1
+				motionManager.startDeviceMotionUpdates(to: .main) { [weak self] (motion, error) in
+					guard let self = self else { return }
+					guard let continuation = self.activeContinuation else { return }
+					self.activeContinuation = nil
+					self.motionManager.stopDeviceMotionUpdates()
+
+					if let error = error {
+						continuation.resume(throwing: error)
+						return
+					}
+					if let gravity = motion?.gravity {
+						let g = sqrt(pow(gravity.x, 2) + pow(gravity.y, 2) + pow(gravity.z, 2))
+						continuation.resume(returning: g)
+					} else {
+						continuation.resume(throwing: NSError(domain: "com.example.app", code: 2, userInfo: [NSLocalizedDescriptionKey: "No gravity data available"]))
+					}
 				}
 			}
 		} onCancel: {
 			Task { @MainActor in
-				motionManager.stopDeviceMotionUpdates()
+				self.cancelActiveUpdates()
 			}
+		}
+	}
+	
+	private func cancelActiveUpdates() {
+		motionManager.stopDeviceMotionUpdates()
+		if let continuation = activeContinuation {
+			activeContinuation = nil
+			continuation.resume(throwing: CancellationError())
 		}
 	}
 }

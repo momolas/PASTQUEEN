@@ -180,6 +180,7 @@ struct RangeCardView: View {
         let calculated: [RangeCardRow] = await Task.detached {
             var res: [RangeCardRow] = []
             for d in stride(from: step, through: maxDist, by: step) {
+                if Task.isCancelled { break }
                 let result = calculator.solveTrajectory(for: Double(d))
                 let dClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.dropCorrectionMOA)
                 let wClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.windageCorrectionMOA)
