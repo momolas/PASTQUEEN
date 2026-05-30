@@ -20,6 +20,7 @@ struct CalculatorView: View {
     @State private var trajectoryResult: TrajectoryResult?
     @State private var trajectoryData: [TrajectoryDataPoint] = []
     @State private var selectedDistance: Double?
+    @State private var calculationTask: Task<Void, Never>?
 
     private func getCalculator() -> BallisticCalculator {
         let weatherData = BallisticCalculator.WeatherData(
@@ -39,16 +40,7 @@ struct CalculatorView: View {
                 Section(header: HStack {
                     Text(.weatherUsed)
                     Spacer()
-                    Button("Refresh weather", systemImage: "arrow.clockwise") {
-                        if let loc = locationManager.location {
-                             Task {
-                                 await weatherManager.updateCurrentWeather(userLocation: loc)
-                                 await calculateTrajectory()
-                             }
-                        } else {
-                             locationManager.requestLocation()
-                        }
-                    }
+                    Button("Refresh weather", systemImage: "arrow.clockwise", action: refreshWeather)
                     .labelStyle(.iconOnly)
                     .buttonStyle(.plain)
                     .foregroundStyle(.blue)
@@ -80,16 +72,7 @@ struct CalculatorView: View {
                 Section(header: HStack {
                     Text(.weatherError)
                     Spacer()
-                    Button("Refresh weather", systemImage: "arrow.clockwise") {
-                        if let loc = locationManager.location {
-                             Task {
-                                 await weatherManager.updateCurrentWeather(userLocation: loc)
-                                 await calculateTrajectory()
-                             }
-                        } else {
-                             locationManager.requestLocation()
-                        }
-                    }
+                    Button("Refresh weather", systemImage: "arrow.clockwise", action: refreshWeather)
                     .labelStyle(.iconOnly)
                     .buttonStyle(.plain)
                     .foregroundStyle(.blue)
@@ -100,16 +83,7 @@ struct CalculatorView: View {
                 Section(header: HStack {
                     Text(.weather)
                     Spacer()
-                    Button("Refresh weather", systemImage: "arrow.clockwise") {
-                        if let loc = locationManager.location {
-                             Task {
-                                 await weatherManager.updateCurrentWeather(userLocation: loc)
-                                 await calculateTrajectory()
-                             }
-                        } else {
-                             locationManager.requestLocation()
-                        }
-                    }
+                    Button("Refresh weather", systemImage: "arrow.clockwise", action: refreshWeather)
                     .labelStyle(.iconOnly)
                     .buttonStyle(.plain)
                     .foregroundStyle(.blue)
@@ -125,13 +99,11 @@ struct CalculatorView: View {
             }
 
             Section {
-                Button(.calculate) {
-                    Task { await calculateTrajectory() }
-                }
+                Button(.calculate, action: triggerCalculation)
             }
 
             if let result = trajectoryResult {
-                Section(header: Text(.resultsForMeters, Int(distance))) {
+                Section(header: Text("Results for \(Int(distance)) meters")) {
                     HStack {
                         Text(.drop)
                         Spacer()
@@ -212,7 +184,28 @@ struct CalculatorView: View {
             await calculateTrajectory()
         }
         .onChange(of: locationManager.location) { _, _ in
-             Task { await calculateTrajectory() }
+             triggerCalculation()
+        }
+    }
+
+    @MainActor
+    private func refreshWeather() {
+        guard let loc = locationManager.location else {
+            locationManager.requestLocation()
+            return
+        }
+        calculationTask?.cancel()
+        calculationTask = Task {
+            await weatherManager.updateCurrentWeather(userLocation: loc)
+            await calculateTrajectory()
+        }
+    }
+
+    @MainActor
+    private func triggerCalculation() {
+        calculationTask?.cancel()
+        calculationTask = Task {
+            await calculateTrajectory()
         }
     }
 
@@ -222,15 +215,19 @@ struct CalculatorView: View {
         let result = calculator.solveTrajectory(for: distance)
 
         let solution = calculator.solveFullTrajectory(upTo: distance)
+        let currentDistance = distance
         let data: [TrajectoryDataPoint] = await Task.detached {
             var dataPoints: [TrajectoryDataPoint] = []
-            for i in stride(from: 0, to: distance, by: 10) {
+            for i in stride(from: 0, to: currentDistance, by: 10) {
+                if Task.isCancelled { break }
                 if let point = solution.getPoint(at: Measurement(value: i, unit: UnitLength.meters)) {
                     dataPoints.append(TrajectoryDataPoint(distance: i, drop: point.drop.converted(to: .centimeters).value))
                 }
             }
             return dataPoints
         }.value
+        
+        guard !Task.isCancelled else { return }
         
         self.trajectoryResult = result
         self.trajectoryData = data

@@ -9,8 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct AddView: View {
-    @Environment(\.modelContext) var modelContext
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
 
     @State private var ammunitionName = ""
     @State private var ballisticCoefficient = 0.0
@@ -80,6 +80,11 @@ struct AddView: View {
                         zeroRangeMeters: zeroRangeMeters
                     )
                     modelContext.insert(newAmmunition)
+                    do {
+                        try modelContext.save()
+                    } catch {
+                        print("Failed to save context after inserting ammunition: \(error)")
+                    }
                     dismiss()
                 }
                 .disabled(!isFormValid)

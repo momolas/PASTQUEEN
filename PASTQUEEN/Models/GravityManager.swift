@@ -17,28 +17,34 @@ class GravityManager {
 	let motionManager = CMMotionManager()
 	
 	func getGravityData() async throws -> Double {
-		return try await withCheckedThrowingContinuation { continuation in
-			if motionManager.isDeviceMotionAvailable {
-				motionManager.deviceMotionUpdateInterval = 0.1
-				var hasResumed = false
-				motionManager.startDeviceMotionUpdates(to: .main) { [weak self] (motion, error) in
-					guard !hasResumed else { return }
-					hasResumed = true
-					self?.motionManager.stopDeviceMotionUpdates()
+		try await withTaskCancellationHandler {
+			try await withCheckedThrowingContinuation { continuation in
+				if motionManager.isDeviceMotionAvailable {
+					motionManager.deviceMotionUpdateInterval = 0.1
+					var hasResumed = false
+					motionManager.startDeviceMotionUpdates(to: .main) { [weak self] (motion, error) in
+						guard !hasResumed else { return }
+						hasResumed = true
+						self?.motionManager.stopDeviceMotionUpdates()
 
-					if let error = error {
-						continuation.resume(throwing: error)
-						return
+						if let error = error {
+							continuation.resume(throwing: error)
+							return
+						}
+						if let gravity = motion?.gravity {
+							let g = sqrt(pow(gravity.x, 2) + pow(gravity.y, 2) + pow(gravity.z, 2))
+							continuation.resume(returning: g)
+						} else {
+							continuation.resume(throwing: NSError(domain: "com.example.app", code: 2, userInfo: [NSLocalizedDescriptionKey: "No gravity data available"]))
+						}
 					}
-					if let gravity = motion?.gravity {
-						let g = sqrt(pow(gravity.x, 2) + pow(gravity.y, 2) + pow(gravity.z, 2))
-						continuation.resume(returning: g)
-					} else {
-						continuation.resume(throwing: NSError(domain: "com.example.app", code: 2, userInfo: [NSLocalizedDescriptionKey: "No gravity data available"]))
-					}
+				} else {
+					continuation.resume(throwing: NSError(domain: "com.example.app", code: 1, userInfo: [NSLocalizedDescriptionKey: "Device motion is not available"]))
 				}
-			} else {
-				continuation.resume(throwing: NSError(domain: "com.example.app", code: 1, userInfo: [NSLocalizedDescriptionKey: "Device motion is not available"]))
+			}
+		} onCancel: {
+			Task { @MainActor in
+				motionManager.stopDeviceMotionUpdates()
 			}
 		}
 	}

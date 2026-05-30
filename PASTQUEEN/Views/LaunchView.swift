@@ -10,7 +10,7 @@ import SwiftData
 
 struct LaunchView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var ammunitions: [BallisticSettings]
+    @Query(sort: \BallisticSettings.date, order: .reverse) private var ammunitions: [BallisticSettings]
     @State private var selectedAmmunition: BallisticSettings?
     @State private var showingProfiles = false
     @ScaledMetric(relativeTo: .largeTitle) private var iconSize: CGFloat = 60

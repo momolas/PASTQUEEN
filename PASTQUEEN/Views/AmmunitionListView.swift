@@ -9,7 +9,7 @@ import SwiftData
 struct AmmunitionListView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @Query private var ammunitions: [BallisticSettings]
+    @Query(sort: \BallisticSettings.date, order: .reverse) private var ammunitions: [BallisticSettings]
     @Binding var selectedAmmunition: BallisticSettings?
 
     var body: some View {
@@ -68,6 +68,11 @@ struct AmmunitionListView: View {
         let deletedSelected = offsets.contains { ammunitions[$0] == selectedAmmunition }
         for index in offsets {
             modelContext.delete(ammunitions[index])
+        }
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to save context after deleting ammunition: \(error)")
         }
         if deletedSelected {
             selectedAmmunition = nil
