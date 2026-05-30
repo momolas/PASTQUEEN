@@ -16,6 +16,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     var altitude: Double?
     var location: CLLocation?
     var authorizationStatus: CLAuthorizationStatus
+    var errorMessage: String?
 
     override init() {
         self.authorizationStatus = locationManager.authorizationStatus
@@ -25,6 +26,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
 
     func requestLocation() {
+        self.errorMessage = nil
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
     }
@@ -41,6 +43,9 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
     nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Error getting location: \(error)")
+        Task { @MainActor in
+            self.errorMessage = error.localizedDescription
+        }
     }
 
     nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {

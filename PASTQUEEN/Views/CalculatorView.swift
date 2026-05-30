@@ -10,11 +10,6 @@ import SwiftData
 import Charts
 import CoreLocation
 
-struct TrajectoryDataPoint: Identifiable {
-    let id = UUID()
-    let distance: Double
-    let drop: Double
-}
 
 struct CalculatorView: View {
     let ballisticSettings: BallisticSettings
@@ -63,7 +58,6 @@ struct CalculatorView: View {
                             Text(.temp)
                             Text(weather.temperature.converted(to: .celsius).value, format: .number.precision(.fractionLength(1)))
                                 .fontDesign(.rounded)
-                                .fontWeight(.light)
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
@@ -71,7 +65,6 @@ struct CalculatorView: View {
                             Text(.wind)
                             Text(weather.wind.speed.converted(to: .kilometersPerHour).value, format: .number.precision(.fractionLength(1)))
                                 .fontDesign(.rounded)
-                                .fontWeight(.light)
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
@@ -79,7 +72,6 @@ struct CalculatorView: View {
                             Text(.pressure)
                             Text(weather.pressure.converted(to: .hectopascals).value, format: .number.precision(.fractionLength(0)))
                                 .fontDesign(.rounded)
-                                .fontWeight(.light)
                                 .foregroundStyle(.secondary)
                         }
                     }
@@ -139,48 +131,42 @@ struct CalculatorView: View {
             }
 
             if let result = trajectoryResult {
-                Section(header: Text("Results for \(distance, format: .number.precision(.fractionLength(0))) meters")) {
+                Section(header: Text(.resultsForMeters, Int(distance))) {
                     HStack {
                         Text(.drop)
                         Spacer()
                         Text("\(result.dropCM, format: .number.precision(.fractionLength(2))) cm")
                             .fontDesign(.rounded)
-                            .fontWeight(.light)
                     }
                     HStack {
                         Text(.dropMOA)
                         Spacer()
                         Text("\(result.dropCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
                             .fontDesign(.rounded)
-                            .fontWeight(.light)
                     }
                     HStack {
                         Text(.windage)
                         Spacer()
                         Text("\(result.windageCM, format: .number.precision(.fractionLength(2))) cm")
                             .fontDesign(.rounded)
-                            .fontWeight(.light)
                     }
                     HStack {
                         Text(.windageMOA)
                         Spacer()
                         Text("\(result.windageCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
                             .fontDesign(.rounded)
-                            .fontWeight(.light)
                     }
                     HStack {
                         Text(.velocity)
                         Spacer()
                         Text("\(result.velocityMPS, format: .number.precision(.fractionLength(0))) m/s")
                             .fontDesign(.rounded)
-                            .fontWeight(.light)
                     }
                     HStack {
                         Text(.energy)
                         Spacer()
                         Text("\(result.energyJoules, format: .number.precision(.fractionLength(0))) Joules")
                             .fontDesign(.rounded)
-                            .fontWeight(.light)
                     }
                 }
             }
@@ -208,7 +194,6 @@ struct CalculatorView: View {
                                     Text("\(selectedDrop, format: .number.precision(.fractionLength(1))) cm")
                                         .font(.caption)
                                         .fontDesign(.rounded)
-                                        .fontWeight(.light)
                                         .padding(4)
                                         .background(.thinMaterial, in: .rect(cornerRadius: 10))
                                 }
@@ -220,17 +205,18 @@ struct CalculatorView: View {
             }
         }
         .navigationTitle(String(localized: .calculator))
-        .onAppear {
+        .task {
             if locationManager.authorizationStatus == .notDetermined {
                 locationManager.requestLocation()
             }
-            Task { await calculateTrajectory() }
+            await calculateTrajectory()
         }
         .onChange(of: locationManager.location) { _, _ in
              Task { await calculateTrajectory() }
         }
     }
 
+    @MainActor
     private func calculateTrajectory() async {
         let calculator = getCalculator()
         let result = calculator.solveTrajectory(for: distance)
@@ -246,10 +232,8 @@ struct CalculatorView: View {
             return dataPoints
         }.value
         
-        await MainActor.run {
-            self.trajectoryResult = result
-            self.trajectoryData = data
-        }
+        self.trajectoryResult = result
+        self.trajectoryData = data
     }
 }
 

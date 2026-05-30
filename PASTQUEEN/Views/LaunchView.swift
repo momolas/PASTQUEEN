@@ -13,6 +13,7 @@ struct LaunchView: View {
     @Query private var ammunitions: [BallisticSettings]
     @State private var selectedAmmunition: BallisticSettings?
     @State private var showingProfiles = false
+    @ScaledMetric(relativeTo: .largeTitle) private var iconSize: CGFloat = 60
 
     var body: some View {
         NavigationStack {
@@ -32,19 +33,17 @@ struct LaunchView: View {
                         }
                     }
             } else {
-                VStack(spacing: 8) {
+                VStack {
                     Image(systemName: "scope")
-                        .font(.system(size: 60))
+                        .font(.system(size: iconSize))
                         .foregroundStyle(.tertiary)
-                        .padding(.bottom, 8)
+                        .padding(.bottom)
                     Text(.noAmmunitionProfiles)
                         .font(.headline)
                         .fontDesign(.rounded)
-                        .fontWeight(.light)
                     Text(.tapToAdd)
                         .font(.subheadline)
                         .fontDesign(.rounded)
-                        .fontWeight(.light)
                         .foregroundStyle(.secondary)
                 }
                 .navigationBarTitleDisplayMode(.large)

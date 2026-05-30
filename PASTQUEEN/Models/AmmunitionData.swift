@@ -19,8 +19,3 @@ struct AmmunitionData {
         DragFunction(id: 8, name: "G8")
     ]
 }
-
-struct DragFunction: Identifiable {
-    let id: Int32
-    let name: String
-}

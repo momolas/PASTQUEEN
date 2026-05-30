@@ -10,38 +10,74 @@ import SwiftData
 
 struct DetailView: View {
     let ballisticSettings: BallisticSettings
+    @ScaledMetric(relativeTo: .largeTitle) private var iconSize: CGFloat = 60
 
     var body: some View {
-        VStack(spacing: 20) {
-            Text(ballisticSettings.ammunitionName)
-                .font(.largeTitle)
-                .bold()
-
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Caliber: \(ballisticSettings.calibre)")
-                Text("BC: \(ballisticSettings.ballisticCoefficient, format: .number.precision(.fractionLength(3)))")
-                Text("Muzzle Velocity: \(ballisticSettings.muzzleVelocityMPS, format: .number.precision(.fractionLength(0))) m/s")
-                Text("Projectile Weight: \(ballisticSettings.projectileWeightGrains, format: .number.precision(.fractionLength(0))) gr")
-                Text("Sight Height: \(ballisticSettings.sightHeightCM, format: .number.precision(.fractionLength(2))) cm")
-                Text("Zero Range: \(ballisticSettings.zeroRangeMeters, format: .number.precision(.fractionLength(0))) m")
+        List {
+            Section {
+                VStack(alignment: .center) {
+                    Image(systemName: "target")
+                        .font(.system(size: iconSize))
+                        .foregroundStyle(.blue)
+                        .padding(.vertical)
+                    
+                    Text(ballisticSettings.ammunitionName)
+                        .font(.title)
+                        .bold()
+                        .multilineTextAlignment(.center)
+                    
+                    Text(ballisticSettings.projectileManufacturer)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .listRowBackground(Color.clear)
             }
-            .font(.body)
-
-            Spacer()
-
-            NavigationLink(value: ballisticSettings) {
-                Text("Calculate Range Card")
-                    .bold()
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(.blue)
-                    .foregroundStyle(.white)
-                    .clipShape(.rect(cornerRadius: 10))
+            
+            Section(header: Text(.ammunitionDetails)) {
+                LabeledContent(String(localized: .caliber), value: ballisticSettings.calibre)
+                LabeledContent(
+                    String(localized: .projectileWeightGrains),
+                    value: "\(ballisticSettings.projectileWeightGrains.formatted()) gr"
+                )
             }
-            .padding()
+            
+            Section(header: Text(.ballisticData)) {
+                LabeledContent(
+                    String(localized: .ballisticCoefficient),
+                    value: ballisticSettings.ballisticCoefficient.formatted(.number.precision(.fractionLength(3)))
+                )
+                LabeledContent(
+                    String(localized: .muzzleVelocity),
+                    value: "\(ballisticSettings.muzzleVelocityMPS.formatted(.number.precision(.fractionLength(0)))) m/s"
+                )
+                LabeledContent(
+                    String(localized: .muzzleEnergy),
+                    value: "\(ballisticSettings.muzzleEnergy.formatted(.number.precision(.fractionLength(0)))) J"
+                )
+            }
+            
+            Section(header: Text(.rifleSetup)) {
+                LabeledContent(
+                    String(localized: .sightHeight),
+                    value: "\(ballisticSettings.sightHeightCM.formatted(.number.precision(.fractionLength(2)))) cm"
+                )
+                LabeledContent(
+                    String(localized: .zeroRange),
+                    value: "\(ballisticSettings.zeroRangeMeters.formatted(.number.precision(.fractionLength(0)))) m"
+                )
+            }
+            
+            Section {
+                NavigationLink(value: ballisticSettings) {
+                    Text(.calculateRangeCard)
+                        .bold()
+                        .foregroundStyle(.blue)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+            }
         }
-        .padding()
-        .navigationTitle("Details")
+        .navigationTitle(String(localized: .details))
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: BallisticSettings.self) { settings in
             CalculatorView(ballisticSettings: settings)
