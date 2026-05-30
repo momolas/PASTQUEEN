@@ -33,11 +33,12 @@ struct DetailView: View {
                 .listRowBackground(Color.clear)
             }
             
-            Section(header: Text("Weapon & Calibration")) {
-                LabeledContent("Rifle Model", value: weapon.name)
+            Section(header: Text(.weaponCalibration)) {
+                LabeledContent(String(localized: .rifleModel), value: weapon.name)
                 LabeledContent(String(localized: .caliber), value: weapon.calibre)
-                LabeledContent("Sight Height", value: "\(weapon.sightHeightCM.formatted()) cm")
-                LabeledContent("Zero Range", value: "\(weapon.zeroRangeMeters.formatted()) m")
+                LabeledContent(String(localized: .sightHeight), value: "\(weapon.sightHeightCM.formatted()) cm")
+                LabeledContent(String(localized: .zeroRangeLabel), value: "\(weapon.zeroRangeMeters.formatted()) m")
+                LabeledContent(String(localized: .scopeClickUnit), value: weapon.scopeClickUnit.rawValue)
             }
             
             Section(header: Text(.ammunitionDetails)) {
@@ -63,7 +64,7 @@ struct DetailView: View {
             }
             
             Section {
-                NavigationLink(value: weapon) {
+                NavigationLink(value: RangeCardConfig(weapon: weapon, ammunition: ammunition)) {
                     Text(.calculateRangeCard)
                         .bold()
                         .foregroundStyle(.blue)
@@ -76,6 +77,23 @@ struct DetailView: View {
         .navigationDestination(for: Weapon.self) { weapon in
             CalculatorView(weapon: weapon)
         }
+        .navigationDestination(for: RangeCardConfig.self) { config in
+            RangeCardView(weapon: config.weapon, ammunition: config.ammunition)
+        }
+    }
+}
+
+struct RangeCardConfig: Hashable {
+    let weapon: Weapon
+    let ammunition: Ammunition
+    
+    static func == (lhs: RangeCardConfig, rhs: RangeCardConfig) -> Bool {
+        lhs.weapon.id == rhs.weapon.id && lhs.ammunition.id == rhs.ammunition.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(weapon.id)
+        hasher.combine(ammunition.id)
     }
 }
 

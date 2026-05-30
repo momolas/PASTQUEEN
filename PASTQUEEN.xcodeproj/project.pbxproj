@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CDDF00092EE46EB7008DDD15 /* SensorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF000A2EE46EB7008DDD15 /* SensorManager.swift */; };
+		CDDF000B2EE46EB7008DDD15 /* WindClockPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF000C2EE46EB7008DDD15 /* WindClockPicker.swift */; };
+		CDDF000D2EE46EB7008DDD15 /* RangeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF000E2EE46EB7008DDD15 /* RangeCardView.swift */; };
 		CDDF00012EE46EB7008DDD15 /* Weapon.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00022EE46EB7008DDD15 /* Weapon.swift */; };
 		CDDF00032EE46EB7008DDD15 /* Ammunition.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00042EE46EB7008DDD15 /* Ammunition.swift */; };
 		CDDF00052EE46EB7008DDD15 /* AddWeaponView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00062EE46EB7008DDD15 /* AddWeaponView.swift */; };
@@ -27,16 +30,19 @@
 		CDDE00062EE46EB7008DDD15 /* TrajectoryDataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDE00052EE46EB7008DDD15 /* TrajectoryDataPoint.swift */; };
 		CDFD841029D6F39D00E9B274 /* GravityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFD840F29D6F39D00E9B274 /* GravityManager.swift */; };
 		CDFD841229D71F1C00E9B274 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFD841129D71F1C00E9B274 /* LocationManager.swift */; };
-		F8F7E2D3F7B4F5C2B0EC9067 /* AmmunitionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64490F2424B9909B430E02E8 /* AmmunitionListView.swift */; };
+		F8F7E2D3F7B4F5C2B0EC9067 /* WeaponListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64490F2424B9909B430E02E8 /* WeaponListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CDDF000A2EE46EB7008DDD15 /* SensorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorManager.swift; sourceTree = "<group>"; };
+		CDDF000C2EE46EB7008DDD15 /* WindClockPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindClockPicker.swift; sourceTree = "<group>"; };
+		CDDF000E2EE46EB7008DDD15 /* RangeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeCardView.swift; sourceTree = "<group>"; };
 		CDDF00022EE46EB7008DDD15 /* Weapon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weapon.swift; sourceTree = "<group>"; };
 		CDDF00042EE46EB7008DDD15 /* Ammunition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ammunition.swift; sourceTree = "<group>"; };
 		CDDF00062EE46EB7008DDD15 /* AddWeaponView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWeaponView.swift; sourceTree = "<group>"; };
 		CDDF00082EE46EB7008DDD15 /* AddAmmunitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAmmunitionView.swift; sourceTree = "<group>"; };
 		5801502FE6AFF46FA004B664 /* Localizable.xcstrings */ = {isa = PBXFileReference; includeInIndex = 1; path = Localizable.xcstrings; sourceTree = "<group>"; };
-		64490F2424B9909B430E02E8 /* AmmunitionListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AmmunitionListView.swift; sourceTree = "<group>"; };
+		64490F2424B9909B430E02E8 /* WeaponListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WeaponListView.swift; sourceTree = "<group>"; };
 		CD2FBF8F2909504C00387B0B /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		CD9973F728D49B4600C9D3FD /* PASTQUEEN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PASTQUEEN.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD9973FA28D49B4600C9D3FD /* PASTQUEENApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PASTQUEENApp.swift; sourceTree = "<group>"; };
@@ -77,6 +83,7 @@
 		CD495C3028E0A66E00620946 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				CDDF000A2EE46EB7008DDD15 /* SensorManager.swift */,
 				CDDF00022EE46EB7008DDD15 /* Weapon.swift */,
 				CDDF00042EE46EB7008DDD15 /* Ammunition.swift */,
 				CDE935B92EE46EB7008DDD15 /* AmmunitionData.swift */,
@@ -94,12 +101,14 @@
 		CD495C3928E0A6DD00620946 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				CDDF000C2EE46EB7008DDD15 /* WindClockPicker.swift */,
+				CDDF000E2EE46EB7008DDD15 /* RangeCardView.swift */,
 				CDDF00062EE46EB7008DDD15 /* AddWeaponView.swift */,
 				CDDF00082EE46EB7008DDD15 /* AddAmmunitionView.swift */,
 				CD9973FC28D49B4600C9D3FD /* LaunchView.swift */,
 				CD2FBF8F2909504C00387B0B /* DetailView.swift */,
 				CD9B27B328D4CE3800E28642 /* CalculatorView.swift */,
-				64490F2424B9909B430E02E8 /* AmmunitionListView.swift */,
+				64490F2424B9909B430E02E8 /* WeaponListView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -217,6 +226,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDDF00092EE46EB7008DDD15 /* SensorManager.swift in Sources */,
+				CDDF000B2EE46EB7008DDD15 /* WindClockPicker.swift in Sources */,
+				CDDF000D2EE46EB7008DDD15 /* RangeCardView.swift in Sources */,
 				CDDF00012EE46EB7008DDD15 /* Weapon.swift in Sources */,
 				CDDF00032EE46EB7008DDD15 /* Ammunition.swift in Sources */,
 				CDDF00052EE46EB7008DDD15 /* AddWeaponView.swift in Sources */,
@@ -233,7 +245,7 @@
 				CD9973FB28D49B4600C9D3FD /* PASTQUEENApp.swift in Sources */,
 				CD2FBF902909504C00387B0B /* DetailView.swift in Sources */,
 				CDA6EECF2919312C004196DF /* WeatherManager.swift in Sources */,
-				F8F7E2D3F7B4F5C2B0EC9067 /* AmmunitionListView.swift in Sources */,
+				F8F7E2D3F7B4F5C2B0EC9067 /* WeaponListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -18,6 +18,13 @@ struct AddAmmunitionView: View {
     @State private var dragFunction: Int32 = 1
     @State private var muzzleVelocityMPS: Double = 800.0
     @State private var muzzleEnergy: Double = 3500.0
+    @State private var selectedPreset: MarketAmmunition? = nil
+
+    private var filteredPresets: [MarketAmmunition] {
+        AmmunitionData.commonLoads.filter { preset in
+            preset.caliber.localizedStandardContains(weapon.calibre) || weapon.calibre.localizedStandardContains(preset.caliber)
+        }
+    }
 
     private var isFormValid: Bool {
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
@@ -31,6 +38,18 @@ struct AddAmmunitionView: View {
 
     var body: some View {
         Form {
+            if !filteredPresets.isEmpty {
+                Section(header: Text("Popular Market Loads")) {
+                    Picker("Pre-populate from preset", selection: $selectedPreset) {
+                        Text("Custom / Manual").tag(nil as MarketAmmunition?)
+                        ForEach(filteredPresets) { preset in
+                            Text("\(preset.manufacturer) \(preset.name)").tag(preset as MarketAmmunition?)
+                        }
+                    }
+                    .pickerStyle(.navigationLink)
+                }
+            }
+
             Section(.ammunitionDetails) {
                 TextField(String(localized: .ammunitionName), text: $name)
                 TextField(String(localized: .manufacturer), text: $projectileManufacturer)
@@ -71,6 +90,17 @@ struct AddAmmunitionView: View {
                     dismiss()
                 }
                 .disabled(!isFormValid)
+            }
+        }
+        .onChange(of: selectedPreset) { _, newPreset in
+            if let preset = newPreset {
+                name = preset.name
+                projectileManufacturer = preset.manufacturer
+                projectileWeightGrains = preset.projectileWeightGrains
+                ballisticCoefficient = preset.ballisticCoefficient
+                dragFunction = preset.dragFunction
+                muzzleVelocityMPS = preset.muzzleVelocityMPS
+                muzzleEnergy = preset.muzzleEnergyJoules
             }
         }
         .navigationBarTitleDisplayMode(.inline)

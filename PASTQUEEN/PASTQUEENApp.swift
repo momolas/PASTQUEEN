@@ -12,6 +12,7 @@ import SwiftData
 struct PASTQUEENApp: App {
     @State private var locationManager = LocationManager()
     @State private var weatherManager = WeatherManager()
+    @State private var sensorManager = SensorManager()
     
     private let container: ModelContainer
 
@@ -29,7 +30,8 @@ struct PASTQUEENApp: App {
                         name: "Savage B22",
                         calibre: ".22 LR",
                         sightHeightCM: 4.0,
-                        zeroRangeMeters: 50.0
+                        zeroRangeMeters: 50.0,
+                        scopeClickUnit: .moa18
                     )
                     
                     let cciSV = Ammunition(
@@ -48,7 +50,8 @@ struct PASTQUEENApp: App {
                         name: "Savage Axis Varmint",
                         calibre: ".308 Win",
                         sightHeightCM: 4.5,
-                        zeroRangeMeters: 100.0
+                        zeroRangeMeters: 100.0,
+                        scopeClickUnit: .moa18
                     )
                     
                     let federalMatch = Ammunition(
@@ -82,6 +85,7 @@ struct PASTQUEENApp: App {
         }
         .environment(\.locationService, locationManager)
         .environment(\.weatherService, weatherManager)
+        .environment(\.sensorService, sensorManager)
         .modelContainer(container)
     }
 }

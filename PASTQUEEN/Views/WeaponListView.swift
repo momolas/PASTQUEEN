@@ -27,7 +27,7 @@ struct WeaponListView: View {
                                 .font(.headline)
                                 .fontDesign(.rounded)
                                 .foregroundStyle(.primary)
-                            Text("\(weapon.calibre) - Zero: \(weapon.zeroRangeMeters, format: .number)m")
+                            Text("\(weapon.calibre) • \(Text(.zeroRangeLabel)): \(weapon.zeroRangeMeters, format: .number)m")
                                 .font(.subheadline)
                                 .fontDesign(.rounded)
                                 .foregroundStyle(.secondary)

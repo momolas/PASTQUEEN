@@ -14,6 +14,7 @@ struct AddWeaponView: View {
     @State private var calibre: String = ".308"
     @State private var sightHeightCM: Double = 3.81
     @State private var zeroRangeMeters: Double = 100.0
+    @State private var scopeClickUnit: ScopeClickUnit = .moa18
 
     private var isFormValid: Bool {
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
@@ -25,7 +26,7 @@ struct AddWeaponView: View {
     var body: some View {
         Form {
             Section(.rifleSetup) {
-                TextField(String(localized: .ammunitionName), text: $name)
+                TextField(String(localized: .rifleName), text: $name)
                 Picker(String(localized: .caliber), selection: $calibre) {
                     ForEach(AmmunitionData.calibers, id: \.self) {
                         Text($0)
@@ -35,13 +36,24 @@ struct AddWeaponView: View {
                 TextField(String(localized: .zeroRange), value: $zeroRangeMeters, format: .number)
             }
 
+            Section(header: Text(.turretCalibration)) {
+                Picker(selection: $scopeClickUnit) {
+                    ForEach(ScopeClickUnit.allCases) { unit in
+                        Text(unit.rawValue).tag(unit)
+                    }
+                } label: {
+                    Text(.scopeClickUnit)
+                }
+            }
+
             Section {
                 Button(.save) {
                     let newWeapon = Weapon(
                         name: name,
                         calibre: calibre,
                         sightHeightCM: sightHeightCM,
-                        zeroRangeMeters: zeroRangeMeters
+                        zeroRangeMeters: zeroRangeMeters,
+                        scopeClickUnit: scopeClickUnit
                     )
                     modelContext.insert(newWeapon)
                     do {
@@ -55,7 +67,7 @@ struct AddWeaponView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle(String(localized: .addAmmunition)) // Localized target
+        .navigationTitle(Text(.addWeapon))
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button(.cancel) {

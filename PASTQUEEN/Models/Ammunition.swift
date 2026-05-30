@@ -8,6 +8,8 @@ import SwiftData
 
 @Model
 class Ammunition {
+    #Index<Ammunition>([\.date], [\.name])
+
     var id: UUID
     var name: String
     var projectileManufacturer: String

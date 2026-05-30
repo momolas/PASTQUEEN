@@ -21,11 +21,20 @@ struct CalculatorView: View {
     @State private var selectedDistance: Double?
     @State private var calculationTask: Task<Void, Never>?
 
+    @Environment(\.sensorService) private var sensorManager
+    @State private var useOfflineSensors = false
+    @State private var manualWindSpeed: Double = 0.0
+    @State private var windDirectionDegrees: Double = 0.0
+
     private func getCalculator() -> BallisticCalculator {
+        let localPressure = (useOfflineSensors && sensorManager?.currentPressureHPa != nil)
+            ? sensorManager!.currentPressureHPa!
+            : weatherManager?.currentWeather?.pressure.converted(to: UnitPressure.hectopascals).value ?? 1013.25
+
         let weatherData = BallisticCalculator.WeatherData(
-            windSpeed: weatherManager?.currentWeather?.wind.speed.converted(to: UnitSpeed.kilometersPerHour).value ?? 0.0,
-            windDirection: weatherManager?.currentWeather?.wind.direction.value ?? 0.0,
-            pressure: weatherManager?.currentWeather?.pressure.converted(to: UnitPressure.hectopascals).value ?? 1013.25,
+            windSpeed: manualWindSpeed,
+            windDirection: windDirectionDegrees,
+            pressure: localPressure,
             temperature: weatherManager?.currentWeather?.temperature.converted(to: UnitTemperature.celsius).value ?? 15.0,
             humidity: weatherManager?.currentWeather?.humidity ?? 0.78,
             altitude: locationManager?.altitude ?? 0.0
@@ -52,11 +61,11 @@ struct CalculatorView: View {
 
     var body: some View {
         Form {
-            Section(header: Text("Rifle & Setup")) {
-                LabeledContent("Rifle", value: weapon.name)
+            Section(header: Text(.rifleSetup)) {
+                LabeledContent(String(localized: .rifle), value: weapon.name)
                 LabeledContent(String(localized: .caliber), value: weapon.calibre)
-                LabeledContent("Sight Height", value: "\(weapon.sightHeightCM.formatted()) cm")
-                LabeledContent("Zero Range", value: "\(weapon.zeroRangeMeters.formatted()) m")
+                LabeledContent(String(localized: .sightHeight), value: "\(weapon.sightHeightCM.formatted()) cm")
+                LabeledContent(String(localized: .zeroRangeLabel), value: "\(weapon.zeroRangeMeters.formatted()) m")
             }
 
             Section(header: Text("Ammunition Load")) {
@@ -91,6 +100,21 @@ struct CalculatorView: View {
                     .buttonStyle(.plain)
                     .foregroundStyle(.blue)
                 }) {
+                    Toggle(isOn: $useOfflineSensors) {
+                        Label("Offline Barometer", systemImage: "sensor")
+                    }
+                    .onChange(of: useOfflineSensors) { _, newValue in
+                        if newValue {
+                            sensorManager?.startMonitoring()
+                        } else {
+                            sensorManager?.stopMonitoring()
+                        }
+                        triggerCalculation()
+                    }
+                    
+                    if useOfflineSensors {
+                        LabeledContent("Local Pressure", value: "\(sensorManager?.currentPressureHPa?.formatted(.number.precision(.fractionLength(1))) ?? "Reading...") hPa")
+                    }
                     HStack {
                         VStack(alignment: .leading) {
                             Text(.temp)
@@ -144,6 +168,19 @@ struct CalculatorView: View {
                     .keyboardType(.decimalPad)
             }
 
+            Section(header: Text("Wind Conditions")) {
+                HStack {
+                    Text("Wind Speed (km/h)")
+                    Spacer()
+                    TextField("Speed", value: $manualWindSpeed, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 80)
+                }
+                
+                WindClockPicker(windDirectionDegrees: $windDirectionDegrees)
+            }
+
             Section {
                 Button(.calculate, action: triggerCalculation)
             }
@@ -162,6 +199,16 @@ struct CalculatorView: View {
                         Text("\(result.dropCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
                             .fontDesign(.rounded)
                     }
+                    
+                    let dropClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.dropCorrectionMOA)
+                    let dropDirectionKey: LocalizedStringResource = result.dropCorrectionMOA >= 0 ? .up : .down
+                    HStack {
+                        Text(.elevationAdjustment)
+                        Spacer()
+                        Text("\(dropClicks) \(Text(.clicks)) (\(Text(dropDirectionKey).bold().foregroundStyle(.blue)))")
+                    }
+                    .fontDesign(.rounded)
+                    
                     HStack {
                         Text(.windage)
                         Spacer()
@@ -174,6 +221,15 @@ struct CalculatorView: View {
                         Text("\(result.windageCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
                             .fontDesign(.rounded)
                     }
+                    
+                    let windageClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.windageCorrectionMOA)
+                    let windageDirectionKey: LocalizedStringResource = result.windageCorrectionMOA >= 0 ? .right : .left
+                    HStack {
+                        Text(.windageAdjustment)
+                        Spacer()
+                        Text("\(windageClicks) \(Text(.clicks)) (\(Text(windageDirectionKey).bold().foregroundStyle(.blue)))")
+                    }
+                    .fontDesign(.rounded)
                     HStack {
                         Text(.velocity)
                         Spacer()
@@ -228,6 +284,7 @@ struct CalculatorView: View {
                 locationManager?.requestLocation()
             }
             setupDefaultAmmunition()
+            syncManualWind()
             await calculateTrajectory()
         }
         .onChange(of: weapon) { _, _ in
@@ -243,6 +300,17 @@ struct CalculatorView: View {
         }
         .onChange(of: locationManager?.location) { _, _ in
              triggerCalculation()
+        }
+        .onChange(of: manualWindSpeed) { _, _ in
+            triggerCalculation()
+        }
+        .onChange(of: windDirectionDegrees) { _, _ in
+            triggerCalculation()
+        }
+        .onChange(of: sensorManager?.currentPressureHPa) { _, _ in
+            if useOfflineSensors {
+                triggerCalculation()
+            }
         }
     }
 
@@ -262,7 +330,15 @@ struct CalculatorView: View {
         calculationTask?.cancel()
         calculationTask = Task {
             await weatherManager?.updateCurrentWeather(userLocation: loc)
+            syncManualWind()
             await calculateTrajectory()
+        }
+    }
+
+    private func syncManualWind() {
+        if let weather = weatherManager?.currentWeather {
+            manualWindSpeed = weather.wind.speed.converted(to: .kilometersPerHour).value
+            windDirectionDegrees = weather.wind.direction.value
         }
     }
 

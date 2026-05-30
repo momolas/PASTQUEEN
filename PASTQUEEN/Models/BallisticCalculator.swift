@@ -48,15 +48,22 @@ struct BallisticCalculator {
     }
     
     public func solveFullTrajectory(upTo distance: Double) -> Ballistics {
+        let effectiveBC: Double
+        if ballistics.dragFunction == 7 {
+            effectiveBC = ballistics.ballisticCoefficient * 1.95
+        } else {
+            effectiveBC = ballistics.ballisticCoefficient
+        }
+
         return Ballistics.solve(
-            dragCoefficient: ballistics.ballisticCoefficient,
+            dragCoefficient: effectiveBC,
             initialVelocity: Measurement(value: ballistics.muzzleVelocityMPS, unit: UnitSpeed.metersPerSecond),
             sightHeight: Measurement(value: ballistics.sightHeightCM, unit: UnitLength.centimeters),
             shootingAngle: Measurement(value: 0, unit: UnitAngle.degrees),
             zeroRange: Measurement(value: ballistics.zeroRangeMeters, unit: UnitLength.meters),
             atmosphere: Atmosphere(
                 altitude: Measurement(value: weather.altitude, unit: UnitLength.meters),
-				pressure: Measurement(value: weather.pressure, unit: UnitPressure.hectopascals),
+ 				pressure: Measurement(value: weather.pressure, unit: UnitPressure.hectopascals),
                 temperature: Measurement(value: weather.temperature, unit: UnitTemperature.celsius),
                 relativeHumidity: weather.humidity,
             ),
