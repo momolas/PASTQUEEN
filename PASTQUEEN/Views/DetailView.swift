@@ -11,6 +11,9 @@ struct DetailView: View {
     let ammunition: Ammunition
     @ScaledMetric(relativeTo: .largeTitle) private var iconSize: CGFloat = 60
 
+    @State private var showingEditWeapon = false
+    @State private var showingEditAmmunition = false
+
     var body: some View {
         List {
             Section {
@@ -33,7 +36,16 @@ struct DetailView: View {
                 .listRowBackground(Color.clear)
             }
             
-            Section(header: Text(.weaponCalibration)) {
+            Section(header: HStack {
+                Text(.weaponCalibration)
+                Spacer()
+                Button("Modifier la carabine", systemImage: "pencil") {
+                    showingEditWeapon = true
+                }
+                .labelStyle(.iconOnly)
+                .buttonStyle(.plain)
+                .foregroundStyle(.blue)
+            }) {
                 LabeledContent(String(localized: .rifleModel), value: weapon.name)
                 LabeledContent(String(localized: .caliber), value: weapon.calibre)
                 LabeledContent(String(localized: .sightHeight), value: "\(weapon.sightHeightCM.formatted()) cm")
@@ -42,8 +54,16 @@ struct DetailView: View {
                 LabeledContent(String(localized: .scopeClickUnit), value: weapon.scopeClickUnit.rawValue)
             }
 
-            
-            Section(header: Text(.ammunitionDetails)) {
+            Section(header: HStack {
+                Text(.ammunitionDetails)
+                Spacer()
+                Button("Modifier le chargement", systemImage: "pencil") {
+                    showingEditAmmunition = true
+                }
+                .labelStyle(.iconOnly)
+                .buttonStyle(.plain)
+                .foregroundStyle(.blue)
+            }) {
                 LabeledContent(
                     String(localized: .projectileWeightGrains),
                     value: "\(ammunition.projectileWeightGrains.formatted()) gr"
@@ -76,6 +96,16 @@ struct DetailView: View {
         }
         .navigationTitle(String(localized: .details))
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showingEditWeapon) {
+            NavigationStack {
+                EditWeaponView(weapon: weapon)
+            }
+        }
+        .sheet(isPresented: $showingEditAmmunition) {
+            NavigationStack {
+                EditAmmunitionView(ammunition: ammunition)
+            }
+        }
         .navigationDestination(for: Weapon.self) { weapon in
             CalculatorView(weapon: weapon)
         }
@@ -83,6 +113,7 @@ struct DetailView: View {
             RangeCardView(weapon: config.weapon, ammunition: config.ammunition)
         }
     }
+
 }
 
 struct RangeCardConfig: Hashable {

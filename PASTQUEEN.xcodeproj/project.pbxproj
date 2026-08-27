@@ -14,6 +14,9 @@
 		CDDF00032EE46EB7008DDD15 /* Ammunition.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00042EE46EB7008DDD15 /* Ammunition.swift */; };
 		CDDF00052EE46EB7008DDD15 /* AddWeaponView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00062EE46EB7008DDD15 /* AddWeaponView.swift */; };
 		CDDF00072EE46EB7008DDD15 /* AddAmmunitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00082EE46EB7008DDD15 /* AddAmmunitionView.swift */; };
+		CDDF00112EE46EB7008DDD15 /* EditWeaponView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00122EE46EB7008DDD15 /* EditWeaponView.swift */; };
+		CDDF00132EE46EB7008DDD15 /* EditAmmunitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00142EE46EB7008DDD15 /* EditAmmunitionView.swift */; };
+		CDDF00152EE46EB7008DDD15 /* RangeCardPrintableCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00162EE46EB7008DDD15 /* RangeCardPrintableCard.swift */; };
 		05233FBFD43403BCED8DA45F /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 5801502FE6AFF46FA004B664 /* Localizable.xcstrings */; };
 		CD2FBF902909504C00387B0B /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2FBF8F2909504C00387B0B /* DetailView.swift */; };
 		CD9973FB28D49B4600C9D3FD /* PASTQUEENApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9973FA28D49B4600C9D3FD /* PASTQUEENApp.swift */; };
@@ -28,7 +31,6 @@
 		CDDE00022EE46EB7008DDD15 /* DragFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDE00012EE46EB7008DDD15 /* DragFunction.swift */; };
 		CDDE00042EE46EB7008DDD15 /* TrajectoryResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDE00032EE46EB7008DDD15 /* TrajectoryResult.swift */; };
 		CDDE00062EE46EB7008DDD15 /* TrajectoryDataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDE00052EE46EB7008DDD15 /* TrajectoryDataPoint.swift */; };
-		CDFD841029D6F39D00E9B274 /* GravityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFD840F29D6F39D00E9B274 /* GravityManager.swift */; };
 		CDFD841229D71F1C00E9B274 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFD841129D71F1C00E9B274 /* LocationManager.swift */; };
 		F8F7E2D3F7B4F5C2B0EC9067 /* WeaponListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64490F2424B9909B430E02E8 /* WeaponListView.swift */; };
 /* End PBXBuildFile section */
@@ -41,6 +43,9 @@
 		CDDF00042EE46EB7008DDD15 /* Ammunition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ammunition.swift; sourceTree = "<group>"; };
 		CDDF00062EE46EB7008DDD15 /* AddWeaponView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWeaponView.swift; sourceTree = "<group>"; };
 		CDDF00082EE46EB7008DDD15 /* AddAmmunitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAmmunitionView.swift; sourceTree = "<group>"; };
+		CDDF00122EE46EB7008DDD15 /* EditWeaponView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditWeaponView.swift; sourceTree = "<group>"; };
+		CDDF00142EE46EB7008DDD15 /* EditAmmunitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAmmunitionView.swift; sourceTree = "<group>"; };
+		CDDF00162EE46EB7008DDD15 /* RangeCardPrintableCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeCardPrintableCard.swift; sourceTree = "<group>"; };
 		5801502FE6AFF46FA004B664 /* Localizable.xcstrings */ = {isa = PBXFileReference; includeInIndex = 1; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		64490F2424B9909B430E02E8 /* WeaponListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WeaponListView.swift; sourceTree = "<group>"; };
 		CD2FBF8F2909504C00387B0B /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
@@ -54,7 +59,6 @@
 		CDA6EECD2919312C004196DF /* WeatherManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeatherManager.swift; sourceTree = "<group>"; };
 		CDE935B92EE46EB7008DDD15 /* AmmunitionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmmunitionData.swift; sourceTree = "<group>"; };
 		CDE935BA2EE46EB7008DDD15 /* BallisticCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallisticCalculator.swift; sourceTree = "<group>"; };
-		CDFD840F29D6F39D00E9B274 /* GravityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GravityManager.swift; sourceTree = "<group>"; };
 		CDDE00012EE46EB7008DDD15 /* DragFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragFunction.swift; sourceTree = "<group>"; };
 		CDDE00032EE46EB7008DDD15 /* TrajectoryResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrajectoryResult.swift; sourceTree = "<group>"; };
 		CDDE00052EE46EB7008DDD15 /* TrajectoryDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrajectoryDataPoint.swift; sourceTree = "<group>"; };
@@ -93,7 +97,6 @@
 				CDDE00052EE46EB7008DDD15 /* TrajectoryDataPoint.swift */,
 				CDA6EECD2919312C004196DF /* WeatherManager.swift */,
 				CDFD841129D71F1C00E9B274 /* LocationManager.swift */,
-				CDFD840F29D6F39D00E9B274 /* GravityManager.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -103,8 +106,11 @@
 			children = (
 				CDDF000C2EE46EB7008DDD15 /* WindClockPicker.swift */,
 				CDDF000E2EE46EB7008DDD15 /* RangeCardView.swift */,
+				CDDF00162EE46EB7008DDD15 /* RangeCardPrintableCard.swift */,
 				CDDF00062EE46EB7008DDD15 /* AddWeaponView.swift */,
+				CDDF00122EE46EB7008DDD15 /* EditWeaponView.swift */,
 				CDDF00082EE46EB7008DDD15 /* AddAmmunitionView.swift */,
+				CDDF00142EE46EB7008DDD15 /* EditAmmunitionView.swift */,
 				CD9973FC28D49B4600C9D3FD /* LaunchView.swift */,
 				CD2FBF8F2909504C00387B0B /* DetailView.swift */,
 				CD9B27B328D4CE3800E28642 /* CalculatorView.swift */,
@@ -229,10 +235,13 @@
 				CDDF00092EE46EB7008DDD15 /* SensorManager.swift in Sources */,
 				CDDF000B2EE46EB7008DDD15 /* WindClockPicker.swift in Sources */,
 				CDDF000D2EE46EB7008DDD15 /* RangeCardView.swift in Sources */,
+				CDDF00152EE46EB7008DDD15 /* RangeCardPrintableCard.swift in Sources */,
 				CDDF00012EE46EB7008DDD15 /* Weapon.swift in Sources */,
 				CDDF00032EE46EB7008DDD15 /* Ammunition.swift in Sources */,
 				CDDF00052EE46EB7008DDD15 /* AddWeaponView.swift in Sources */,
+				CDDF00112EE46EB7008DDD15 /* EditWeaponView.swift in Sources */,
 				CDDF00072EE46EB7008DDD15 /* AddAmmunitionView.swift in Sources */,
+				CDDF00132EE46EB7008DDD15 /* EditAmmunitionView.swift in Sources */,
 				CD9973FD28D49B4600C9D3FD /* LaunchView.swift in Sources */,
 				CDE935BB2EE46EB7008DDD15 /* BallisticCalculator.swift in Sources */,
 				CDDE00042EE46EB7008DDD15 /* TrajectoryResult.swift in Sources */,
@@ -240,7 +249,6 @@
 				CDDE00022EE46EB7008DDD15 /* DragFunction.swift in Sources */,
 				CD9B27B428D4CE3800E28642 /* CalculatorView.swift in Sources */,
 				CDDE00062EE46EB7008DDD15 /* TrajectoryDataPoint.swift in Sources */,
-				CDFD841029D6F39D00E9B274 /* GravityManager.swift in Sources */,
 				CDFD841229D71F1C00E9B274 /* LocationManager.swift in Sources */,
 				CD9973FB28D49B4600C9D3FD /* PASTQUEENApp.swift in Sources */,
 				CD2FBF902909504C00387B0B /* DetailView.swift in Sources */,

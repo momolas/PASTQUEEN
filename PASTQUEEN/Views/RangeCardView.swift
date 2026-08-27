@@ -172,6 +172,18 @@ struct RangeCardView: View {
         }
         .navigationTitle("Table de Tir")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                if let image = renderedCardImage {
+                    ShareLink(
+                        item: image,
+                        preview: SharePreview("\(weapon.name) - \(ammunition.name) - Table de tir", image: image)
+                    ) {
+                        Label("Exporter la table", systemImage: "square.and.arrow.up")
+                    }
+                }
+            }
+        }
         .task(id: increment) {
             await calculateCard()
         }
@@ -182,6 +194,38 @@ struct RangeCardView: View {
             await calculateCard()
         }
     }
+    
+    @MainActor
+    private var weatherSummaryText: String {
+        guard let weather = weatherManager?.currentWeather else { return "" }
+        let temp = weather.temperature.converted(to: .celsius).value.formatted(.number.precision(.fractionLength(0)))
+        let press = weather.pressure.converted(to: .hectopascals).value.formatted(.number.precision(.fractionLength(0)))
+        let wind = weather.wind.speed.converted(to: .kilometersPerHour).value.formatted(.number.precision(.fractionLength(0)))
+        return "\(temp)°C • \(press) hPa • Vent \(wind) km/h"
+    }
+
+    @MainActor
+    private var renderedCardImage: Image? {
+        guard !rows.isEmpty else { return nil }
+        let card = RangeCardPrintableCard(
+            weaponName: weapon.name,
+            caliber: weapon.calibre,
+            scopeUnit: weapon.scopeClickUnit.rawValue,
+            zeroDistance: weapon.zeroRangeMeters,
+            ammoName: ammunition.name,
+            bulletWeight: ammunition.projectileWeightGrains,
+            muzzleVelocity: ammunition.muzzleVelocityMPS,
+            weatherSummary: weatherSummaryText,
+            rows: rows
+        )
+        let renderer = ImageRenderer(content: card)
+        renderer.scale = 3.0
+        if let uiImage = renderer.uiImage {
+            return Image(uiImage: uiImage)
+        }
+        return nil
+    }
+
     
     private func calculateCard() async {
         isCalculating = true

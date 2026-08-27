@@ -65,8 +65,10 @@ struct WindClockPicker: View {
             )
         }
         .padding(.vertical, 8)
+        .sensoryFeedback(.selection, trigger: currentHour)
     }
 }
+
 
 #Preview {
     @Previewable @State var windAngle = 90.0
