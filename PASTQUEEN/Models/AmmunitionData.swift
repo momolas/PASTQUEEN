@@ -56,7 +56,6 @@ struct AmmunitionData {
         MarketAmmunition(manufacturer: "Hornady", name: "ELD Match 178gr", caliber: ".308 Win", projectileWeightGrains: 178.0, ballisticCoefficient: 0.547, dragFunction: 1, muzzleVelocityMPS: 792.0, muzzleEnergyJoules: 3624.0),
         MarketAmmunition(manufacturer: "Remington", name: "Core-Lokt 150gr PSP", caliber: ".308 Win", projectileWeightGrains: 150.0, ballisticCoefficient: 0.314, dragFunction: 1, muzzleVelocityMPS: 859.0, muzzleEnergyJoules: 3591.0),
 
-        
         // .223 Rem
         MarketAmmunition(manufacturer: "Federal", name: "Gold Medal Match 69gr", caliber: ".223 Rem", projectileWeightGrains: 69.0, ballisticCoefficient: 0.301, dragFunction: 1, muzzleVelocityMPS: 899.0, muzzleEnergyJoules: 1809.0),
         MarketAmmunition(manufacturer: "Hornady", name: "Frontier 55gr FMJ", caliber: ".223 Rem", projectileWeightGrains: 55.0, ballisticCoefficient: 0.243, dragFunction: 1, muzzleVelocityMPS: 987.0, muzzleEnergyJoules: 1735.0),
