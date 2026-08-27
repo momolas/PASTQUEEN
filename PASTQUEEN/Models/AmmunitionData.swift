@@ -24,7 +24,6 @@ struct AmmunitionData {
         ".22 LR",
         ".223 Rem",
         ".308 Win",
-        "7.62x51 NATO",
         "6.5 Creedmoor",
         "9mm Luger",
         ".300 Win Mag",
@@ -52,7 +51,7 @@ struct AmmunitionData {
         MarketAmmunition(manufacturer: "Federal", name: "Champion", caliber: ".22 LR", projectileWeightGrains: 40.0, ballisticCoefficient: 0.125, dragFunction: 1, muzzleVelocityMPS: 378.0, muzzleEnergyJoules: 185.0),
         
         // .308 Win / 7.62x51 NATO
-        MarketAmmunition(manufacturer: "GGG", name: "7.62x51 NATO / .308 Win M80 FMJ 147gr", caliber: ".308 Win", projectileWeightGrains: 147.0, ballisticCoefficient: 0.400, dragFunction: 1, muzzleVelocityMPS: 835.0, muzzleEnergyJoules: 3329.0),
+        MarketAmmunition(manufacturer: "GGG", name: "GGG .308 Win 147gr FMJ", caliber: ".308 Win", projectileWeightGrains: 147.0, ballisticCoefficient: 0.400, dragFunction: 1, muzzleVelocityMPS: 842.0, muzzleEnergyJoules: 3374.0),
         MarketAmmunition(manufacturer: "Federal", name: "Gold Medal Match 168gr", caliber: ".308 Win", projectileWeightGrains: 168.0, ballisticCoefficient: 0.462, dragFunction: 1, muzzleVelocityMPS: 808.0, muzzleEnergyJoules: 3525.0),
         MarketAmmunition(manufacturer: "Hornady", name: "ELD Match 178gr", caliber: ".308 Win", projectileWeightGrains: 178.0, ballisticCoefficient: 0.547, dragFunction: 1, muzzleVelocityMPS: 792.0, muzzleEnergyJoules: 3624.0),
         MarketAmmunition(manufacturer: "Remington", name: "Core-Lokt 150gr PSP", caliber: ".308 Win", projectileWeightGrains: 150.0, ballisticCoefficient: 0.314, dragFunction: 1, muzzleVelocityMPS: 859.0, muzzleEnergyJoules: 3591.0),
