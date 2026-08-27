@@ -38,8 +38,10 @@ struct DetailView: View {
                 LabeledContent(String(localized: .caliber), value: weapon.calibre)
                 LabeledContent(String(localized: .sightHeight), value: "\(weapon.sightHeightCM.formatted()) cm")
                 LabeledContent(String(localized: .zeroRangeLabel), value: "\(weapon.zeroRangeMeters.formatted()) m")
+                LabeledContent("Pas de rayure", value: "1:\(weapon.twistRateInches.formatted()) pouces (\(weapon.twistDirection.rawValue))")
                 LabeledContent(String(localized: .scopeClickUnit), value: weapon.scopeClickUnit.rawValue)
             }
+
             
             Section(header: Text(.ammunitionDetails)) {
                 LabeledContent(

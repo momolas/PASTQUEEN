@@ -27,6 +27,13 @@ enum ScopeClickUnit: String, Codable, CaseIterable, Identifiable {
     }
 }
 
+enum TwistDirection: String, Codable, CaseIterable, Identifiable {
+    case right = "Right (RH)"
+    case left = "Left (LH)"
+    
+    var id: String { self.rawValue }
+}
+
 @Model
 class Weapon {
     #Index<Weapon>([\.name])
@@ -37,17 +44,31 @@ class Weapon {
     var sightHeightCM: Double
     var zeroRangeMeters: Double
     var scopeClickUnit: ScopeClickUnit
+    var twistRateInches: Double = 10.0
+    var twistDirection: TwistDirection = TwistDirection.right
     
     @Relationship(deleteRule: .cascade, inverse: \Ammunition.weapon) 
     var ammunitions: [Ammunition]?
 
-    init(id: UUID = UUID(), name: String, calibre: String, sightHeightCM: Double, zeroRangeMeters: Double, scopeClickUnit: ScopeClickUnit = .moa18) {
+    init(
+        id: UUID = UUID(),
+        name: String,
+        calibre: String,
+        sightHeightCM: Double,
+        zeroRangeMeters: Double,
+        scopeClickUnit: ScopeClickUnit = .moa18,
+        twistRateInches: Double = 10.0,
+        twistDirection: TwistDirection = .right
+    ) {
         self.id = id
         self.name = name
         self.calibre = calibre
         self.sightHeightCM = sightHeightCM
         self.zeroRangeMeters = zeroRangeMeters
         self.scopeClickUnit = scopeClickUnit
+        self.twistRateInches = twistRateInches
+        self.twistDirection = twistDirection
         self.ammunitions = []
     }
 }
+

@@ -13,6 +13,7 @@ struct CalculatorView: View {
 
     @Environment(\.weatherService) private var weatherManager
     @Environment(\.locationService) private var locationManager
+    @Environment(\.sensorService) private var sensorManager
     
     @State private var selectedAmmunition: Ammunition?
     @State private var distance: Double = 100.0
@@ -21,10 +22,16 @@ struct CalculatorView: View {
     @State private var selectedDistance: Double?
     @State private var calculationTask: Task<Void, Never>?
 
-    @Environment(\.sensorService) private var sensorManager
     @State private var useOfflineSensors = false
     @State private var manualWindSpeed: Double = 0.0
     @State private var windDirectionDegrees: Double = 0.0
+
+    // ELR State
+    @State private var enableELR = false
+    @State private var inclineAngleDegrees: Double = 0.0
+    @State private var shootingAzimuthDegrees: Double = 0.0
+    @State private var liveCompassActive = false
+    @State private var liveInclinometerActive = false
 
     private func getCalculator() -> BallisticCalculator {
         let localPressure = (useOfflineSensors && sensorManager?.currentPressureHPa != nil)
@@ -53,7 +60,13 @@ struct CalculatorView: View {
             projectileManufacturer: selectedAmmunition?.projectileManufacturer ?? "Default",
             projectileWeightGrains: selectedAmmunition?.projectileWeightGrains ?? 168.0,
             sightHeightCM: weapon.sightHeightCM,
-            zeroRangeMeters: weapon.zeroRangeMeters
+            zeroRangeMeters: weapon.zeroRangeMeters,
+            twistRateInches: weapon.twistRateInches,
+            twistDirection: weapon.twistDirection,
+            inclineAngleDegrees: inclineAngleDegrees,
+            shootingAzimuthDegrees: shootingAzimuthDegrees,
+            latitudeDegrees: locationManager?.latitude ?? 45.0,
+            enableELR: enableELR
         )
         
         return BallisticCalculator(ballistics: settings, weather: weatherData)
@@ -66,6 +79,7 @@ struct CalculatorView: View {
                 LabeledContent(String(localized: .caliber), value: weapon.calibre)
                 LabeledContent(String(localized: .sightHeight), value: "\(weapon.sightHeightCM.formatted()) cm")
                 LabeledContent(String(localized: .zeroRangeLabel), value: "\(weapon.zeroRangeMeters.formatted()) m")
+                LabeledContent("Pas de rayure", value: "1:\(weapon.twistRateInches.formatted()) (\(weapon.twistDirection.rawValue))")
             }
 
             Section(header: Text("Ammunition Load")) {
@@ -181,6 +195,82 @@ struct CalculatorView: View {
                 WindClockPicker(windDirectionDegrees: $windDirectionDegrees)
             }
 
+            // Advanced ELR Module Section
+            Section(header: Label("Très Longue Distance (ELR)", systemImage: "scope")) {
+                Toggle(isOn: $enableELR) {
+                    Text("Activer les effets ELR")
+                        .bold()
+                }
+                
+                if enableELR {
+                    // Incline Angle / Inclinometer
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("Angle de tir / Pente")
+                            Spacer()
+                            TextField("Angle", value: $inclineAngleDegrees, format: .number.precision(.fractionLength(1)))
+                                .keyboardType(.numbersAndPunctuation)
+                                .multilineTextAlignment(.trailing)
+                                .frame(width: 70)
+                            Text("°")
+                        }
+                        
+                        Button {
+                            liveInclinometerActive.toggle()
+                            if liveInclinometerActive {
+                                sensorManager?.startInclineMonitoring()
+                            } else {
+                                sensorManager?.stopInclineMonitoring()
+                            }
+                        } label: {
+                            Label(
+                                liveInclinometerActive ? "Inclinomètre Actif (posé sur le canon)" : "Mesurer l'angle (Capteur)",
+                                systemImage: liveInclinometerActive ? "level.fill" : "level"
+                            )
+                            .font(.caption)
+                            .foregroundStyle(liveInclinometerActive ? .green : .blue)
+                        }
+                        .buttonStyle(.borderless)
+                    }
+
+                    // Shooting Azimuth / Compass
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("Azimut de tir (Cap)")
+                            Spacer()
+                            TextField("Azimut", value: $shootingAzimuthDegrees, format: .number.precision(.fractionLength(0)))
+                                .keyboardType(.numberPad)
+                                .multilineTextAlignment(.trailing)
+                                .frame(width: 70)
+                            Text("°")
+                        }
+                        
+                        Button {
+                            liveCompassActive.toggle()
+                            if liveCompassActive {
+                                locationManager?.startUpdatingHeading()
+                            } else {
+                                locationManager?.stopUpdatingHeading()
+                            }
+                        } label: {
+                            Label(
+                                liveCompassActive ? "Boussole Active (viser la cible)" : "Capturer le cap (Boussole)",
+                                systemImage: liveCompassActive ? "location.north.line.fill" : "safari"
+                            )
+                            .font(.caption)
+                            .foregroundStyle(liveCompassActive ? .green : .blue)
+                        }
+                        .buttonStyle(.borderless)
+                    }
+
+                    if let lat = locationManager?.latitude {
+                        LabeledContent("Latitude actuelle", value: "\(lat.formatted(.number.precision(.fractionLength(2))))°")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+
             Section {
                 Button(.calculate, action: triggerCalculation)
             }
@@ -190,18 +280,18 @@ struct CalculatorView: View {
                     HStack {
                         Text(.drop)
                         Spacer()
-                        Text("\(result.dropCM, format: .number.precision(.fractionLength(2))) cm")
+                        Text("\(result.totalDropCM, format: .number.precision(.fractionLength(2))) cm")
                             .fontDesign(.rounded)
                     }
                     HStack {
                         Text(.dropMOA)
                         Spacer()
-                        Text("\(result.dropCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
+                        Text("\(result.totalDropCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
                             .fontDesign(.rounded)
                     }
                     
-                    let dropClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.dropCorrectionMOA)
-                    let dropDirectionKey: LocalizedStringResource = result.dropCorrectionMOA >= 0 ? .up : .down
+                    let dropClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.totalDropCorrectionMOA)
+                    let dropDirectionKey: LocalizedStringResource = result.totalDropCorrectionMOA >= 0 ? .up : .down
                     HStack {
                         Text(.elevationAdjustment)
                         Spacer()
@@ -212,18 +302,18 @@ struct CalculatorView: View {
                     HStack {
                         Text(.windage)
                         Spacer()
-                        Text("\(result.windageCM, format: .number.precision(.fractionLength(2))) cm")
+                        Text("\(result.totalWindageCM, format: .number.precision(.fractionLength(2))) cm")
                             .fontDesign(.rounded)
                     }
                     HStack {
                         Text(.windageMOA)
                         Spacer()
-                        Text("\(result.windageCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
+                        Text("\(result.totalWindageCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
                             .fontDesign(.rounded)
                     }
                     
-                    let windageClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.windageCorrectionMOA)
-                    let windageDirectionKey: LocalizedStringResource = result.windageCorrectionMOA >= 0 ? .right : .left
+                    let windageClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.totalWindageCorrectionMOA)
+                    let windageDirectionKey: LocalizedStringResource = result.totalWindageCorrectionMOA >= 0 ? .right : .left
                     HStack {
                         Text(.windageAdjustment)
                         Spacer()
@@ -241,6 +331,45 @@ struct CalculatorView: View {
                         Spacer()
                         Text("\(result.energyJoules, format: .number.precision(.fractionLength(0))) Joules")
                             .fontDesign(.rounded)
+                    }
+                    HStack {
+                        Text("Temps de vol")
+                        Spacer()
+                        Text("\(result.timeSeconds, format: .number.precision(.fractionLength(2))) s")
+                            .fontDesign(.rounded)
+                    }
+                }
+
+                if enableELR {
+                    Section(header: Text("Décomposition des Effets ELR")) {
+                        HStack {
+                            Text("Dérive Gyroscopique (Spin Drift)")
+                            Spacer()
+                            Text("\(result.spinDriftCM, format: .number.precision(.fractionLength(1))) cm (\(result.spinDriftMOA, format: .number.precision(.fractionLength(2))) MOA)")
+                                .fontDesign(.rounded)
+                                .foregroundStyle(.secondary)
+                        }
+                        HStack {
+                            Text("Coriolis Horizontal")
+                            Spacer()
+                            Text("\(result.coriolisHorizontalCM, format: .number.precision(.fractionLength(1))) cm (\(result.coriolisHorizontalMOA, format: .number.precision(.fractionLength(2))) MOA)")
+                                .fontDesign(.rounded)
+                                .foregroundStyle(.secondary)
+                        }
+                        HStack {
+                            Text("Coriolis Vertical (Eötvös)")
+                            Spacer()
+                            Text("\(result.coriolisVerticalCM, format: .number.precision(.fractionLength(1))) cm (\(result.coriolisVerticalMOA, format: .number.precision(.fractionLength(2))) MOA)")
+                                .fontDesign(.rounded)
+                                .foregroundStyle(.secondary)
+                        }
+                        HStack {
+                            Text("Saut Aérodynamique (Aero Jump)")
+                            Spacer()
+                            Text("\(result.aerodynamicJumpCM, format: .number.precision(.fractionLength(1))) cm (\(result.aerodynamicJumpMOA, format: .number.precision(.fractionLength(2))) MOA)")
+                                .fontDesign(.rounded)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
             }
@@ -306,6 +435,27 @@ struct CalculatorView: View {
         }
         .onChange(of: windDirectionDegrees) { _, _ in
             triggerCalculation()
+        }
+        .onChange(of: enableELR) { _, _ in
+            triggerCalculation()
+        }
+        .onChange(of: inclineAngleDegrees) { _, _ in
+            triggerCalculation()
+        }
+        .onChange(of: shootingAzimuthDegrees) { _, _ in
+            triggerCalculation()
+        }
+        .onChange(of: locationManager?.headingDegrees) { _, newHeading in
+            if liveCompassActive, let newHeading {
+                shootingAzimuthDegrees = newHeading
+                triggerCalculation()
+            }
+        }
+        .onChange(of: sensorManager?.currentInclineDegrees) { _, newIncline in
+            if liveInclinometerActive, let newIncline {
+                inclineAngleDegrees = newIncline
+                triggerCalculation()
+            }
         }
         .onChange(of: sensorManager?.currentPressureHPa) { _, _ in
             if useOfflineSensors {
@@ -381,6 +531,8 @@ struct CalculatorView: View {
         CalculatorView(weapon: sampleWeapon)
             .environment(\.locationService, LocationManager())
             .environment(\.weatherService, WeatherManager())
+            .environment(\.sensorService, SensorManager())
     }
     .modelContainer(for: Weapon.self, inMemory: true)
 }
+

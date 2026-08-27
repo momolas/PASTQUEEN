@@ -28,11 +28,12 @@ struct RangeCardView: View {
     
     @State private var increment = 50
     @State private var maxDistance = 500
+    @State private var enableELR = true
     @State private var rows: [RangeCardRow] = []
     @State private var isCalculating = false
     
     private let increments = [25, 50, 100]
-    private let maxDistances = [300, 500, 800, 1000]
+    private let maxDistances = [300, 500, 800, 1000, 1500]
     
     private func getCalculator() -> BallisticCalculator {
         let weatherData = BallisticCalculator.WeatherData(
@@ -57,7 +58,13 @@ struct RangeCardView: View {
             projectileManufacturer: ammunition.projectileManufacturer,
             projectileWeightGrains: ammunition.projectileWeightGrains,
             sightHeightCM: weapon.sightHeightCM,
-            zeroRangeMeters: weapon.zeroRangeMeters
+            zeroRangeMeters: weapon.zeroRangeMeters,
+            twistRateInches: weapon.twistRateInches,
+            twistDirection: weapon.twistDirection,
+            inclineAngleDegrees: 0.0,
+            shootingAzimuthDegrees: 0.0,
+            latitudeDegrees: locationManager?.latitude ?? 45.0,
+            enableELR: enableELR
         )
         
         return BallisticCalculator(ballistics: settings, weather: weatherData)
@@ -81,9 +88,11 @@ struct RangeCardView: View {
                         }
                     }
                     .pickerStyle(.navigationLink)
+                    
+                    Toggle("Effets ELR (Spin Drift & Coriolis)", isOn: $enableELR)
                 }
             }
-            .frame(height: 140)
+            .frame(height: 180)
             
             // Header for table
             HStack {
@@ -169,6 +178,9 @@ struct RangeCardView: View {
         .task(id: maxDistance) {
             await calculateCard()
         }
+        .task(id: enableELR) {
+            await calculateCard()
+        }
     }
     
     private func calculateCard() async {
@@ -182,16 +194,16 @@ struct RangeCardView: View {
             for d in stride(from: step, through: maxDist, by: step) {
                 if Task.isCancelled { break }
                 let result = calculator.solveTrajectory(for: Double(d))
-                let dClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.dropCorrectionMOA)
-                let wClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.windageCorrectionMOA)
+                let dClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.totalDropCorrectionMOA)
+                let wClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.totalWindageCorrectionMOA)
                 
                 res.append(RangeCardRow(
                     distance: d,
-                    dropCM: result.dropCM,
-                    dropMOA: result.dropCorrectionMOA,
+                    dropCM: result.totalDropCM,
+                    dropMOA: result.totalDropCorrectionMOA,
                     dropClicks: dClicks,
-                    windageCM: result.windageCM,
-                    windageMOA: result.windageCorrectionMOA,
+                    windageCM: result.totalWindageCM,
+                    windageMOA: result.totalWindageCorrectionMOA,
                     windageClicks: wClicks,
                     velocity: result.velocityMPS,
                     energy: result.energyJoules

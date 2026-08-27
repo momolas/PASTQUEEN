@@ -15,11 +15,14 @@ struct AddWeaponView: View {
     @State private var sightHeightCM: Double = 3.81
     @State private var zeroRangeMeters: Double = 100.0
     @State private var scopeClickUnit: ScopeClickUnit = .moa18
+    @State private var twistRateInches: Double = 10.0
+    @State private var twistDirection: TwistDirection = .right
 
     private var isFormValid: Bool {
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
         guard sightHeightCM > 0 else { return false }
         guard zeroRangeMeters > 0 else { return false }
+        guard twistRateInches > 0 else { return false }
         return true
     }
 
@@ -34,6 +37,15 @@ struct AddWeaponView: View {
                 }
                 TextField(String(localized: .sightHeight), value: $sightHeightCM, format: .number)
                 TextField(String(localized: .zeroRange), value: $zeroRangeMeters, format: .number)
+            }
+
+            Section(header: Text("Canon & Rayures (ELR)")) {
+                TextField("Pas de rayure (1:X pouces)", value: $twistRateInches, format: .number)
+                Picker("Sens des rayures", selection: $twistDirection) {
+                    ForEach(TwistDirection.allCases) { dir in
+                        Text(dir.rawValue).tag(dir)
+                    }
+                }
             }
 
             Section(header: Text(.turretCalibration)) {
@@ -53,7 +65,9 @@ struct AddWeaponView: View {
                         calibre: calibre,
                         sightHeightCM: sightHeightCM,
                         zeroRangeMeters: zeroRangeMeters,
-                        scopeClickUnit: scopeClickUnit
+                        scopeClickUnit: scopeClickUnit,
+                        twistRateInches: twistRateInches,
+                        twistDirection: twistDirection
                     )
                     modelContext.insert(newWeapon)
                     do {
@@ -66,6 +80,7 @@ struct AddWeaponView: View {
                 .disabled(!isFormValid)
             }
         }
+
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle(Text(.addWeapon))
         .toolbar {

@@ -31,7 +31,9 @@ struct PASTQUEENApp: App {
                         calibre: ".22 LR",
                         sightHeightCM: 4.0,
                         zeroRangeMeters: 50.0,
-                        scopeClickUnit: .moa18
+                        scopeClickUnit: .moa18,
+                        twistRateInches: 16.0,
+                        twistDirection: .right
                     )
                     
                     let cciSV = Ammunition(
@@ -51,8 +53,11 @@ struct PASTQUEENApp: App {
                         calibre: ".308 Win",
                         sightHeightCM: 4.5,
                         zeroRangeMeters: 100.0,
-                        scopeClickUnit: .moa18
+                        scopeClickUnit: .moa18,
+                        twistRateInches: 10.0,
+                        twistDirection: .right
                     )
+
                     
                     let federalMatch = Ammunition(
                         name: "Federal Match 168",
