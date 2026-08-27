@@ -30,14 +30,15 @@ struct AmmunitionData {
         ".338 Lapua Mag"
     ]
     
-    static let dragFunctions: [DragFunction] = [
-        DragFunction(id: 1, name: "G1"),
-        DragFunction(id: 2, name: "G2"),
-        DragFunction(id: 5, name: "G5"),
-        DragFunction(id: 6, name: "G6"),
-        DragFunction(id: 7, name: "G7"),
-        DragFunction(id: 8, name: "G8")
+    static let dragFunctions: [DragFunctionItem] = [
+        DragFunctionItem(id: 1, name: "G1"),
+        DragFunctionItem(id: 2, name: "G2"),
+        DragFunctionItem(id: 5, name: "G5"),
+        DragFunctionItem(id: 6, name: "G6"),
+        DragFunctionItem(id: 7, name: "G7"),
+        DragFunctionItem(id: 8, name: "G8")
     ]
+
     
     static let commonLoads: [MarketAmmunition] = [
         // .22 LR

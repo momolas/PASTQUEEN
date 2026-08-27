@@ -151,15 +151,21 @@ struct BallisticCalculator: Sendable {
     }
     
     public func solveFullTrajectory(upTo distance: Double) -> Ballistics {
-        let effectiveBC: Double
-        if ballistics.dragFunction == 7 {
-            effectiveBC = ballistics.ballisticCoefficient * 1.95
-        } else {
-            effectiveBC = ballistics.ballisticCoefficient
+        let dragFunc: DragFunction
+        switch ballistics.dragFunction {
+
+        case 7: dragFunc = .g7
+        case 2: dragFunc = .g2
+        case 5: dragFunc = .g5
+        case 6: dragFunc = .g6
+        case 8: dragFunc = .g8
+        default: dragFunc = .g1
         }
 
         return Ballistics.solve(
-            dragCoefficient: effectiveBC,
+            preferredDistanceUnit: .meters,
+            dragFunction: dragFunc,
+            dragCoefficient: ballistics.ballisticCoefficient,
             initialVelocity: Measurement(value: ballistics.muzzleVelocityMPS, unit: UnitSpeed.metersPerSecond),
             sightHeight: Measurement(value: ballistics.sightHeightCM, unit: UnitLength.centimeters),
             shootingAngle: Measurement(value: ballistics.inclineAngleDegrees, unit: UnitAngle.degrees),
@@ -175,6 +181,7 @@ struct BallisticCalculator: Sendable {
             weight: Measurement(value: ballistics.projectileWeightGrains, unit: UnitMass.grains)
         )
     }
+
 }
 
 struct BallisticSettings: Equatable, Sendable, Identifiable {

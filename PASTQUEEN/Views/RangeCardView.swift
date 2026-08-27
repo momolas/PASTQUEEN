@@ -232,14 +232,16 @@ struct RangeCardView: View {
         let calculator = getCalculator()
         let step = increment
         let maxDist = maxDistance
+        let scopeUnit = weapon.scopeClickUnit
         
         let calculated: [RangeCardRow] = await Task.detached {
             var res: [RangeCardRow] = []
             for d in stride(from: step, through: maxDist, by: step) {
                 if Task.isCancelled { break }
                 let result = calculator.solveTrajectory(for: Double(d))
-                let dClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.totalDropCorrectionMOA)
-                let wClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.totalWindageCorrectionMOA)
+                let dClicks = scopeUnit.clicks(forMOACorrection: result.totalDropCorrectionMOA)
+                let wClicks = scopeUnit.clicks(forMOACorrection: result.totalWindageCorrectionMOA)
+
                 
                 res.append(RangeCardRow(
                     distance: d,

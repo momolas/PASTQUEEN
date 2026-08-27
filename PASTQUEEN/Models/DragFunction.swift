@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct DragFunction: Identifiable {
+struct DragFunctionItem: Identifiable {
     let id: Int32
     let name: String
 }
+
