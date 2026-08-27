@@ -333,7 +333,8 @@ struct CalculatorView: View {
                         ReticleView(
                             result: result,
                             scopeUnit: weapon.scopeClickUnit,
-                            distanceMeters: distance
+                            distanceMeters: distance,
+                            showHUD: true
                         )
                     }
                 }

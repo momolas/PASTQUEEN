@@ -9,8 +9,15 @@ import SwiftUI
 import SwiftData
 import Ballistics
 
+enum QuickHUDRoute: Hashable {
+    case calculator
+    case rangeCard
+}
+
+
 struct QuickHUDView: View {
     @Bindable var weapon: Weapon
+
 
     @Environment(\.locationService) private var locationManager
     @Environment(\.weatherService) private var weatherManager
@@ -87,7 +94,8 @@ struct QuickHUDView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 14) {
+            VStack(spacing: 12) {
+                // 1. Floating Weapon & Ammo Selector Pill
                 QuickWeaponHeaderCard(
                     weapon: weapon,
                     currentAmmo: currentAmmo,
@@ -97,11 +105,13 @@ struct QuickHUDView: View {
                     }
                 )
 
+                // 2. Minimalist Distance Hero Card
                 QuickDistanceCard(
                     distance: $distance,
                     onDistanceChange: recalculate
                 )
 
+                // 3. Environmental Translucent Chips
                 EnvironmentalStatusPills(
                     manualWindSpeed: manualWindSpeed,
                     windDirectionDegrees: windDirectionDegrees,
@@ -130,21 +140,26 @@ struct QuickHUDView: View {
                     onToggleMovingTarget: recalculate
                 )
 
+                // 4. Ultra-Clean Correction Badges
                 QuickHUDBadges(
                     result: trajectoryResult,
                     scopeUnit: weapon.scopeClickUnit
                 )
 
+                // 5. Tactical Optical Scope
                 ReticleView(
                     result: trajectoryResult,
                     scopeUnit: weapon.scopeClickUnit,
-                    distanceMeters: distance
+                    distanceMeters: distance,
+                    showHUD: false
                 )
 
-                QuickHUDNavButtons(weapon: weapon)
+                // 6. Minimalist Bottom Action Links
+                QuickHUDNavButtons(weapon: weapon, currentAmmo: currentAmmo)
                     .padding(.horizontal)
-                    .padding(.bottom, 20)
+                    .padding(.bottom, 16)
             }
+            .padding(.top, 4)
         }
         .navigationTitle("HUD de Tir")
         .navigationBarTitleDisplayMode(.inline)
@@ -172,7 +187,6 @@ struct QuickHUDView: View {
                 }
             }
         }
-
         .sheet(isPresented: $showingProfiles) {
             NavigationStack {
                 WeaponListView(selectedWeapon: .constant(weapon))
@@ -189,7 +203,6 @@ struct QuickHUDView: View {
             .presentationDetents([.medium])
         }
         .task {
-
             recalculate()
         }
         .onChange(of: sensorManager?.currentInclineDegrees) { _, newIncline in
@@ -220,18 +233,23 @@ struct QuickWeaponHeaderCard: View {
     let onSelectAmmo: (Ammunition) -> Void
 
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(weapon.name)
-                    .font(.headline)
-                    .bold()
-                    .foregroundStyle(.white)
-                if let ammo = currentAmmo {
-                    Text("\(ammo.name) • \(weapon.calibre)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+        HStack(spacing: 8) {
+            Image(systemName: "scope")
+                .font(.caption)
+                .foregroundStyle(.blue)
+
+            Text(weapon.name)
+                .font(.subheadline)
+                .bold()
+
+            if let ammo = currentAmmo {
+                Text("•")
+                    .foregroundStyle(.tertiary)
+                Text(ammo.name)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
+
             Spacer()
 
             let ammoList = weapon.ammunitions?.sorted(by: { $0.date > $1.date }) ?? []
@@ -243,15 +261,16 @@ struct QuickWeaponHeaderCard: View {
                         }
                     }
                 } label: {
-                    Image(systemName: "circle.grid.2x1.fill")
-                        .font(.subheadline)
-                        .padding(8)
-                        .background(.ultraThinMaterial, in: Circle())
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
                 }
             }
         }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .background(.ultraThinMaterial, in: Capsule())
         .padding(.horizontal)
-        .padding(.top, 4)
     }
 }
 
@@ -260,25 +279,18 @@ struct QuickDistanceCard: View {
     let onDistanceChange: () -> Void
 
     var body: some View {
-        VStack(spacing: 6) {
-            HStack(alignment: .lastTextBaseline) {
-                Text("DISTANCE")
-                    .font(.caption2)
+        VStack(spacing: 4) {
+            HStack(alignment: .lastTextBaseline, spacing: 4) {
+                Text("\(Int(distance))")
+                    .font(.system(size: 48, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+                Text("m")
+                    .font(.title3)
                     .bold()
                     .foregroundStyle(.secondary)
-                Spacer()
-                HStack(alignment: .lastTextBaseline, spacing: 4) {
-                    Text("\(Int(distance))")
-                        .font(.system(size: 46, weight: .black, design: .rounded))
-                        .foregroundStyle(.white)
-                    Text("m")
-                        .font(.title3)
-                        .bold()
-                        .foregroundStyle(.secondary)
-                }
             }
 
-            HStack(spacing: 12) {
+            HStack(spacing: 14) {
                 Button {
                     if distance > 25 {
                         distance = max(distance - 25, 25)
@@ -286,12 +298,13 @@ struct QuickDistanceCard: View {
                     }
                 } label: {
                     Image(systemName: "minus.circle.fill")
-                        .font(.title2)
+                        .font(.title3)
                         .foregroundStyle(.secondary)
                 }
 
                 Slider(value: $distance, in: 25...1000, step: 25)
                     .tint(.blue)
+                    .sensoryFeedback(.selection, trigger: distance)
                     .onChange(of: distance) { _, _ in
                         onDistanceChange()
                     }
@@ -303,13 +316,14 @@ struct QuickDistanceCard: View {
                     }
                 } label: {
                     Image(systemName: "plus.circle.fill")
-                        .font(.title2)
+                        .font(.title3)
                         .foregroundStyle(.secondary)
                 }
             }
         }
-        .padding()
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(.ultraThinMaterial, in: .rect(cornerRadius: 16))
         .padding(.horizontal)
     }
 }
@@ -331,15 +345,15 @@ struct EnvironmentalStatusPills: View {
 
     var body: some View {
         ScrollView(.horizontal) {
-            HStack(spacing: 8) {
+            HStack(spacing: 6) {
                 Button(action: onTapWind) {
                     HStack(spacing: 4) {
                         Image(systemName: "wind")
                         Text("\(manualWindSpeed, format: .number.precision(.fractionLength(0))) km/h à \(Int(windDirectionDegrees))°")
                     }
-                    .font(.caption)
+                    .font(.caption2)
                     .bold()
-                    .padding(.horizontal, 12)
+                    .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(.ultraThinMaterial, in: Capsule())
                 }
@@ -353,10 +367,10 @@ struct EnvironmentalStatusPills: View {
                         Image(systemName: liveInclinometerActive ? "level.fill" : "level")
                         Text("\(inclineAngleDegrees, format: .number.precision(.fractionLength(0)))°")
                     }
-                    .font(.caption)
+                    .font(.caption2)
                     .bold()
                     .foregroundStyle(liveInclinometerActive ? .green : .primary)
-                    .padding(.horizontal, 12)
+                    .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(.ultraThinMaterial, in: Capsule())
                 }
@@ -370,10 +384,10 @@ struct EnvironmentalStatusPills: View {
                         Image(systemName: liveCompassActive ? "location.north.line.fill" : "safari")
                         Text("\(Int(shootingAzimuthDegrees))°")
                     }
-                    .font(.caption)
+                    .font(.caption2)
                     .bold()
                     .foregroundStyle(liveCompassActive ? .green : .primary)
-                    .padding(.horizontal, 12)
+                    .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(.ultraThinMaterial, in: Capsule())
                 }
@@ -385,12 +399,12 @@ struct EnvironmentalStatusPills: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "figure.run")
-                        Text(enableMovingTarget ? "\(targetSpeedKMH, format: .number.precision(.fractionLength(0))) km/h \(targetDirectionRight ? "➔" : "⬅")" : "Cible fixe")
+                        Text(enableMovingTarget ? "\(targetSpeedKMH, format: .number.precision(.fractionLength(0))) km/h \(targetDirectionRight ? "➔" : "⬅")" : "Fixe")
                     }
-                    .font(.caption)
+                    .font(.caption2)
                     .bold()
                     .foregroundStyle(enableMovingTarget ? .cyan : .secondary)
-                    .padding(.horizontal, 12)
+                    .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(.ultraThinMaterial, in: Capsule())
                 }
@@ -444,56 +458,81 @@ struct QuickHUDBadges: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
-            VStack(spacing: 3) {
+        HStack(spacing: 10) {
+            VStack(spacing: 2) {
                 Text("ÉLÉVATION")
-                    .font(.caption2)
-                    .bold()
+                    .font(.system(size: 10, weight: .bold))
                     .foregroundStyle(.blue)
 
                 HStack(spacing: 4) {
                     Image(systemName: "arrow.up.circle.fill")
                         .foregroundStyle(.blue)
                     Text("\(dropClicks) clics")
-                        .font(.title2)
+                        .font(.title3)
                         .bold()
                         .fontDesign(.rounded)
                 }
 
                 Text("\(elevationHoldoverUnits, format: .number.precision(.fractionLength(1))) \(unitLabel)")
-                    .font(.caption)
-                    .bold()
+                    .font(.caption2)
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+            .padding(.vertical, 10)
+            .background(.ultraThinMaterial, in: .rect(cornerRadius: 14))
 
-            VStack(spacing: 3) {
+            VStack(spacing: 2) {
                 Text("DÉRIVE / AVANCE")
-                    .font(.caption2)
-                    .bold()
+                    .font(.system(size: 10, weight: .bold))
                     .foregroundStyle(.orange)
 
                 HStack(spacing: 4) {
                     Image(systemName: windageDirection == "D" ? "arrow.right.circle.fill" : "arrow.left.circle.fill")
                         .foregroundStyle(.orange)
                     Text("\(windageClicks) clics \(windageDirection)")
-                        .font(.title2)
+                        .font(.title3)
                         .bold()
                         .fontDesign(.rounded)
                 }
 
                 Text("\(abs(windageHoldoverUnits), format: .number.precision(.fractionLength(1))) \(unitLabel)")
-                    .font(.caption)
-                    .bold()
+                    .font(.caption2)
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+            .padding(.vertical, 10)
+            .background(.ultraThinMaterial, in: .rect(cornerRadius: 14))
         }
         .padding(.horizontal)
+    }
+}
+
+struct QuickHUDNavButtons: View {
+    let weapon: Weapon
+    let currentAmmo: Ammunition?
+
+    var body: some View {
+        HStack(spacing: 10) {
+            NavigationLink(value: QuickHUDRoute.calculator) {
+                Label("Calculateur", systemImage: "slider.horizontal.3")
+                    .font(.footnote)
+                    .bold()
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(Color.blue.opacity(0.15), in: .rect(cornerRadius: 10))
+                    .foregroundStyle(.blue)
+            }
+
+            NavigationLink(value: QuickHUDRoute.rangeCard) {
+                Label("Table DOPE", systemImage: "tablecells")
+                    .font(.footnote)
+                    .bold()
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(Color.secondary.opacity(0.12), in: .rect(cornerRadius: 10))
+                    .foregroundStyle(.white)
+            }
+        }
     }
 }
 
@@ -532,37 +571,3 @@ struct WindPickerSheet: View {
         }
     }
 }
-
-enum QuickHUDRoute: Hashable {
-    case calculator
-    case rangeCard
-}
-
-struct QuickHUDNavButtons: View {
-    let weapon: Weapon
-
-    var body: some View {
-        HStack(spacing: 12) {
-            NavigationLink(value: QuickHUDRoute.calculator) {
-                Label("Calculateur Complet", systemImage: "slider.horizontal.3")
-                    .font(.subheadline)
-                    .bold()
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(Color.blue.opacity(0.18), in: RoundedRectangle(cornerRadius: 12))
-                    .foregroundStyle(.blue)
-            }
-
-            NavigationLink(value: QuickHUDRoute.rangeCard) {
-                Label("Table DOPE", systemImage: "tablecells")
-                    .font(.subheadline)
-                    .bold()
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(Color.secondary.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
-                    .foregroundStyle(.white)
-            }
-        }
-    }
-}
-
