@@ -99,6 +99,13 @@ struct DetailView: View {
                         .foregroundStyle(.indigo)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
+
+                NavigationLink(value: PBRConfig(weapon: weapon, ammunition: ammunition)) {
+                    Label("Tir Tendu & Zone Vitale (DRO / PBR)", systemImage: "scope")
+                        .bold()
+                        .foregroundStyle(.teal)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
             }
         }
         .navigationTitle(String(localized: .details))
@@ -122,6 +129,27 @@ struct DetailView: View {
         .navigationDestination(for: TruingConfig.self) { config in
             TruingView(weapon: config.weapon, ammunition: config.ammunition)
         }
+        .navigationDestination(for: PBRConfig.self) { config in
+            Form {
+                PBRView(weapon: config.weapon, ammunition: config.ammunition)
+            }
+            .navigationTitle("Tir Tendu (PBR)")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+}
+
+struct PBRConfig: Hashable {
+    let weapon: Weapon
+    let ammunition: Ammunition
+    
+    static func == (lhs: PBRConfig, rhs: PBRConfig) -> Bool {
+        lhs.weapon.id == rhs.weapon.id && lhs.ammunition.id == rhs.ammunition.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(weapon.id)
+        hasher.combine(ammunition.id)
     }
 }
 
@@ -138,6 +166,7 @@ struct TruingConfig: Hashable {
         hasher.combine(ammunition.id)
     }
 }
+
 
 struct RangeCardConfig: Hashable {
 

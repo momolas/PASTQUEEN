@@ -19,6 +19,7 @@ class Ammunition {
     var muzzleVelocityMPS: Double = 0.0
     var muzzleEnergy: Double = 0.0
     var date: Double = 0.0
+    var powderSensitivityMPSPerC: Double = 0.0
     
     var weapon: Weapon?
 
@@ -31,6 +32,7 @@ class Ammunition {
         dragFunction: Int32,
         muzzleVelocityMPS: Double,
         muzzleEnergy: Double,
+        powderSensitivityMPSPerC: Double = 0.0,
         date: Double = Date().timeIntervalSince1970
     ) {
         self.id = id
@@ -41,7 +43,9 @@ class Ammunition {
         self.dragFunction = dragFunction
         self.muzzleVelocityMPS = muzzleVelocityMPS
         self.muzzleEnergy = muzzleEnergy
+        self.powderSensitivityMPSPerC = powderSensitivityMPSPerC
         self.date = date
     }
 }
+
 

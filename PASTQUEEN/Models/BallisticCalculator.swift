@@ -153,7 +153,6 @@ struct BallisticCalculator: Sendable {
     public func solveFullTrajectory(upTo distance: Double) -> Ballistics {
         let dragFunc: DragFunction
         switch ballistics.dragFunction {
-
         case 7: dragFunc = .g7
         case 2: dragFunc = .g2
         case 5: dragFunc = .g5
@@ -162,11 +161,23 @@ struct BallisticCalculator: Sendable {
         default: dragFunc = .g1
         }
 
+        var effectiveVelocityMPS = ballistics.muzzleVelocityMPS
+        if ballistics.powderSensitivityMPSPerC > 0 {
+            let sensitivityFPSPerDegreeF = ballistics.powderSensitivityMPSPerC * 3.28084 / 1.8
+            let adj = PowderSensitivity.adjustedVelocity(
+                baseVelocity: Measurement(value: ballistics.muzzleVelocityMPS, unit: .metersPerSecond),
+                baseTemperature: Measurement(value: 15.0, unit: .celsius),
+                currentTemperature: Measurement(value: weather.temperature, unit: .celsius),
+                sensitivityFPSPerDegreeF: sensitivityFPSPerDegreeF
+            )
+            effectiveVelocityMPS = adj.converted(to: .metersPerSecond).value
+        }
+
         return Ballistics.solve(
             preferredDistanceUnit: .meters,
             dragFunction: dragFunc,
             dragCoefficient: ballistics.ballisticCoefficient,
-            initialVelocity: Measurement(value: ballistics.muzzleVelocityMPS, unit: UnitSpeed.metersPerSecond),
+            initialVelocity: Measurement(value: effectiveVelocityMPS, unit: UnitSpeed.metersPerSecond),
             sightHeight: Measurement(value: ballistics.sightHeightCM, unit: UnitLength.centimeters),
             shootingAngle: Measurement(value: ballistics.inclineAngleDegrees, unit: UnitAngle.degrees),
             zeroRange: Measurement(value: ballistics.zeroRangeMeters, unit: UnitLength.meters),
@@ -198,6 +209,8 @@ struct BallisticSettings: Equatable, Sendable, Identifiable {
     var projectileWeightGrains: Double
     var sightHeightCM: Double
     var zeroRangeMeters: Double
+    var powderSensitivityMPSPerC: Double = 0.0
+
 
     // ELR Settings
     var twistRateInches: Double
@@ -221,6 +234,7 @@ struct BallisticSettings: Equatable, Sendable, Identifiable {
         projectileWeightGrains: Double,
         sightHeightCM: Double,
         zeroRangeMeters: Double,
+        powderSensitivityMPSPerC: Double = 0.0,
         twistRateInches: Double = 10.0,
         twistDirection: TwistDirection = .right,
         inclineAngleDegrees: Double = 0.0,
@@ -241,6 +255,7 @@ struct BallisticSettings: Equatable, Sendable, Identifiable {
         self.projectileWeightGrains = projectileWeightGrains
         self.sightHeightCM = sightHeightCM
         self.zeroRangeMeters = zeroRangeMeters
+        self.powderSensitivityMPSPerC = powderSensitivityMPSPerC
         self.twistRateInches = twistRateInches
         self.twistDirection = twistDirection
         self.inclineAngleDegrees = inclineAngleDegrees
@@ -249,4 +264,5 @@ struct BallisticSettings: Equatable, Sendable, Identifiable {
         self.enableELR = enableELR
     }
 }
+
 

@@ -33,6 +33,16 @@ struct CalculatorView: View {
     @State private var liveCompassActive = false
     @State private var liveInclinometerActive = false
 
+    enum CalculatorDisplayMode: String, CaseIterable, Identifiable {
+        case turrets = "Tourelles"
+        case reticle = "Réticule"
+        case pbr = "Tir Tendu (PBR)"
+        
+        var id: String { rawValue }
+    }
+
+    @State private var displayMode: CalculatorDisplayMode = .turrets
+
     private func getCalculator() -> BallisticCalculator {
         let localPressure = (useOfflineSensors && sensorManager?.currentPressureHPa != nil)
             ? sensorManager!.currentPressureHPa!
@@ -61,6 +71,7 @@ struct CalculatorView: View {
             projectileWeightGrains: selectedAmmunition?.projectileWeightGrains ?? 168.0,
             sightHeightCM: weapon.sightHeightCM,
             zeroRangeMeters: weapon.zeroRangeMeters,
+            powderSensitivityMPSPerC: selectedAmmunition?.powderSensitivityMPSPerC ?? 0.0,
             twistRateInches: weapon.twistRateInches,
             twistDirection: weapon.twistDirection,
             inclineAngleDegrees: inclineAngleDegrees,
@@ -71,6 +82,7 @@ struct CalculatorView: View {
         
         return BallisticCalculator(ballistics: settings, weather: weatherData)
     }
+
 
     var body: some View {
         Form {
@@ -275,138 +287,166 @@ struct CalculatorView: View {
                 Button(.calculate, action: triggerCalculation)
             }
 
-            if let result = trajectoryResult {
-                Section(header: Text("Results for \(Int(distance)) meters")) {
-                    HStack {
-                        Text(.drop)
-                        Spacer()
-                        Text("\(result.totalDropCM, format: .number.precision(.fractionLength(2))) cm")
-                            .fontDesign(.rounded)
-                    }
-                    HStack {
-                        Text(.dropMOA)
-                        Spacer()
-                        Text("\(result.totalDropCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
-                            .fontDesign(.rounded)
-                    }
-                    
-                    let dropClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.totalDropCorrectionMOA)
-                    let dropDirectionKey: LocalizedStringResource = result.totalDropCorrectionMOA >= 0 ? .up : .down
-                    HStack {
-                        Text(.elevationAdjustment)
-                        Spacer()
-                        Text("\(dropClicks) \(Text(.clicks)) (\(Text(dropDirectionKey).bold().foregroundStyle(.blue)))")
-                    }
-                    .fontDesign(.rounded)
-                    
-                    HStack {
-                        Text(.windage)
-                        Spacer()
-                        Text("\(result.totalWindageCM, format: .number.precision(.fractionLength(2))) cm")
-                            .fontDesign(.rounded)
-                    }
-                    HStack {
-                        Text(.windageMOA)
-                        Spacer()
-                        Text("\(result.totalWindageCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
-                            .fontDesign(.rounded)
-                    }
-                    
-                    let windageClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.totalWindageCorrectionMOA)
-                    let windageDirectionKey: LocalizedStringResource = result.totalWindageCorrectionMOA >= 0 ? .right : .left
-                    HStack {
-                        Text(.windageAdjustment)
-                        Spacer()
-                        Text("\(windageClicks) \(Text(.clicks)) (\(Text(windageDirectionKey).bold().foregroundStyle(.blue)))")
-                    }
-                    .fontDesign(.rounded)
-                    HStack {
-                        Text(.velocity)
-                        Spacer()
-                        Text("\(result.velocityMPS, format: .number.precision(.fractionLength(0))) m/s")
-                            .fontDesign(.rounded)
-                    }
-                    HStack {
-                        Text(.energy)
-                        Spacer()
-                        Text("\(result.energyJoules, format: .number.precision(.fractionLength(0))) Joules")
-                            .fontDesign(.rounded)
-                    }
-                    HStack {
-                        Text("Temps de vol")
-                        Spacer()
-                        Text("\(result.timeSeconds, format: .number.precision(.fractionLength(2))) s")
-                            .fontDesign(.rounded)
+            Section {
+                Picker("Mode d'affichage", selection: $displayMode) {
+                    ForEach(CalculatorDisplayMode.allCases) { m in
+                        Text(m.rawValue).tag(m)
                     }
                 }
-
-                if enableELR {
-                    Section(header: Text("Décomposition des Effets ELR")) {
-                        HStack {
-                            Text("Dérive Gyroscopique (Spin Drift)")
-                            Spacer()
-                            Text("\(result.spinDriftCM, format: .number.precision(.fractionLength(1))) cm (\(result.spinDriftMOA, format: .number.precision(.fractionLength(2))) MOA)")
-                                .fontDesign(.rounded)
-                                .foregroundStyle(.secondary)
-                        }
-                        HStack {
-                            Text("Coriolis Horizontal")
-                            Spacer()
-                            Text("\(result.coriolisHorizontalCM, format: .number.precision(.fractionLength(1))) cm (\(result.coriolisHorizontalMOA, format: .number.precision(.fractionLength(2))) MOA)")
-                                .fontDesign(.rounded)
-                                .foregroundStyle(.secondary)
-                        }
-                        HStack {
-                            Text("Coriolis Vertical (Eötvös)")
-                            Spacer()
-                            Text("\(result.coriolisVerticalCM, format: .number.precision(.fractionLength(1))) cm (\(result.coriolisVerticalMOA, format: .number.precision(.fractionLength(2))) MOA)")
-                                .fontDesign(.rounded)
-                                .foregroundStyle(.secondary)
-                        }
-                        HStack {
-                            Text("Saut Aérodynamique (Aero Jump)")
-                            Spacer()
-                            Text("\(result.aerodynamicJumpCM, format: .number.precision(.fractionLength(1))) cm (\(result.aerodynamicJumpMOA, format: .number.precision(.fractionLength(2))) MOA)")
-                                .fontDesign(.rounded)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
+                .pickerStyle(.segmented)
             }
 
-            if !trajectoryData.isEmpty {
-                Section(header: Text(String(localized: .trajectory))) {
-                    Chart(trajectoryData) { point in
-                        LineMark(
-                            x: .value("Distance", point.distance),
-                            y: .value("Drop", point.drop)
-                        )
-                        .interpolationMethod(.catmullRom)
+            if displayMode == .turrets {
+                if let result = trajectoryResult {
+                    Section(header: Text("Results for \(Int(distance)) meters")) {
+                        HStack {
+                            Text(.drop)
+                            Spacer()
+                            Text("\(result.totalDropCM, format: .number.precision(.fractionLength(2))) cm")
+                                .fontDesign(.rounded)
+                        }
+                        HStack {
+                            Text(.dropMOA)
+                            Spacer()
+                            Text("\(result.totalDropCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
+                                .fontDesign(.rounded)
+                        }
                         
-                        AreaMark(
-                            x: .value("Distance", point.distance),
-                            y: .value("Drop", point.drop)
-                        )
-                        .interpolationMethod(.catmullRom)
-                        .foregroundStyle(Gradient(colors: [.blue.opacity(0.3), .blue.opacity(0.0)]))
+                        let dropClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.totalDropCorrectionMOA)
+                        let dropDirectionKey: LocalizedStringResource = result.totalDropCorrectionMOA >= 0 ? .up : .down
+                        HStack {
+                            Text(.elevationAdjustment)
+                            Spacer()
+                            Text("\(dropClicks) \(Text(.clicks)) (\(Text(dropDirectionKey).bold().foregroundStyle(.blue)))")
+                        }
+                        .fontDesign(.rounded)
                         
-                        if let selectedDistance, let selectedDrop = trajectoryData.first(where: { abs($0.distance - selectedDistance) < 5.0 })?.drop {
-                            RuleMark(x: .value("Distance", selectedDistance))
-                                .foregroundStyle(.red)
-                                .annotation(position: .top) {
-                                    Text("\(selectedDrop, format: .number.precision(.fractionLength(1))) cm")
-                                        .font(.caption)
-                                        .fontDesign(.rounded)
-                                        .padding(4)
-                                        .background(.thinMaterial, in: .rect(cornerRadius: 10))
-                                }
+                        HStack {
+                            Text(.windage)
+                            Spacer()
+                            Text("\(result.totalWindageCM, format: .number.precision(.fractionLength(2))) cm")
+                                .fontDesign(.rounded)
+                        }
+                        HStack {
+                            Text(.windageMOA)
+                            Spacer()
+                            Text("\(result.totalWindageCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
+                                .fontDesign(.rounded)
+                        }
+                        
+                        let windageClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.totalWindageCorrectionMOA)
+                        let windageDirectionKey: LocalizedStringResource = result.totalWindageCorrectionMOA >= 0 ? .right : .left
+                        HStack {
+                            Text(.windageAdjustment)
+                            Spacer()
+                            Text("\(windageClicks) \(Text(.clicks)) (\(Text(windageDirectionKey).bold().foregroundStyle(.blue)))")
+                        }
+                        .fontDesign(.rounded)
+                        HStack {
+                            Text(.velocity)
+                            Spacer()
+                            Text("\(result.velocityMPS, format: .number.precision(.fractionLength(0))) m/s")
+                                .fontDesign(.rounded)
+                        }
+                        HStack {
+                            Text(.energy)
+                            Spacer()
+                            Text("\(result.energyJoules, format: .number.precision(.fractionLength(0))) Joules")
+                                .fontDesign(.rounded)
+                        }
+                        HStack {
+                            Text("Temps de vol")
+                            Spacer()
+                            Text("\(result.timeSeconds, format: .number.precision(.fractionLength(2))) s")
+                                .fontDesign(.rounded)
                         }
                     }
-                    .chartXSelection(value: $selectedDistance)
-                    .frame(height: 200)
+
+                    if enableELR {
+                        Section(header: Text("Décomposition des Effets ELR")) {
+                            HStack {
+                                Text("Dérive Gyroscopique (Spin Drift)")
+                                Spacer()
+                                Text("\(result.spinDriftCM, format: .number.precision(.fractionLength(1))) cm (\(result.spinDriftMOA, format: .number.precision(.fractionLength(2))) MOA)")
+                                    .fontDesign(.rounded)
+                                    .foregroundStyle(.secondary)
+                            }
+                            HStack {
+                                Text("Coriolis Horizontal")
+                                Spacer()
+                                Text("\(result.coriolisHorizontalCM, format: .number.precision(.fractionLength(1))) cm (\(result.coriolisHorizontalMOA, format: .number.precision(.fractionLength(2))) MOA)")
+                                    .fontDesign(.rounded)
+                                    .foregroundStyle(.secondary)
+                            }
+                            HStack {
+                                Text("Coriolis Vertical (Eötvös)")
+                                Spacer()
+                                Text("\(result.coriolisVerticalCM, format: .number.precision(.fractionLength(1))) cm (\(result.coriolisVerticalMOA, format: .number.precision(.fractionLength(2))) MOA)")
+                                    .fontDesign(.rounded)
+                                    .foregroundStyle(.secondary)
+                            }
+                            HStack {
+                                Text("Saut Aérodynamique (Aero Jump)")
+                                Spacer()
+                                Text("\(result.aerodynamicJumpCM, format: .number.precision(.fractionLength(1))) cm (\(result.aerodynamicJumpMOA, format: .number.precision(.fractionLength(2))) MOA)")
+                                    .fontDesign(.rounded)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
+
+                if !trajectoryData.isEmpty {
+                    Section(header: Text(String(localized: .trajectory))) {
+                        Chart(trajectoryData) { point in
+                            LineMark(
+                                x: .value("Distance", point.distance),
+                                y: .value("Drop", point.drop)
+                            )
+                            .interpolationMethod(.catmullRom)
+                            
+                            AreaMark(
+                                x: .value("Distance", point.distance),
+                                y: .value("Drop", point.drop)
+                            )
+                            .interpolationMethod(.catmullRom)
+                            .foregroundStyle(Gradient(colors: [.blue.opacity(0.3), .blue.opacity(0.0)]))
+                            
+                            if let selectedDistance, let selectedDrop = trajectoryData.first(where: { abs($0.distance - selectedDistance) < 5.0 })?.drop {
+                                RuleMark(x: .value("Distance", selectedDistance))
+                                    .foregroundStyle(.red)
+                                    .annotation(position: .top) {
+                                        Text("\(selectedDrop, format: .number.precision(.fractionLength(1))) cm")
+                                            .font(.caption)
+                                            .fontDesign(.rounded)
+                                            .padding(4)
+                                            .background(.thinMaterial, in: .rect(cornerRadius: 10))
+                                    }
+                            }
+                        }
+                        .chartXSelection(value: $selectedDistance)
+                        .frame(height: 200)
+                    }
+                }
+            } else if displayMode == .reticle {
+                if let result = trajectoryResult {
+                    Section {
+                        ReticleView(
+                            result: result,
+                            scopeUnit: weapon.scopeClickUnit,
+                            distanceMeters: distance
+                        )
+                    }
+                }
+            } else if displayMode == .pbr {
+                if let ammo = selectedAmmunition {
+                    Section {
+                        PBRView(weapon: weapon, ammunition: ammo)
+                    }
                 }
             }
         }
+
         .navigationTitle(String(localized: .calculator))
         .task {
             if locationManager?.authorizationStatus == .notDetermined {

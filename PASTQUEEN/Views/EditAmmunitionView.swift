@@ -18,6 +18,7 @@ struct EditAmmunitionView: View {
     @State private var dragFunction: Int32 = 1
     @State private var muzzleVelocityMPS: Double = 800.0
     @State private var muzzleEnergy: Double = 3500.0
+    @State private var powderSensitivityMPSPerC: Double = 0.0
 
     private var isFormValid: Bool {
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
@@ -49,6 +50,21 @@ struct EditAmmunitionView: View {
                 }
             }
 
+            Section(header: Text("Sensibilité thermique de la poudre (dv/dT)")) {
+                HStack {
+                    Text("Variation V0 par °C")
+                    Spacer()
+                    TextField("dv/dT", value: $powderSensitivityMPSPerC, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                    Text("m/s / °C")
+                        .foregroundStyle(.secondary)
+                }
+                Text("Ajuste automatiquement la vitesse initiale de sortie de bouche en fonction de la température ambiante du pas de tir (0 = désactivé).")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+
             Section {
                 Button(.save) {
                     ammunition.name = name
@@ -58,6 +74,7 @@ struct EditAmmunitionView: View {
                     ammunition.dragFunction = dragFunction
                     ammunition.muzzleVelocityMPS = muzzleVelocityMPS
                     ammunition.muzzleEnergy = muzzleEnergy
+                    ammunition.powderSensitivityMPSPerC = powderSensitivityMPSPerC
                     
                     do {
                         try modelContext.save()
@@ -86,8 +103,10 @@ struct EditAmmunitionView: View {
             dragFunction = ammunition.dragFunction
             muzzleVelocityMPS = ammunition.muzzleVelocityMPS
             muzzleEnergy = ammunition.muzzleEnergy
+            powderSensitivityMPSPerC = ammunition.powderSensitivityMPSPerC
         }
     }
+
 }
 
 #Preview {
