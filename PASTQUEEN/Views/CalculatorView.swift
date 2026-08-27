@@ -33,15 +33,20 @@ struct CalculatorView: View {
     @State private var liveCompassActive = false
     @State private var liveInclinometerActive = false
 
+    // Moving Target State
+    @State private var enableMovingTarget = false
+    @State private var targetSpeedKMH: Double = 15.0
+    @State private var targetDirectionRight = true
+
     enum CalculatorDisplayMode: String, CaseIterable, Identifiable {
+        case hud = "Quick-HUD"
         case turrets = "Tourelles"
-        case reticle = "Réticule"
         case pbr = "Tir Tendu (PBR)"
         
         var id: String { rawValue }
     }
 
-    @State private var displayMode: CalculatorDisplayMode = .turrets
+    @State private var displayMode: CalculatorDisplayMode = .hud
 
     private func getCalculator() -> BallisticCalculator {
         let localPressure = (useOfflineSensors && sensorManager?.currentPressureHPa != nil)
@@ -54,7 +59,9 @@ struct CalculatorView: View {
             pressure: localPressure,
             temperature: weatherManager?.currentWeather?.temperature.converted(to: UnitTemperature.celsius).value ?? 15.0,
             humidity: weatherManager?.currentWeather?.humidity ?? 0.78,
-            altitude: locationManager?.altitude ?? 0.0
+            altitude: locationManager?.altitude ?? 0.0,
+            targetSpeedKMH: enableMovingTarget ? targetSpeedKMH : 0.0,
+            targetAngleDegrees: targetDirectionRight ? 90.0 : -90.0
         )
         
         let settings = BallisticSettings(
@@ -82,6 +89,7 @@ struct CalculatorView: View {
         
         return BallisticCalculator(ballistics: settings, weather: weatherData)
     }
+
 
 
     var body: some View {
@@ -283,6 +291,29 @@ struct CalculatorView: View {
                 }
             }
 
+            Section(header: Text("Cible Mobile (Moving Target)")) {
+                Toggle(isOn: $enableMovingTarget) {
+                    Label("Activer correction cible mobile", systemImage: "figure.run")
+                }
+
+                if enableMovingTarget {
+                    HStack {
+                        Text("Vitesse de déplacement")
+                        Spacer()
+                        TextField("Vitesse", value: $targetSpeedKMH, format: .number)
+                            .keyboardType(.decimalPad)
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 60)
+                        Text("km/h")
+                    }
+
+                    Picker("Direction", selection: $targetDirectionRight) {
+                        Text("Gauche ➔ Droite (90°)").tag(true)
+                        Text("Droite ➔ Gauche (-90°)").tag(false)
+                    }
+                }
+            }
+
             Section {
                 Button(.calculate, action: triggerCalculation)
             }
@@ -296,7 +327,17 @@ struct CalculatorView: View {
                 .pickerStyle(.segmented)
             }
 
-            if displayMode == .turrets {
+            if displayMode == .hud {
+                if let result = trajectoryResult {
+                    Section {
+                        ReticleView(
+                            result: result,
+                            scopeUnit: weapon.scopeClickUnit,
+                            distanceMeters: distance
+                        )
+                    }
+                }
+            } else if displayMode == .turrets {
                 if let result = trajectoryResult {
                     Section(header: Text("Results for \(Int(distance)) meters")) {
                         HStack {
@@ -362,35 +403,47 @@ struct CalculatorView: View {
                         }
                     }
 
-                    if enableELR {
-                        Section(header: Text("Décomposition des Effets ELR")) {
-                            HStack {
-                                Text("Dérive Gyroscopique (Spin Drift)")
-                                Spacer()
-                                Text("\(result.spinDriftCM, format: .number.precision(.fractionLength(1))) cm (\(result.spinDriftMOA, format: .number.precision(.fractionLength(2))) MOA)")
-                                    .fontDesign(.rounded)
-                                    .foregroundStyle(.secondary)
+                    if enableELR || enableMovingTarget {
+                        Section(header: Text("Décomposition des Corrections")) {
+                            if enableELR {
+                                HStack {
+                                    Text("Dérive Gyroscopique (Spin Drift)")
+                                    Spacer()
+                                    Text("\(result.spinDriftCM, format: .number.precision(.fractionLength(1))) cm (\(result.spinDriftMOA, format: .number.precision(.fractionLength(2))) MOA)")
+                                        .fontDesign(.rounded)
+                                        .foregroundStyle(.secondary)
+                                }
+                                HStack {
+                                    Text("Coriolis Horizontal")
+                                    Spacer()
+                                    Text("\(result.coriolisHorizontalCM, format: .number.precision(.fractionLength(1))) cm (\(result.coriolisHorizontalMOA, format: .number.precision(.fractionLength(2))) MOA)")
+                                        .fontDesign(.rounded)
+                                        .foregroundStyle(.secondary)
+                                }
+                                HStack {
+                                    Text("Coriolis Vertical (Eötvös)")
+                                    Spacer()
+                                    Text("\(result.coriolisVerticalCM, format: .number.precision(.fractionLength(1))) cm (\(result.coriolisVerticalMOA, format: .number.precision(.fractionLength(2))) MOA)")
+                                        .fontDesign(.rounded)
+                                        .foregroundStyle(.secondary)
+                                }
+                                HStack {
+                                    Text("Saut Aérodynamique (Aero Jump)")
+                                    Spacer()
+                                    Text("\(result.aerodynamicJumpCM, format: .number.precision(.fractionLength(1))) cm (\(result.aerodynamicJumpMOA, format: .number.precision(.fractionLength(2))) MOA)")
+                                        .fontDesign(.rounded)
+                                        .foregroundStyle(.secondary)
+                                }
                             }
-                            HStack {
-                                Text("Coriolis Horizontal")
-                                Spacer()
-                                Text("\(result.coriolisHorizontalCM, format: .number.precision(.fractionLength(1))) cm (\(result.coriolisHorizontalMOA, format: .number.precision(.fractionLength(2))) MOA)")
-                                    .fontDesign(.rounded)
-                                    .foregroundStyle(.secondary)
-                            }
-                            HStack {
-                                Text("Coriolis Vertical (Eötvös)")
-                                Spacer()
-                                Text("\(result.coriolisVerticalCM, format: .number.precision(.fractionLength(1))) cm (\(result.coriolisVerticalMOA, format: .number.precision(.fractionLength(2))) MOA)")
-                                    .fontDesign(.rounded)
-                                    .foregroundStyle(.secondary)
-                            }
-                            HStack {
-                                Text("Saut Aérodynamique (Aero Jump)")
-                                Spacer()
-                                Text("\(result.aerodynamicJumpCM, format: .number.precision(.fractionLength(1))) cm (\(result.aerodynamicJumpMOA, format: .number.precision(.fractionLength(2))) MOA)")
-                                    .fontDesign(.rounded)
-                                    .foregroundStyle(.secondary)
+
+                            if enableMovingTarget && abs(result.movingTargetLeadCM) > 0.01 {
+                                HStack {
+                                    Text("Avance Cible Mobile (Lead)")
+                                    Spacer()
+                                    Text("\(result.movingTargetLeadCM, format: .number.precision(.fractionLength(1))) cm (\(result.movingTargetLeadMOA, format: .number.precision(.fractionLength(2))) MOA)")
+                                        .bold()
+                                        .foregroundStyle(.cyan)
+                                }
                             }
                         }
                     }
@@ -428,16 +481,6 @@ struct CalculatorView: View {
                         .frame(height: 200)
                     }
                 }
-            } else if displayMode == .reticle {
-                if let result = trajectoryResult {
-                    Section {
-                        ReticleView(
-                            result: result,
-                            scopeUnit: weapon.scopeClickUnit,
-                            distanceMeters: distance
-                        )
-                    }
-                }
             } else if displayMode == .pbr {
                 if let ammo = selectedAmmunition {
                     Section {
@@ -446,6 +489,7 @@ struct CalculatorView: View {
                 }
             }
         }
+
 
         .navigationTitle(String(localized: .calculator))
         .task {
@@ -502,7 +546,17 @@ struct CalculatorView: View {
                 triggerCalculation()
             }
         }
+        .onChange(of: enableMovingTarget) { _, _ in
+            triggerCalculation()
+        }
+        .onChange(of: targetSpeedKMH) { _, _ in
+            triggerCalculation()
+        }
+        .onChange(of: targetDirectionRight) { _, _ in
+            triggerCalculation()
+        }
     }
+
 
     private func setupDefaultAmmunition() {
         let ammoList = weapon.ammunitions?.sorted(by: { $0.date > $1.date }) ?? []

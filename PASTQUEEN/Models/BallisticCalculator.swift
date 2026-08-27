@@ -23,6 +23,8 @@ struct BallisticCalculator: Sendable {
         var temperature: Double = 15.0
         var humidity: Double = 0.78
         var altitude: Double = 0.0
+        var targetSpeedKMH: Double = 0.0
+        var targetAngleDegrees: Double = 90.0
     }
     
     init(ballistics: BallisticSettings, weather: WeatherData) {
@@ -43,6 +45,13 @@ struct BallisticCalculator: Sendable {
         let velocityMPS = point.velocity.converted(to: .metersPerSecond).value
         let energyJoules = point.energy.converted(to: .joules).value
 
+        // --- Moving Target Lead ---
+        let targetSpeedMPS = weather.targetSpeedKMH / 3.6
+        let crossTargetSpeedMPS = targetSpeedMPS * sin(weather.targetAngleDegrees * .pi / 180.0)
+        let leadMeters = crossTargetSpeedMPS * timeSeconds
+        let leadCM = leadMeters * 100.0
+        let leadMOA = moaCorrection(fromCM: leadCM, atDistanceMeters: distance)
+
         guard ballistics.enableELR && distance > 0 && timeSeconds > 0 else {
             return TrajectoryResult(
                 distance: distance,
@@ -61,10 +70,12 @@ struct BallisticCalculator: Sendable {
                 coriolisVerticalMOA: 0,
                 aerodynamicJumpCM: 0,
                 aerodynamicJumpMOA: 0,
+                movingTargetLeadCM: leadCM,
+                movingTargetLeadMOA: leadMOA,
                 totalDropCM: baseDropCM,
                 totalDropCorrectionMOA: baseDropCorrectionMOA,
-                totalWindageCM: baseWindageCM,
-                totalWindageCorrectionMOA: baseWindageCorrectionMOA
+                totalWindageCM: baseWindageCM + leadCM,
+                totalWindageCorrectionMOA: baseWindageCorrectionMOA + leadMOA
             )
         }
 
@@ -111,8 +122,9 @@ struct BallisticCalculator: Sendable {
 
         // Spin drift (+ pushes right)
         // Coriolis (+ pushes right)
-        let totalWindageCM = baseWindageCM + spinDriftCM + coriolisHorizontalCM
-        let totalWindageCorrectionMOA = baseWindageCorrectionMOA + spinDriftMOA + coriolisHorizontalMOA
+        // Lead (+ pushes in direction of movement)
+        let totalWindageCM = baseWindageCM + spinDriftCM + coriolisHorizontalCM + leadCM
+        let totalWindageCorrectionMOA = baseWindageCorrectionMOA + spinDriftMOA + coriolisHorizontalMOA + leadMOA
 
         return TrajectoryResult(
             distance: distance,
@@ -131,12 +143,15 @@ struct BallisticCalculator: Sendable {
             coriolisVerticalMOA: coriolisVerticalMOA,
             aerodynamicJumpCM: aeroJumpCM,
             aerodynamicJumpMOA: aeroJumpMOA,
+            movingTargetLeadCM: leadCM,
+            movingTargetLeadMOA: leadMOA,
             totalDropCM: totalDropCM,
             totalDropCorrectionMOA: totalDropCorrectionMOA,
             totalWindageCM: totalWindageCM,
             totalWindageCorrectionMOA: totalWindageCorrectionMOA
         )
     }
+
     
     private func moaCorrection(fromCM cm: Double, atDistanceMeters dist: Double) -> Double {
         guard dist > 0 else { return 0 }

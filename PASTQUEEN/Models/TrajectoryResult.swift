@@ -27,7 +27,11 @@ struct TrajectoryResult {
     let aerodynamicJumpCM: Double
     let aerodynamicJumpMOA: Double
     
-    // Total corrections (including base + ELR effects)
+    // Moving target components
+    let movingTargetLeadCM: Double
+    let movingTargetLeadMOA: Double
+
+    // Total corrections (including base + ELR effects + Moving Target)
     let totalDropCM: Double
     let totalDropCorrectionMOA: Double
     let totalWindageCM: Double
@@ -51,11 +55,14 @@ struct TrajectoryResult {
             coriolisVerticalMOA: 0,
             aerodynamicJumpCM: 0,
             aerodynamicJumpMOA: 0,
+            movingTargetLeadCM: 0,
+            movingTargetLeadMOA: 0,
             totalDropCM: 0,
             totalDropCorrectionMOA: 0,
             totalWindageCM: 0,
             totalWindageCorrectionMOA: 0
         )
     }
+
 }
 

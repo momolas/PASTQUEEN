@@ -39,43 +39,100 @@ struct ReticleView: View {
         }
     }
 
+    private var dropClicks: Int {
+        scopeUnit.clicks(forMOACorrection: result.totalDropCorrectionMOA)
+    }
+
+    private var windageClicks: Int {
+        scopeUnit.clicks(forMOACorrection: result.totalWindageCorrectionMOA)
+    }
+
+    private var windageDirection: String {
+        result.totalWindageCorrectionMOA >= 0 ? "D" : "G"
+    }
+
     var body: some View {
         VStack(spacing: 16) {
-            // Scope HUD Info Cards
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("CONTRE-VISÉE HAUTEUR")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                    Text("\(elevationHoldoverUnits, format: .number.precision(.fractionLength(1))) \(unitLabel)")
+            // Quick-HUD Hero Header
+            VStack(spacing: 4) {
+                HStack(alignment: .lastTextBaseline, spacing: 6) {
+                    Text("\(Int(distanceMeters))")
+                        .font(.system(size: 42, weight: .black, design: .rounded))
+                        .foregroundStyle(.white)
+                    Text("mètres")
                         .font(.headline)
                         .bold()
-                        .foregroundStyle(.blue)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(12)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("CONTRE-VISÉE VENT")
-                        .font(.caption2)
                         .foregroundStyle(.secondary)
-                    HStack(spacing: 4) {
-                        Text("\(abs(windageHoldoverUnits), format: .number.precision(.fractionLength(1))) \(unitLabel)")
-                            .font(.headline)
-                            .bold()
-                            .foregroundStyle(.orange)
-                        Text(windageHoldoverUnits >= 0 ? "D" : "G")
-                            .font(.caption)
-                            .bold()
-                            .foregroundStyle(.secondary)
-                    }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(12)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+
+                if abs(result.movingTargetLeadCM) > 0.1 {
+                    HStack(spacing: 4) {
+                        Image(systemName: "figure.run")
+                        Text("Cible Mobile : Avance \(abs(result.movingTargetLeadCM), format: .number.precision(.fractionLength(0))) cm (\(abs(result.movingTargetLeadMOA), format: .number.precision(.fractionLength(1))) MOA)")
+                    }
+                    .font(.caption2)
+                    .bold()
+                    .foregroundStyle(.cyan)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(Color.cyan.opacity(0.15), in: Capsule())
+                }
+            }
+
+            // Quick-HUD Massive Badges
+            HStack(spacing: 12) {
+                // Elevation Badge
+                VStack(spacing: 2) {
+                    Text("ÉLÉVATION")
+                        .font(.caption2)
+                        .bold()
+                        .foregroundStyle(.blue)
+
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.up.circle.fill")
+                            .foregroundStyle(.blue)
+                        Text("\(dropClicks) clics")
+                            .font(.title2)
+                            .bold()
+                            .fontDesign(.rounded)
+                    }
+
+                    Text("\(elevationHoldoverUnits, format: .number.precision(.fractionLength(1))) \(unitLabel)")
+                        .font(.caption)
+                        .bold()
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+
+                // Windage / Lead Badge
+                VStack(spacing: 2) {
+                    Text("DÉRIVE / AVANCE")
+                        .font(.caption2)
+                        .bold()
+                        .foregroundStyle(.orange)
+
+                    HStack(spacing: 4) {
+                        Image(systemName: windageDirection == "D" ? "arrow.right.circle.fill" : "arrow.left.circle.fill")
+                            .foregroundStyle(.orange)
+                        Text("\(windageClicks) clics \(windageDirection)")
+                            .font(.title2)
+                            .bold()
+                            .fontDesign(.rounded)
+                    }
+
+                    Text("\(abs(windageHoldoverUnits), format: .number.precision(.fractionLength(1))) \(unitLabel)")
+                        .font(.caption)
+                        .bold()
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
             }
             .padding(.horizontal)
+
 
             // Graphical Scope Canvas
             ZStack {

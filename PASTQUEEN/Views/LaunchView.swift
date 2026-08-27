@@ -16,20 +16,7 @@ struct LaunchView: View {
     var body: some View {
         NavigationStack {
             if let weapon = selectedWeapon ?? weapons.first {
-                CalculatorView(weapon: weapon)
-                    .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
-                            Button("Rifles", systemImage: "list.bullet") {
-                                showingProfiles = true
-                            }
-                            .labelStyle(.iconOnly)
-                        }
-                    }
-                    .sheet(isPresented: $showingProfiles) {
-                        NavigationStack {
-                            WeaponListView(selectedWeapon: $selectedWeapon)
-                        }
-                    }
+                QuickHUDView(weapon: weapon)
             } else {
                 VStack {
                     Image(systemName: "scope")
