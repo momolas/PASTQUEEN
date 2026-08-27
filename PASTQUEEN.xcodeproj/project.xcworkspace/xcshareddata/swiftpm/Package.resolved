@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/momolas/swift-ballistics.git",
       "state" : {
-        "revision" : "b58207502b51c3e7f76fb038a0bdd515494de504",
-        "version" : "1.0.0"
+        "revision" : "0c391ac8d4ebfa37cb6e98ab58da3fd23d50b21b",
+        "version" : "1.1.0"
       }
     }
   ],
