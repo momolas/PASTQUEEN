@@ -219,12 +219,12 @@ struct RangeCardView: View {
             rows: rows
         )
         let renderer = ImageRenderer(content: card)
-        renderer.scale = 3.0
-        if let uiImage = renderer.uiImage {
-            return Image(uiImage: uiImage)
+        if let cgImage = renderer.cgImage {
+            return Image(decorative: cgImage, scale: 3.0)
         }
         return nil
     }
+
 
     
     private func calculateCard() async {

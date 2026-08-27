@@ -108,7 +108,8 @@ struct RangeCardPrintableCard: View {
             }
         }
         .padding(20)
-        .background(Color(uiColor: .systemBackground))
+        .background(.background)
         .frame(width: 440)
+
     }
 }
