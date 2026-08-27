@@ -1,13 +1,13 @@
 {
-  "originHash" : "0a73e4282a7a9e58d3f1b97716e7cf4f528215140730e5bfda3386bfe40083c9",
+  "originHash" : "432c8e6a4ee173ee36783ab382591f3711af488f03a7ebf0d195a719ab20c395",
   "pins" : [
     {
       "identity" : "swift-ballistics",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/raydowe/swift-ballistics.git",
+      "location" : "https://github.com/momolas/swift-ballistics.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "71f725c1235e1b0c81bad6af133c0574e04789c9"
+        "revision" : "b58207502b51c3e7f76fb038a0bdd515494de504",
+        "version" : "1.0.0"
       }
     }
   ],

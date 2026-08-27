@@ -7,46 +7,36 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CDDF00092EE46EB7008DDD15 /* SensorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF000A2EE46EB7008DDD15 /* SensorManager.swift */; };
-		CDDF000B2EE46EB7008DDD15 /* WindClockPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF000C2EE46EB7008DDD15 /* WindClockPicker.swift */; };
-		CDDF000D2EE46EB7008DDD15 /* RangeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF000E2EE46EB7008DDD15 /* RangeCardView.swift */; };
-		CDDF00012EE46EB7008DDD15 /* Weapon.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00022EE46EB7008DDD15 /* Weapon.swift */; };
-		CDDF00032EE46EB7008DDD15 /* Ammunition.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00042EE46EB7008DDD15 /* Ammunition.swift */; };
-		CDDF00052EE46EB7008DDD15 /* AddWeaponView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00062EE46EB7008DDD15 /* AddWeaponView.swift */; };
-		CDDF00072EE46EB7008DDD15 /* AddAmmunitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00082EE46EB7008DDD15 /* AddAmmunitionView.swift */; };
-		CDDF00112EE46EB7008DDD15 /* EditWeaponView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00122EE46EB7008DDD15 /* EditWeaponView.swift */; };
-		CDDF00132EE46EB7008DDD15 /* EditAmmunitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00142EE46EB7008DDD15 /* EditAmmunitionView.swift */; };
-		CDDF00152EE46EB7008DDD15 /* RangeCardPrintableCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00162EE46EB7008DDD15 /* RangeCardPrintableCard.swift */; };
 		05233FBFD43403BCED8DA45F /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 5801502FE6AFF46FA004B664 /* Localizable.xcstrings */; };
 		CD2FBF902909504C00387B0B /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2FBF8F2909504C00387B0B /* DetailView.swift */; };
+		CD7F24BA3040769500BCDCAC /* Ballistics in Frameworks */ = {isa = PBXBuildFile; productRef = CD7F24B93040769500BCDCAC /* Ballistics */; };
 		CD9973FB28D49B4600C9D3FD /* PASTQUEENApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9973FA28D49B4600C9D3FD /* PASTQUEENApp.swift */; };
 		CD9973FD28D49B4600C9D3FD /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9973FC28D49B4600C9D3FD /* LaunchView.swift */; };
 		CD9973FF28D49B4800C9D3FD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD9973FE28D49B4800C9D3FD /* Assets.xcassets */; };
 		CD99740328D49B4800C9D3FD /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD99740228D49B4800C9D3FD /* Preview Assets.xcassets */; };
 		CD9B27B428D4CE3800E28642 /* CalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9B27B328D4CE3800E28642 /* CalculatorView.swift */; };
 		CDA6EECF2919312C004196DF /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA6EECD2919312C004196DF /* WeatherManager.swift */; };
-		CDBEAE6A2F65E8B700D3A843 /* Ballistics in Frameworks */ = {isa = PBXBuildFile; productRef = CDBEAE692F65E8B700D3A843 /* Ballistics */; };
-		CDE935BB2EE46EB7008DDD15 /* BallisticCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE935BA2EE46EB7008DDD15 /* BallisticCalculator.swift */; };
-		CDE935BC2EE46EB7008DDD15 /* AmmunitionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE935B92EE46EB7008DDD15 /* AmmunitionData.swift */; };
 		CDDE00022EE46EB7008DDD15 /* DragFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDE00012EE46EB7008DDD15 /* DragFunction.swift */; };
 		CDDE00042EE46EB7008DDD15 /* TrajectoryResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDE00032EE46EB7008DDD15 /* TrajectoryResult.swift */; };
 		CDDE00062EE46EB7008DDD15 /* TrajectoryDataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDE00052EE46EB7008DDD15 /* TrajectoryDataPoint.swift */; };
+		CDDF00012EE46EB7008DDD15 /* Weapon.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00022EE46EB7008DDD15 /* Weapon.swift */; };
+		CDDF00032EE46EB7008DDD15 /* Ammunition.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00042EE46EB7008DDD15 /* Ammunition.swift */; };
+		CDDF00052EE46EB7008DDD15 /* AddWeaponView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00062EE46EB7008DDD15 /* AddWeaponView.swift */; };
+		CDDF00072EE46EB7008DDD15 /* AddAmmunitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00082EE46EB7008DDD15 /* AddAmmunitionView.swift */; };
+		CDDF00092EE46EB7008DDD15 /* SensorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF000A2EE46EB7008DDD15 /* SensorManager.swift */; };
+		CDDF000B2EE46EB7008DDD15 /* WindClockPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF000C2EE46EB7008DDD15 /* WindClockPicker.swift */; };
+		CDDF000D2EE46EB7008DDD15 /* RangeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF000E2EE46EB7008DDD15 /* RangeCardView.swift */; };
+		CDDF00112EE46EB7008DDD15 /* EditWeaponView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00122EE46EB7008DDD15 /* EditWeaponView.swift */; };
+		CDDF00132EE46EB7008DDD15 /* EditAmmunitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00142EE46EB7008DDD15 /* EditAmmunitionView.swift */; };
+		CDDF00152EE46EB7008DDD15 /* RangeCardPrintableCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00162EE46EB7008DDD15 /* RangeCardPrintableCard.swift */; };
+		CDE935BB2EE46EB7008DDD15 /* BallisticCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE935BA2EE46EB7008DDD15 /* BallisticCalculator.swift */; };
+		CDE935BC2EE46EB7008DDD15 /* AmmunitionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE935B92EE46EB7008DDD15 /* AmmunitionData.swift */; };
 		CDFD841229D71F1C00E9B274 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFD841129D71F1C00E9B274 /* LocationManager.swift */; };
 		F8F7E2D3F7B4F5C2B0EC9067 /* WeaponListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64490F2424B9909B430E02E8 /* WeaponListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		CDDF000A2EE46EB7008DDD15 /* SensorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorManager.swift; sourceTree = "<group>"; };
-		CDDF000C2EE46EB7008DDD15 /* WindClockPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindClockPicker.swift; sourceTree = "<group>"; };
-		CDDF000E2EE46EB7008DDD15 /* RangeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeCardView.swift; sourceTree = "<group>"; };
-		CDDF00022EE46EB7008DDD15 /* Weapon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weapon.swift; sourceTree = "<group>"; };
-		CDDF00042EE46EB7008DDD15 /* Ammunition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ammunition.swift; sourceTree = "<group>"; };
-		CDDF00062EE46EB7008DDD15 /* AddWeaponView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWeaponView.swift; sourceTree = "<group>"; };
-		CDDF00082EE46EB7008DDD15 /* AddAmmunitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAmmunitionView.swift; sourceTree = "<group>"; };
-		CDDF00122EE46EB7008DDD15 /* EditWeaponView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditWeaponView.swift; sourceTree = "<group>"; };
-		CDDF00142EE46EB7008DDD15 /* EditAmmunitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAmmunitionView.swift; sourceTree = "<group>"; };
-		CDDF00162EE46EB7008DDD15 /* RangeCardPrintableCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeCardPrintableCard.swift; sourceTree = "<group>"; };
-		5801502FE6AFF46FA004B664 /* Localizable.xcstrings */ = {isa = PBXFileReference; includeInIndex = 1; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		5801502FE6AFF46FA004B664 /* Localizable.xcstrings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		64490F2424B9909B430E02E8 /* WeaponListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WeaponListView.swift; sourceTree = "<group>"; };
 		CD2FBF8F2909504C00387B0B /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		CD9973F728D49B4600C9D3FD /* PASTQUEEN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PASTQUEEN.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -57,11 +47,21 @@
 		CD99740228D49B4800C9D3FD /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		CD9B27B328D4CE3800E28642 /* CalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorView.swift; sourceTree = "<group>"; };
 		CDA6EECD2919312C004196DF /* WeatherManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeatherManager.swift; sourceTree = "<group>"; };
-		CDE935B92EE46EB7008DDD15 /* AmmunitionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmmunitionData.swift; sourceTree = "<group>"; };
-		CDE935BA2EE46EB7008DDD15 /* BallisticCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallisticCalculator.swift; sourceTree = "<group>"; };
 		CDDE00012EE46EB7008DDD15 /* DragFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragFunction.swift; sourceTree = "<group>"; };
 		CDDE00032EE46EB7008DDD15 /* TrajectoryResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrajectoryResult.swift; sourceTree = "<group>"; };
 		CDDE00052EE46EB7008DDD15 /* TrajectoryDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrajectoryDataPoint.swift; sourceTree = "<group>"; };
+		CDDF00022EE46EB7008DDD15 /* Weapon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weapon.swift; sourceTree = "<group>"; };
+		CDDF00042EE46EB7008DDD15 /* Ammunition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ammunition.swift; sourceTree = "<group>"; };
+		CDDF00062EE46EB7008DDD15 /* AddWeaponView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWeaponView.swift; sourceTree = "<group>"; };
+		CDDF00082EE46EB7008DDD15 /* AddAmmunitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAmmunitionView.swift; sourceTree = "<group>"; };
+		CDDF000A2EE46EB7008DDD15 /* SensorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorManager.swift; sourceTree = "<group>"; };
+		CDDF000C2EE46EB7008DDD15 /* WindClockPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindClockPicker.swift; sourceTree = "<group>"; };
+		CDDF000E2EE46EB7008DDD15 /* RangeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeCardView.swift; sourceTree = "<group>"; };
+		CDDF00122EE46EB7008DDD15 /* EditWeaponView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditWeaponView.swift; sourceTree = "<group>"; };
+		CDDF00142EE46EB7008DDD15 /* EditAmmunitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAmmunitionView.swift; sourceTree = "<group>"; };
+		CDDF00162EE46EB7008DDD15 /* RangeCardPrintableCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeCardPrintableCard.swift; sourceTree = "<group>"; };
+		CDE935B92EE46EB7008DDD15 /* AmmunitionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmmunitionData.swift; sourceTree = "<group>"; };
+		CDE935BA2EE46EB7008DDD15 /* BallisticCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallisticCalculator.swift; sourceTree = "<group>"; };
 		CDFD841129D71F1C00E9B274 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -70,7 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CDBEAE6A2F65E8B700D3A843 /* Ballistics in Frameworks */,
+				CD7F24BA3040769500BCDCAC /* Ballistics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -186,7 +186,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1410;
-				LastUpgradeCheck = 2640;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					CD9973F628D49B4600C9D3FD = {
 						CreatedOnToolsVersion = 14.1;
@@ -203,7 +203,7 @@
 			);
 			mainGroup = CD9973EE28D49B4600C9D3FD;
 			packageReferences = (
-				CDBEAE682F65E8B700D3A843 /* XCRemoteSwiftPackageReference "swift-ballistics.git" */,
+				CD7F24B83040769500BCDCAC /* XCRemoteSwiftPackageReference "swift-ballistics" */,
 			);
 			productRefGroup = CD9973F828D49B4600C9D3FD /* Products */;
 			projectDirPath = "";
@@ -491,20 +491,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		CDBEAE682F65E8B700D3A843 /* XCRemoteSwiftPackageReference "swift-ballistics.git" */ = {
+		CD7F24B83040769500BCDCAC /* XCRemoteSwiftPackageReference "swift-ballistics" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/raydowe/swift-ballistics.git";
+			repositoryURL = "https://github.com/momolas/swift-ballistics.git";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		CDBEAE692F65E8B700D3A843 /* Ballistics */ = {
+		CD7F24B93040769500BCDCAC /* Ballistics */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = CDBEAE682F65E8B700D3A843 /* XCRemoteSwiftPackageReference "swift-ballistics.git" */;
+			package = CD7F24B83040769500BCDCAC /* XCRemoteSwiftPackageReference "swift-ballistics" */;
 			productName = Ballistics;
 		};
 /* End XCSwiftPackageProductDependency section */
