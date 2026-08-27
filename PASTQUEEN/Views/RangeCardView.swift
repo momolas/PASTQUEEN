@@ -2,6 +2,8 @@
 //  RangeCardView.swift
 //  PASTQUEEN
 //
+//  Created by Mo on 27/08/2026.
+//
 
 import SwiftUI
 import SwiftData
@@ -22,19 +24,19 @@ struct RangeCardRow: Identifiable {
 struct RangeCardView: View {
     let weapon: Weapon
     let ammunition: Ammunition
-    
+
     @Environment(\.weatherService) private var weatherManager
     @Environment(\.locationService) private var locationManager
-    
+
     @State private var increment = 50
     @State private var maxDistance = 500
     @State private var enableELR = true
     @State private var rows: [RangeCardRow] = []
     @State private var isCalculating = false
-    
+
     private let increments = [25, 50, 100]
     private let maxDistances = [300, 500, 800, 1000, 1500]
-    
+
     private func getCalculator() -> BallisticCalculator {
         let weatherData = BallisticCalculator.WeatherData(
             windSpeed: weatherManager?.currentWeather?.wind.speed.converted(to: UnitSpeed.kilometersPerHour).value ?? 0.0,
@@ -44,7 +46,7 @@ struct RangeCardView: View {
             humidity: weatherManager?.currentWeather?.humidity ?? 0.78,
             altitude: locationManager?.altitude ?? 0.0
         )
-        
+
         let settings = BallisticSettings(
             ammunitionName: ammunition.name,
             ballisticCoefficient: ammunition.ballisticCoefficient,
@@ -67,56 +69,76 @@ struct RangeCardView: View {
             latitudeDegrees: locationManager?.latitude ?? 45.0,
             enableELR: enableELR
         )
-        
+
         return BallisticCalculator(ballistics: settings, weather: weatherData)
     }
 
-    
     var body: some View {
         VStack(spacing: 0) {
-            // Configuration controls
-            Form {
-                Section(header: Text("Configuration")) {
-                    Picker("Pas (incrément)", selection: $increment) {
-                        ForEach(increments, id: \.self) { inc in
-                            Text("\(inc) m").tag(inc)
+            // Minimalist Top Controls Card
+            VStack(spacing: 10) {
+                HStack(spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("PAS DE DISTANCE")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.secondary)
+                        Picker("Incrément", selection: $increment) {
+                            ForEach(increments, id: \.self) { inc in
+                                Text("\(inc) m").tag(inc)
+                            }
                         }
+                        .pickerStyle(.segmented)
+                        .sensoryFeedback(.selection, trigger: increment)
                     }
-                    .pickerStyle(.segmented)
-                    
-                    Picker("Distance Maximale", selection: $maxDistance) {
-                        ForEach(maxDistances, id: \.self) { dist in
-                            Text("\(dist) m").tag(dist)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("DISTANCE MAX")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.secondary)
+                        Picker("Distance Max", selection: $maxDistance) {
+                            ForEach(maxDistances, id: \.self) { dist in
+                                Text("\(dist) m").tag(dist)
+                            }
                         }
+                        .pickerStyle(.menu)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
                     }
-                    .pickerStyle(.navigationLink)
-                    
-                    Toggle("Effets ELR (Spin Drift & Coriolis)", isOn: $enableELR)
                 }
+
+                Toggle(isOn: $enableELR) {
+                    Label("Effets ELR (Spin Drift & Coriolis)", systemImage: "globe.europe.africa.fill")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .tint(.blue)
             }
-            .frame(height: 180)
-            
-            // Header for table
-            HStack {
-                Text("Dist (m)")
-                    .frame(width: 60, alignment: .leading)
-                Spacer()
-                Text("Élévation")
-                    .frame(width: 100, alignment: .center)
-                Spacer()
-                Text("Dérive")
-                    .frame(width: 100, alignment: .center)
-                Spacer()
-                Text("Vitesse")
-                    .frame(width: 60, alignment: .trailing)
-            }
-            .font(.caption)
-            .bold()
-            .foregroundStyle(.secondary)
+            .padding(12)
+            .background(.ultraThinMaterial, in: .rect(cornerRadius: 14))
             .padding(.horizontal)
             .padding(.vertical, 8)
-            .background(.ultraThinMaterial)
-            
+
+            // Header for table
+            HStack {
+                Text("DIST")
+                    .frame(width: 55, alignment: .leading)
+                Spacer()
+                Text("ÉLÉVATION")
+                    .frame(width: 90, alignment: .center)
+                Spacer()
+                Text("DÉRIVE")
+                    .frame(width: 90, alignment: .center)
+                Spacer()
+                Text("VITESSE")
+                    .frame(width: 65, alignment: .trailing)
+            }
+            .font(.system(size: 10, weight: .bold))
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 6)
+            .background(Color.black.opacity(0.3))
+
             if isCalculating {
                 Spacer()
                 ProgressView("Calcul de la table...")
@@ -125,54 +147,59 @@ struct RangeCardView: View {
             } else {
                 List(rows) { row in
                     HStack {
-                        // Distance column
-                        Text("\(row.distance) m")
-                            .font(.headline)
+                        // Distance
+                        Text("\(row.distance)m")
+                            .font(.subheadline)
+                            .bold()
                             .fontDesign(.rounded)
-                            .frame(width: 60, alignment: .leading)
-                        
+                            .frame(width: 55, alignment: .leading)
+
                         Spacer()
-                        
-                        // Elevation correction column
-                        VStack(alignment: .center, spacing: 2) {
+
+                        // Elevation
+                        VStack(alignment: .center, spacing: 1) {
                             Text("\(row.dropClicks) clics")
+                                .font(.subheadline)
                                 .bold()
+                                .fontDesign(.rounded)
                                 .foregroundStyle(.blue)
                             Text("\(row.dropMOA, format: .number.precision(.fractionLength(1))) MOA")
-                                .font(.caption2)
+                                .font(.system(size: 10))
                                 .foregroundStyle(.secondary)
                         }
-                        .fontDesign(.rounded)
-                        .frame(width: 100, alignment: .center)
-                        
+                        .frame(width: 90, alignment: .center)
+
                         Spacer()
-                        
-                        // Windage correction column
-                        VStack(alignment: .center, spacing: 2) {
+
+                        // Windage
+                        VStack(alignment: .center, spacing: 1) {
                             Text("\(row.windageClicks) clics")
+                                .font(.subheadline)
                                 .bold()
+                                .fontDesign(.rounded)
                                 .foregroundStyle(.orange)
                             Text("\(row.windageMOA, format: .number.precision(.fractionLength(1))) MOA")
-                                .font(.caption2)
+                                .font(.system(size: 10))
                                 .foregroundStyle(.secondary)
                         }
-                        .fontDesign(.rounded)
-                        .frame(width: 100, alignment: .center)
-                        
+                        .frame(width: 90, alignment: .center)
+
                         Spacer()
-                        
-                        // Velocity column
+
+                        // Velocity
                         Text("\(Int(row.velocity)) m/s")
-                            .font(.subheadline)
+                            .font(.footnote)
+                            .bold()
                             .fontDesign(.rounded)
-                            .frame(width: 60, alignment: .trailing)
+                            .frame(width: 65, alignment: .trailing)
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, 2)
+                    .listRowBackground(Color.clear)
                 }
                 .listStyle(.plain)
             }
         }
-        .navigationTitle("Table de Tir")
+        .navigationTitle("Table DOPE")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -196,7 +223,7 @@ struct RangeCardView: View {
             await calculateCard()
         }
     }
-    
+
     @MainActor
     private var weatherSummaryText: String {
         guard let weather = weatherManager?.currentWeather else { return "" }
@@ -233,7 +260,7 @@ struct RangeCardView: View {
         let step = increment
         let maxDist = maxDistance
         let scopeUnit = weapon.scopeClickUnit
-        
+
         let calculated: [RangeCardRow] = await Task.detached {
             var res: [RangeCardRow] = []
             for d in stride(from: step, through: maxDist, by: step) {
@@ -256,25 +283,8 @@ struct RangeCardView: View {
             }
             return res
         }.value
-        
+
         self.rows = calculated
         self.isCalculating = false
     }
-}
-
-#Preview {
-    let sampleWeapon = Weapon(name: "Savage Axis Varmint", calibre: ".308 Win", sightHeightCM: 4.5, zeroRangeMeters: 100.0)
-    let sampleAmmo = Ammunition(
-        name: "Federal Match 168",
-        projectileManufacturer: "Federal",
-        projectileWeightGrains: 168.0,
-        ballisticCoefficient: 0.462,
-        dragFunction: 1,
-        muzzleVelocityMPS: 808.0,
-        muzzleEnergy: 3525.0
-    )
-    NavigationStack {
-        RangeCardView(weapon: sampleWeapon, ammunition: sampleAmmo)
-    }
-    .modelContainer(for: Weapon.self, inMemory: true)
 }

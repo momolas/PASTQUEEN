@@ -2,6 +2,8 @@
 //  WeaponListView.swift
 //  PASTQUEEN
 //
+//  Created by Mo on 27/08/2026.
+//
 
 import SwiftUI
 import SwiftData
@@ -19,41 +21,57 @@ struct WeaponListView: View {
                     selectedWeapon = weapon
                     dismiss()
                 } label: {
-                    HStack {
+                    HStack(spacing: 12) {
                         Image(systemName: "scope")
+                            .font(.title3)
                             .foregroundStyle(.blue)
-                        VStack(alignment: .leading) {
+                            .frame(width: 32)
+
+                        VStack(alignment: .leading, spacing: 2) {
                             Text(weapon.name)
                                 .font(.headline)
                                 .fontDesign(.rounded)
                                 .foregroundStyle(.primary)
-                            Text("\(weapon.calibre) • \(Text(.zeroRangeLabel)): \(weapon.zeroRangeMeters, format: .number)m")
-                                .font(.subheadline)
-                                .fontDesign(.rounded)
-                                .foregroundStyle(.secondary)
+
+                            HStack(spacing: 6) {
+                                Text(weapon.calibre)
+                                    .font(.caption2)
+                                    .bold()
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(Color.blue.opacity(0.15), in: Capsule())
+                                    .foregroundStyle(.blue)
+
+                                Text("Zéro : \(Int(weapon.zeroRangeMeters))m")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
+
+                        Spacer()
+
                         if selectedWeapon == weapon || (selectedWeapon == nil && weapon == weapons.first) {
-                            Spacer()
-                            Image(systemName: "checkmark")
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.title3)
                                 .foregroundStyle(.blue)
                         }
                     }
+                    .padding(.vertical, 4)
                 }
             }
             .onDelete(perform: deleteWeapon)
         }
+        .listStyle(.insetGrouped)
         .navigationTitle("Mes Armes")
         .navigationBarTitleDisplayMode(.inline)
-
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 NavigationLink(value: "AddWeapon") {
-                    Label("Add", systemImage: "plus")
+                    Label("Ajouter", systemImage: "plus")
                 }
-                .labelStyle(.iconOnly)
             }
             ToolbarItem(placement: .cancellationAction) {
-                Button(.cancel) {
+                Button("Fermer") {
                     dismiss()
                 }
             }

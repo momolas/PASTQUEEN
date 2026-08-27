@@ -2,6 +2,8 @@
 //  AddWeaponView.swift
 //  PASTQUEEN
 //
+//  Created by Mo on 27/08/2026.
+//
 
 import SwiftUI
 import SwiftData
@@ -11,7 +13,7 @@ struct AddWeaponView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var name = ""
-    @State private var calibre: String = ".308"
+    @State private var calibre: String = ".308 Win"
     @State private var sightHeightCM: Double = 3.81
     @State private var zeroRangeMeters: Double = 100.0
     @State private var scopeClickUnit: ScopeClickUnit = .moa18
@@ -28,72 +30,116 @@ struct AddWeaponView: View {
 
     var body: some View {
         Form {
-            Section(.rifleSetup) {
-                TextField(String(localized: .rifleName), text: $name)
-                Picker(String(localized: .caliber), selection: $calibre) {
-                    ForEach(AmmunitionData.calibers, id: \.self) {
-                        Text($0)
-                    }
+            Section {
+                HStack {
+                    Label("Nom de la carabine", systemImage: "pencil")
+                    Spacer()
+                    TextField("Ex: Tikka T3x CTR", text: $name)
+                        .multilineTextAlignment(.trailing)
                 }
-                TextField(String(localized: .sightHeight), value: $sightHeightCM, format: .number)
-                TextField(String(localized: .zeroRange), value: $zeroRangeMeters, format: .number)
+
+                Picker(selection: $calibre) {
+                    ForEach(AmmunitionData.calibers, id: \.self) {
+                        Text($0).tag($0)
+                    }
+                } label: {
+                    Label("Calibre", systemImage: "circle.circle")
+                }
+
+                HStack {
+                    Label("Hauteur de visée", systemImage: "arrow.up.and.down")
+                    Spacer()
+                    TextField("Hauteur", value: $sightHeightCM, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 70)
+                    Text("cm")
+                        .foregroundStyle(.secondary)
+                }
+
+                HStack {
+                    Label("Distance de zérotage", systemImage: "target")
+                    Spacer()
+                    TextField("Zéro", value: $zeroRangeMeters, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 70)
+                    Text("m")
+                        .foregroundStyle(.secondary)
+                }
+            } header: {
+                Text("Identification & Zérotage")
             }
 
-            Section(header: Text("Canon & Rayures (ELR)")) {
-                TextField("Pas de rayure (1:X pouces)", value: $twistRateInches, format: .number)
-                Picker("Sens des rayures", selection: $twistDirection) {
+            Section {
+                HStack {
+                    Label("Pas de rayure", systemImage: "tornado")
+                    Spacer()
+                    Text("1:")
+                        .foregroundStyle(.secondary)
+                    TextField("Pas", value: $twistRateInches, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 50)
+                    Text("pouces")
+                        .foregroundStyle(.secondary)
+                }
+
+                Picker(selection: $twistDirection) {
                     ForEach(TwistDirection.allCases) { dir in
                         Text(dir.rawValue).tag(dir)
                     }
+                } label: {
+                    Label("Sens des rayures", systemImage: "arrow.triangle.2.circlepath")
                 }
+            } header: {
+                Text("Canon & Rayures (Balistique ELR)")
             }
 
-            Section(header: Text(.turretCalibration)) {
+            Section {
                 Picker(selection: $scopeClickUnit) {
                     ForEach(ScopeClickUnit.allCases) { unit in
                         Text(unit.rawValue).tag(unit)
                     }
                 } label: {
-                    Text(.scopeClickUnit)
+                    Label("Valeur du clic", systemImage: "dial.low.fill")
                 }
+            } header: {
+                Text("Tourelles de la Lunette")
             }
 
             Section {
-                Button(.save) {
-                    let newWeapon = Weapon(
-                        name: name,
-                        calibre: calibre,
-                        sightHeightCM: sightHeightCM,
-                        zeroRangeMeters: zeroRangeMeters,
-                        scopeClickUnit: scopeClickUnit,
-                        twistRateInches: twistRateInches,
-                        twistDirection: twistDirection
-                    )
-                    modelContext.insert(newWeapon)
-                    do {
-                        try modelContext.save()
-                    } catch {
-                        print("Failed to save context after inserting weapon: \(error)")
-                    }
-                    dismiss()
+                Button(action: saveWeapon) {
+                    Text("Enregistrer la carabine")
+                        .bold()
+                        .frame(maxWidth: .infinity, alignment: .center)
                 }
                 .disabled(!isFormValid)
             }
         }
-
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle(Text(.addWeapon))
+        .navigationTitle("Nouvelle Carabine")
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
-                Button(.cancel) {
+                Button("Annuler") {
                     dismiss()
                 }
             }
         }
     }
-}
 
-#Preview {
-    AddWeaponView()
-        .modelContainer(for: Weapon.self, inMemory: true)
+    private func saveWeapon() {
+        let newWeapon = Weapon(
+            name: name,
+            calibre: calibre,
+            sightHeightCM: sightHeightCM,
+            zeroRangeMeters: zeroRangeMeters,
+            scopeClickUnit: scopeClickUnit,
+            twistRateInches: twistRateInches,
+            twistDirection: twistDirection
+        )
+        modelContext.insert(newWeapon)
+        try? modelContext.save()
+        dismiss()
+    }
 }

@@ -2,6 +2,8 @@
 //  AddAmmunitionView.swift
 //  PASTQUEEN
 //
+//  Created by Mo on 27/08/2026.
+//
 
 import SwiftUI
 import SwiftData
@@ -40,76 +42,128 @@ struct AddAmmunitionView: View {
     var body: some View {
         Form {
             if !filteredPresets.isEmpty {
-                Section(header: Text("Popular Market Loads")) {
-                    Picker("Pre-populate from preset", selection: $selectedPreset) {
-                        Text("Custom / Manual").tag(nil as MarketAmmunition?)
+                Section {
+                    Picker(selection: $selectedPreset) {
+                        Text("Manuel / Personnalisé").tag(nil as MarketAmmunition?)
                         ForEach(filteredPresets) { preset in
-                            Text("\(preset.manufacturer) \(preset.name)").tag(preset as MarketAmmunition?)
+                            Text("\(preset.manufacturer) • \(preset.name)").tag(preset as MarketAmmunition?)
                         }
+                    } label: {
+                        Label("Pré-remplir depuis catalogue", systemImage: "sparkles")
                     }
-                    .pickerStyle(.navigationLink)
+                } header: {
+                    Text("Bibliothèque Munitions Recommandées")
                 }
             }
 
-            Section(.ammunitionDetails) {
-                TextField(String(localized: .ammunitionName), text: $name)
-                TextField(String(localized: .manufacturer), text: $projectileManufacturer)
-                TextField(String(localized: .projectileWeightGrains), value: $projectileWeightGrains, format: .number)
+            Section {
+                HStack {
+                    Label("Nom du chargement", systemImage: "pencil")
+                    Spacer()
+                    TextField("Ex: GGG Match 147gr", text: $name)
+                        .multilineTextAlignment(.trailing)
+                }
+
+                HStack {
+                    Label("Fabricant", systemImage: "building.2")
+                    Spacer()
+                    TextField("Ex: GGG / Federal", text: $projectileManufacturer)
+                        .multilineTextAlignment(.trailing)
+                }
+
+                HStack {
+                    Label("Masse de l'ogive", systemImage: "scalemass")
+                    Spacer()
+                    TextField("Masse", value: $projectileWeightGrains, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 70)
+                    Text("grains")
+                        .foregroundStyle(.secondary)
+                }
+            } header: {
+                Text("Désignation du Projectile")
             }
 
-            Section(.ballisticData) {
-                TextField(String(localized: .ballisticCoefficient), value: $ballisticCoefficient, format: .number)
-                TextField(String(localized: .muzzleVelocity), value: $muzzleVelocityMPS, format: .number)
-                TextField(String(localized: .muzzleEnergy), value: $muzzleEnergy, format: .number)
-                Picker(String(localized: .dragFunction), selection: $dragFunction) {
+            Section {
+                HStack {
+                    Label("Coefficient Balistique (BC)", systemImage: "chart.line.uptrend.xyaxis")
+                    Spacer()
+                    TextField("BC", value: $ballisticCoefficient, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 70)
+                }
+
+                Picker(selection: $dragFunction) {
                     ForEach(AmmunitionData.dragFunctions) { function in
                         Text(function.name).tag(function.id)
                     }
+                } label: {
+                    Label("Modèle de traînée", systemImage: "wind")
                 }
+
+                HStack {
+                    Label("Vitesse initiale (V0)", systemImage: "speedometer")
+                    Spacer()
+                    TextField("V0", value: $muzzleVelocityMPS, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 70)
+                    Text("m/s")
+                        .foregroundStyle(.secondary)
+                }
+
+                HStack {
+                    Label("Énergie à la bouche (E0)", systemImage: "bolt.fill")
+                    Spacer()
+                    TextField("E0", value: $muzzleEnergy, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 70)
+                    Text("Joules")
+                        .foregroundStyle(.secondary)
+                }
+            } header: {
+                Text("Performances Balistiques")
             }
 
-            Section(header: Text("Sensibilité thermique de la poudre (dv/dT)")) {
+            Section {
                 HStack {
-                    Text("Variation V0 par °C")
+                    Label("Sensibilité thermique", systemImage: "thermometer.sun.fill")
                     Spacer()
                     TextField("dv/dT", value: $powderSensitivityMPSPerC, format: .number)
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
+                        .frame(width: 60)
                     Text("m/s / °C")
                         .foregroundStyle(.secondary)
                 }
-                Text("Ajuste automatiquement la vitesse initiale en fonction de la température ambiante du pas de tir (0 = désactivé).")
+                Text("Correction automatique de V0 selon la température (0 = désactivé).")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
+            } header: {
+                Text("Sensibilité de la Poudre")
             }
 
             Section {
-                Button(.save) {
-                    let newAmmunition = Ammunition(
-                        name: name,
-                        projectileManufacturer: projectileManufacturer,
-                        projectileWeightGrains: projectileWeightGrains,
-                        ballisticCoefficient: ballisticCoefficient,
-                        dragFunction: dragFunction,
-                        muzzleVelocityMPS: muzzleVelocityMPS,
-                        muzzleEnergy: muzzleEnergy,
-                        powderSensitivityMPSPerC: powderSensitivityMPSPerC,
-                        date: Date().timeIntervalSince1970
-                    )
-                    newAmmunition.weapon = weapon
-                    
-                    modelContext.insert(newAmmunition)
-                    do {
-                        try modelContext.save()
-                    } catch {
-                        print("Failed to save context after inserting ammunition: \(error)")
-                    }
-                    dismiss()
+                Button(action: saveAmmunition) {
+                    Text("Enregistrer la munition")
+                        .bold()
+                        .frame(maxWidth: .infinity, alignment: .center)
                 }
                 .disabled(!isFormValid)
             }
         }
-
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("Nouvelle Munition")
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Annuler") {
+                    dismiss()
+                }
+            }
+        }
         .onChange(of: selectedPreset) { _, newPreset in
             if let preset = newPreset {
                 name = preset.name
@@ -121,20 +175,23 @@ struct AddAmmunitionView: View {
                 muzzleEnergy = preset.muzzleEnergyJoules
             }
         }
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle(String(localized: .addAmmunition))
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button(.cancel) {
-                    dismiss()
-                }
-            }
-        }
     }
-}
 
-#Preview {
-    let sampleWeapon = Weapon(name: "Preview Rifle", calibre: ".308", sightHeightCM: 4.5, zeroRangeMeters: 100.0)
-    AddAmmunitionView(weapon: sampleWeapon)
-        .modelContainer(for: Weapon.self, inMemory: true)
+    private func saveAmmunition() {
+        let newAmmunition = Ammunition(
+            name: name,
+            projectileManufacturer: projectileManufacturer,
+            projectileWeightGrains: projectileWeightGrains,
+            ballisticCoefficient: ballisticCoefficient,
+            dragFunction: dragFunction,
+            muzzleVelocityMPS: muzzleVelocityMPS,
+            muzzleEnergy: muzzleEnergy,
+            powderSensitivityMPSPerC: powderSensitivityMPSPerC,
+            date: Date().timeIntervalSince1970
+        )
+        newAmmunition.weapon = weapon
+        modelContext.insert(newAmmunition)
+        try? modelContext.save()
+        dismiss()
+    }
 }

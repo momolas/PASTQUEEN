@@ -2,17 +2,19 @@
 //  TruingView.swift
 //  PASTQUEEN
 //
+//  Created by Mo on 27/08/2026.
+//
 
 import SwiftUI
 import SwiftData
 import Ballistics
 
 enum TruingMode: String, CaseIterable, Identifiable {
-    case muzzleVelocity = "Vitesse Initiale (V0)"
-    case ballisticCoefficient = "Coefficient Balistique (BC)"
-    
+    case muzzleVelocity = "Vitesse (V0)"
+    case ballisticCoefficient = "Coefficient (BC)"
+
     var id: String { rawValue }
-    
+
     var recommendedDistance: Double {
         switch self {
         case .muzzleVelocity: return 300.0
@@ -25,9 +27,9 @@ enum TruingInputFormat: String, CaseIterable, Identifiable {
     case clicks = "Clics de tourelle"
     case moa = "MOA"
     case cm = "Écart en cible (cm)"
-    
+
     var id: String { rawValue }
-    
+
     var unitSuffix: String {
         switch self {
         case .clicks: return "clics"
@@ -40,7 +42,7 @@ enum TruingInputFormat: String, CaseIterable, Identifiable {
 struct TruingView: View {
     let weapon: Weapon
     @Bindable var ammunition: Ammunition
-    
+
     @Environment(\.weatherService) private var weatherManager
     @Environment(\.locationService) private var locationManager
     @Environment(\.modelContext) private var modelContext
@@ -50,12 +52,12 @@ struct TruingView: View {
     @State private var testDistanceMeters: Double = 300.0
     @State private var inputFormat: TruingInputFormat = .clicks
     @State private var observedValue: Double = 0.0
-    
+
     // Environmental overrides
     @State private var temperatureC: Double = 15.0
     @State private var pressureHPa: Double = 1013.25
     @State private var altitudeMeters: Double = 0.0
-    
+
     // Results
     @State private var calculatedV0: Double?
     @State private var calculatedBC: Double?
@@ -65,25 +67,26 @@ struct TruingView: View {
     var body: some View {
         Form {
             Section {
-                Picker("Paramètre à calibrer", selection: $mode) {
+                Picker("Objectif", selection: $mode) {
                     ForEach(TruingMode.allCases) { m in
                         Text(m.rawValue).tag(m)
                     }
                 }
                 .pickerStyle(.segmented)
-                
+                .sensoryFeedback(.selection, trigger: mode)
+
                 Text(mode == .muzzleVelocity
-                     ? "Recommandé à mi-distance (300m - 600m). Ajuste la vitesse réelle de votre canon."
-                     : "Recommandé à longue distance (800m+). Ajuste le coefficient de traînée réel de votre ogive.")
+                     ? "Recommandé à 300m-600m. Ajuste la vitesse réelle de votre canon."
+                     : "Recommandé à 800m+. Ajuste le coefficient de traînée réel de votre projectile.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } header: {
-                Text("Objectif d'étalonnage")
+                Text("Paramètre à étalonner")
             }
-            
+
             Section {
                 HStack {
-                    Text("Distance de tir")
+                    Label("Distance de tir", systemImage: "ruler")
                     Spacer()
                     TextField("Distance", value: $testDistanceMeters, format: .number)
                         .keyboardType(.decimalPad)
@@ -91,15 +94,16 @@ struct TruingView: View {
                     Text("m")
                         .foregroundStyle(.secondary)
                 }
-                
+
                 Picker("Unité de correction", selection: $inputFormat) {
                     ForEach(TruingInputFormat.allCases) { format in
                         Text(format.rawValue).tag(format)
                     }
                 }
-                
+
                 HStack {
-                    Text(inputFormat == .clicks ? "Correction tourelle" : (inputFormat == .moa ? "Correction MOA" : "Hauteur d'impact"))
+                    Label(inputFormat == .clicks ? "Correction réelle" : (inputFormat == .moa ? "Correction MOA" : "Hauteur d'impact"),
+                          systemImage: "scope")
                     Spacer()
                     TextField("Valeur", value: $observedValue, format: .number)
                         .keyboardType(.numbersAndPunctuation)
@@ -108,12 +112,12 @@ struct TruingView: View {
                         .foregroundStyle(.secondary)
                 }
             } header: {
-                Text("Observations sur le pas de tir")
+                Text("Impact mesuré au pas de tir")
             }
-            
+
             Section {
                 HStack {
-                    Text("Température")
+                    Label("Température", systemImage: "thermometer.medium")
                     Spacer()
                     TextField("Température", value: $temperatureC, format: .number)
                         .keyboardType(.decimalPad)
@@ -121,9 +125,9 @@ struct TruingView: View {
                     Text("°C")
                         .foregroundStyle(.secondary)
                 }
-                
+
                 HStack {
-                    Text("Pression atmosphérique")
+                    Label("Pression", systemImage: "gauge.with.needle")
                     Spacer()
                     TextField("Pression", value: $pressureHPa, format: .number)
                         .keyboardType(.decimalPad)
@@ -132,25 +136,25 @@ struct TruingView: View {
                         .foregroundStyle(.secondary)
                 }
             } header: {
-                Text("Conditions Météo du Tir")
+                Text("Conditions météo")
             }
-            
+
             Section {
                 Button("Calculer l'étalonnage", systemImage: "wand.and.stars") {
                     performTruing()
                 }
-                .bold()
+                .font(.headline)
                 .frame(maxWidth: .infinity, alignment: .center)
-                .foregroundStyle(.blue)
             }
-            
+
             if let error = errorMessage {
                 Section {
                     Label(error, systemImage: "exclamationmark.triangle.fill")
+                        .font(.footnote)
                         .foregroundStyle(.red)
                 }
             }
-            
+
             if let newV0 = calculatedV0 {
                 Section {
                     TruingV0ResultContent(
@@ -165,7 +169,7 @@ struct TruingView: View {
                         }
                     )
                 } header: {
-                    Text("Résultat de l'étalonnage V0")
+                    Text("Résultat V0 calibrée")
                 }
             } else if let newBC = calculatedBC {
                 Section {
@@ -179,7 +183,7 @@ struct TruingView: View {
                         }
                     )
                 } header: {
-                    Text("Résultat de l'étalonnage BC")
+                    Text("Résultat BC calibré")
                 }
             }
         }
@@ -232,7 +236,7 @@ struct TruingView: View {
             humidity: 0.78,
             altitude: altitudeMeters
         )
-        
+
         let settings = BallisticSettings(
             ammunitionName: ammunition.name,
             ballisticCoefficient: ammunition.ballisticCoefficient,
@@ -248,7 +252,7 @@ struct TruingView: View {
             sightHeightCM: weapon.sightHeightCM,
             zeroRangeMeters: weapon.zeroRangeMeters
         )
-        
+
         return BallisticCalculator(ballistics: settings, weather: weatherData)
     }
 
@@ -355,12 +359,12 @@ struct TruingV0ResultContent: View {
 
     var body: some View {
         HStack {
-            Text("Vitesse théorique actuelle")
+            Text("Vitesse théorique")
             Spacer()
             Text("\(Int(currentV0)) m/s")
                 .foregroundStyle(.secondary)
         }
-        
+
         HStack {
             Text("Vitesse réelle calibrée")
             Spacer()
@@ -368,11 +372,12 @@ struct TruingV0ResultContent: View {
                 .bold()
                 .foregroundStyle(.blue)
         }
-        
+
         HStack {
             Text("Écart constaté")
             Spacer()
             Text("\(delta >= 0 ? "+" : "")\(Int(delta)) m/s")
+                .bold()
                 .foregroundStyle(deltaColor)
         }
 
@@ -409,12 +414,12 @@ struct TruingBCResultContent: View {
 
     var body: some View {
         HStack {
-            Text("BC catalogue actuel")
+            Text("BC catalogue")
             Spacer()
             Text(currentBC, format: .number.precision(.fractionLength(3)))
                 .foregroundStyle(.secondary)
         }
-        
+
         HStack {
             Text("BC réel calibré")
             Spacer()
@@ -422,11 +427,12 @@ struct TruingBCResultContent: View {
                 .bold()
                 .foregroundStyle(.blue)
         }
-        
+
         HStack {
             Text("Écart constaté")
             Spacer()
             Text("\(delta >= 0 ? "+" : "")\(delta.formatted(.number.precision(.fractionLength(3)))) (\(percentage >= 0 ? "+" : "")\(percentage.formatted(.number.precision(.fractionLength(1))))%)")
+                .bold()
                 .foregroundStyle(deltaColor)
         }
 
@@ -436,4 +442,3 @@ struct TruingBCResultContent: View {
             .frame(maxWidth: .infinity, alignment: .center)
     }
 }
-

@@ -2,6 +2,8 @@
 //  EditAmmunitionView.swift
 //  PASTQUEEN
 //
+//  Created by Mo on 27/08/2026.
+//
 
 import SwiftUI
 import SwiftData
@@ -32,65 +34,110 @@ struct EditAmmunitionView: View {
 
     var body: some View {
         Form {
+            Section {
+                HStack {
+                    Label("Nom du chargement", systemImage: "pencil")
+                    Spacer()
+                    TextField("Nom", text: $name)
+                        .multilineTextAlignment(.trailing)
+                }
 
-            Section(.ammunitionDetails) {
-                TextField(String(localized: .ammunitionName), text: $name)
-                TextField(String(localized: .manufacturer), text: $projectileManufacturer)
-                TextField(String(localized: .projectileWeightGrains), value: $projectileWeightGrains, format: .number)
+                HStack {
+                    Label("Fabricant", systemImage: "building.2")
+                    Spacer()
+                    TextField("Fabricant", text: $projectileManufacturer)
+                        .multilineTextAlignment(.trailing)
+                }
+
+                HStack {
+                    Label("Masse de l'ogive", systemImage: "scalemass")
+                    Spacer()
+                    TextField("Masse", value: $projectileWeightGrains, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 70)
+                    Text("grains")
+                        .foregroundStyle(.secondary)
+                }
+            } header: {
+                Text("Désignation du Projectile")
             }
 
-            Section(.ballisticData) {
-                TextField(String(localized: .ballisticCoefficient), value: $ballisticCoefficient, format: .number)
-                TextField(String(localized: .muzzleVelocity), value: $muzzleVelocityMPS, format: .number)
-                TextField(String(localized: .muzzleEnergy), value: $muzzleEnergy, format: .number)
-                Picker(String(localized: .dragFunction), selection: $dragFunction) {
+            Section {
+                HStack {
+                    Label("Coefficient Balistique (BC)", systemImage: "chart.line.uptrend.xyaxis")
+                    Spacer()
+                    TextField("BC", value: $ballisticCoefficient, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 70)
+                }
+
+                Picker(selection: $dragFunction) {
                     ForEach(AmmunitionData.dragFunctions) { function in
                         Text(function.name).tag(function.id)
                     }
+                } label: {
+                    Label("Modèle de traînée", systemImage: "wind")
                 }
+
+                HStack {
+                    Label("Vitesse initiale (V0)", systemImage: "speedometer")
+                    Spacer()
+                    TextField("V0", value: $muzzleVelocityMPS, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 70)
+                    Text("m/s")
+                        .foregroundStyle(.secondary)
+                }
+
+                HStack {
+                    Label("Énergie à la bouche (E0)", systemImage: "bolt.fill")
+                    Spacer()
+                    TextField("E0", value: $muzzleEnergy, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 70)
+                    Text("Joules")
+                        .foregroundStyle(.secondary)
+                }
+            } header: {
+                Text("Performances Balistiques")
             }
 
-            Section(header: Text("Sensibilité thermique de la poudre (dv/dT)")) {
+            Section {
                 HStack {
-                    Text("Variation V0 par °C")
+                    Label("Sensibilité thermique", systemImage: "thermometer.sun.fill")
                     Spacer()
                     TextField("dv/dT", value: $powderSensitivityMPSPerC, format: .number)
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
+                        .frame(width: 60)
                     Text("m/s / °C")
                         .foregroundStyle(.secondary)
                 }
-                Text("Ajuste automatiquement la vitesse initiale de sortie de bouche en fonction de la température ambiante du pas de tir (0 = désactivé).")
+                Text("Correction automatique de V0 selon la température (0 = désactivé).")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
+            } header: {
+                Text("Sensibilité de la Poudre")
             }
 
             Section {
-                Button(.save) {
-                    ammunition.name = name
-                    ammunition.projectileManufacturer = projectileManufacturer
-                    ammunition.projectileWeightGrains = projectileWeightGrains
-                    ammunition.ballisticCoefficient = ballisticCoefficient
-                    ammunition.dragFunction = dragFunction
-                    ammunition.muzzleVelocityMPS = muzzleVelocityMPS
-                    ammunition.muzzleEnergy = muzzleEnergy
-                    ammunition.powderSensitivityMPSPerC = powderSensitivityMPSPerC
-                    
-                    do {
-                        try modelContext.save()
-                    } catch {
-                        print("Failed to save modified ammunition: \(error)")
-                    }
-                    dismiss()
+                Button(action: saveChanges) {
+                    Text("Enregistrer les modifications")
+                        .bold()
+                        .frame(maxWidth: .infinity, alignment: .center)
                 }
                 .disabled(!isFormValid)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Modifier le chargement")
+        .navigationTitle("Modifier la munition")
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
-                Button(.cancel) {
+                Button("Annuler") {
                     dismiss()
                 }
             }
@@ -107,20 +154,16 @@ struct EditAmmunitionView: View {
         }
     }
 
-}
-
-#Preview {
-    let sampleAmmo = Ammunition(
-        name: "Federal Match 168",
-        projectileManufacturer: "Federal",
-        projectileWeightGrains: 168.0,
-        ballisticCoefficient: 0.462,
-        dragFunction: 1,
-        muzzleVelocityMPS: 808.0,
-        muzzleEnergy: 3525.0
-    )
-    NavigationStack {
-        EditAmmunitionView(ammunition: sampleAmmo)
+    private func saveChanges() {
+        ammunition.name = name
+        ammunition.projectileManufacturer = projectileManufacturer
+        ammunition.projectileWeightGrains = projectileWeightGrains
+        ammunition.ballisticCoefficient = ballisticCoefficient
+        ammunition.dragFunction = dragFunction
+        ammunition.muzzleVelocityMPS = muzzleVelocityMPS
+        ammunition.muzzleEnergy = muzzleEnergy
+        ammunition.powderSensitivityMPSPerC = powderSensitivityMPSPerC
+        try? modelContext.save()
+        dismiss()
     }
-    .modelContainer(for: Ammunition.self, inMemory: true)
 }
