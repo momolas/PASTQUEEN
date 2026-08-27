@@ -38,17 +38,18 @@ enum TwistDirection: String, Codable, CaseIterable, Identifiable {
 class Weapon {
     #Index<Weapon>([\.name])
 
-    var id: UUID
-    var name: String
-    var calibre: String
-    var sightHeightCM: Double
-    var zeroRangeMeters: Double
-    var scopeClickUnit: ScopeClickUnit
+    var id: UUID = UUID()
+    var name: String = ""
+    var calibre: String = ""
+    var sightHeightCM: Double = 3.81
+    var zeroRangeMeters: Double = 100.0
+    var scopeClickUnit: ScopeClickUnit = ScopeClickUnit.moa18
     var twistRateInches: Double = 10.0
     var twistDirection: TwistDirection = TwistDirection.right
     
     @Relationship(deleteRule: .cascade, inverse: \Ammunition.weapon) 
     var ammunitions: [Ammunition]?
+
 
     init(
         id: UUID = UUID(),

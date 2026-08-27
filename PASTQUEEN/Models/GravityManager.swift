@@ -9,6 +9,20 @@ import Foundation
 import CoreMotion
 import Observation
 
+enum GravityError: LocalizedError, Sendable {
+    case deviceMotionNotAvailable
+    case noGravityDataAvailable
+    
+    var errorDescription: String? {
+        switch self {
+        case .deviceMotionNotAvailable:
+            return "Device motion is not available"
+        case .noGravityDataAvailable:
+            return "No gravity data available"
+        }
+    }
+}
+
 @MainActor
 @Observable
 class GravityManager {
@@ -23,7 +37,7 @@ class GravityManager {
 		return try await withTaskCancellationHandler {
 			try await withCheckedThrowingContinuation { continuation in
 				guard motionManager.isDeviceMotionAvailable else {
-					continuation.resume(throwing: NSError(domain: "com.example.app", code: 1, userInfo: [NSLocalizedDescriptionKey: "Device motion is not available"]))
+					continuation.resume(throwing: GravityError.deviceMotionNotAvailable)
 					return
 				}
 				
@@ -40,10 +54,10 @@ class GravityManager {
 						return
 					}
 					if let gravity = motion?.gravity {
-						let g = sqrt(pow(gravity.x, 2) + pow(gravity.y, 2) + pow(gravity.z, 2))
+						let g = sqrt(gravity.x * gravity.x + gravity.y * gravity.y + gravity.z * gravity.z)
 						continuation.resume(returning: g)
 					} else {
-						continuation.resume(throwing: NSError(domain: "com.example.app", code: 2, userInfo: [NSLocalizedDescriptionKey: "No gravity data available"]))
+						continuation.resume(throwing: GravityError.noGravityDataAvailable)
 					}
 				}
 			}
@@ -53,6 +67,7 @@ class GravityManager {
 			}
 		}
 	}
+
 	
 	private func cancelActiveUpdates() {
 		motionManager.stopDeviceMotionUpdates()
