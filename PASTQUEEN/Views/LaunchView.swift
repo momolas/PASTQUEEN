@@ -2,6 +2,8 @@
 //  LaunchView.swift
 //  PASTQUEEN
 //
+//  Created by Mo on 27/08/2026.
+//
 
 import SwiftUI
 import SwiftData
@@ -10,37 +12,25 @@ struct LaunchView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Weapon.name) private var weapons: [Weapon]
     @State private var selectedWeapon: Weapon?
-    @State private var showingProfiles = false
-    @ScaledMetric(relativeTo: .largeTitle) private var iconSize: CGFloat = 60
 
     var body: some View {
         NavigationStack {
             if let weapon = selectedWeapon ?? weapons.first {
                 QuickHUDView(weapon: weapon)
             } else {
-                VStack {
-                    Image(systemName: "scope")
-                        .font(.system(size: iconSize))
-                        .foregroundStyle(.tertiary)
-                        .padding(.bottom)
-                    Text(.noAmmunitionProfiles)
-                        .font(.headline)
-                        .fontDesign(.rounded)
-                    Text(.tapToAdd)
-                        .font(.subheadline)
-                        .fontDesign(.rounded)
-                        .foregroundStyle(.secondary)
-                }
-                .navigationBarTitleDisplayMode(.large)
-                .navigationTitle(String(localized: .ammunitions))
-                .toolbar {
-                    ToolbarItem(placement: .primaryAction) {
-                        NavigationLink(value: "AddWeapon") {
-                            Label("Add", systemImage: "plus")
-                        }
-                        .labelStyle(.iconOnly)
+                ContentUnavailableView {
+                    Label("Aucune Carabine", systemImage: "scope")
+                } description: {
+                    Text("Ajoutez votre première arme pour démarrer les calculs balistiques.")
+                } actions: {
+                    NavigationLink(value: "AddWeapon") {
+                        Text("Ajouter une carabine")
+                            .bold()
                     }
+                    .buttonStyle(.borderedProminent)
                 }
+                .navigationTitle("PASTQUEEN")
+                .navigationBarTitleDisplayMode(.inline)
                 .navigationDestination(for: String.self) { value in
                     if value == "AddWeapon" {
                         AddWeaponView()

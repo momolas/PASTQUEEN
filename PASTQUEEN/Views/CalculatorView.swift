@@ -2,6 +2,8 @@
 //  CalculatorView.swift
 //  PASTQUEEN
 //
+//  Created by Mo on 27/08/2026.
+//
 
 import SwiftUI
 import SwiftData
@@ -14,7 +16,7 @@ struct CalculatorView: View {
     @Environment(\.weatherService) private var weatherManager
     @Environment(\.locationService) private var locationManager
     @Environment(\.sensorService) private var sensorManager
-    
+
     @State private var selectedAmmunition: Ammunition?
     @State private var distance: Double = 100.0
     @State private var trajectoryResult: TrajectoryResult?
@@ -41,8 +43,8 @@ struct CalculatorView: View {
     enum CalculatorDisplayMode: String, CaseIterable, Identifiable {
         case hud = "Quick-HUD"
         case turrets = "Tourelles"
-        case pbr = "Tir Tendu (PBR)"
-        
+        case pbr = "Tir Tendu"
+
         var id: String { rawValue }
     }
 
@@ -63,7 +65,7 @@ struct CalculatorView: View {
             targetSpeedKMH: enableMovingTarget ? targetSpeedKMH : 0.0,
             targetAngleDegrees: targetDirectionRight ? 90.0 : -90.0
         )
-        
+
         let settings = BallisticSettings(
             ammunitionName: selectedAmmunition?.name ?? "Default",
             ballisticCoefficient: selectedAmmunition?.ballisticCoefficient ?? 0.45,
@@ -86,56 +88,53 @@ struct CalculatorView: View {
             latitudeDegrees: locationManager?.latitude ?? 45.0,
             enableELR: enableELR
         )
-        
+
         return BallisticCalculator(ballistics: settings, weather: weatherData)
     }
 
-
-
     var body: some View {
         Form {
-            Section(header: Text(.rifleSetup)) {
-                LabeledContent(String(localized: .rifle), value: weapon.name)
-                LabeledContent(String(localized: .caliber), value: weapon.calibre)
-                LabeledContent(String(localized: .sightHeight), value: "\(weapon.sightHeightCM.formatted()) cm")
-                LabeledContent(String(localized: .zeroRangeLabel), value: "\(weapon.zeroRangeMeters.formatted()) m")
+            Section {
+                LabeledContent("Modèle", value: weapon.name)
+                LabeledContent("Calibre", value: weapon.calibre)
+                LabeledContent("Hauteur de visée", value: "\(weapon.sightHeightCM.formatted()) cm")
+                LabeledContent("Zéro", value: "\(weapon.zeroRangeMeters.formatted()) m")
                 LabeledContent("Pas de rayure", value: "1:\(weapon.twistRateInches.formatted()) (\(weapon.twistDirection.rawValue))")
+            } header: {
+                Text("Configuration Carabine")
             }
 
-            Section(header: Text("Ammunition Load")) {
+            Section {
                 let ammoList = weapon.ammunitions?.sorted(by: { $0.date > $1.date }) ?? []
                 if ammoList.isEmpty {
                     NavigationLink(destination: AddAmmunitionView(weapon: weapon)) {
-                        Label("Add Ammunition Load", systemImage: "plus.circle")
+                        Label("Ajouter un chargement", systemImage: "plus.circle")
                             .bold()
                             .foregroundStyle(.blue)
                     }
                 } else {
-                    Picker("Selected Load", selection: $selectedAmmunition) {
+                    Picker(selection: $selectedAmmunition) {
                         ForEach(ammoList) { ammo in
                             Text(ammo.name).tag(ammo as Ammunition?)
                         }
+                    } label: {
+                        Label("Chargement actif", systemImage: "scope")
                     }
-                    .pickerStyle(.navigationLink)
-                    
+
                     NavigationLink(destination: AddAmmunitionView(weapon: weapon)) {
-                        Label("Add New Load", systemImage: "plus.circle")
+                        Label("Nouveau chargement", systemImage: "plus")
+                            .font(.footnote)
                             .foregroundStyle(.blue)
                     }
                 }
+            } header: {
+                Text("Munition")
             }
 
             if let weather = weatherManager?.currentWeather {
-                Section(header: HStack {
-                    Text(.weatherUsed)
-                    Spacer()
-                    Button("Refresh weather", systemImage: "arrow.clockwise", action: refreshWeather)
-                    .labelStyle(.iconOnly)
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.blue)
-                }) {
+                Section {
                     Toggle(isOn: $useOfflineSensors) {
-                        Label("Offline Barometer", systemImage: "sensor")
+                        Label("Baromètre interne (hors-ligne)", systemImage: "sensor")
                     }
                     .onChange(of: useOfflineSensors) { _, newValue in
                         if newValue {
@@ -145,96 +144,103 @@ struct CalculatorView: View {
                         }
                         triggerCalculation()
                     }
-                    
+
                     if useOfflineSensors {
-                        LabeledContent("Local Pressure", value: "\(sensorManager?.currentPressureHPa?.formatted(.number.precision(.fractionLength(1))) ?? "Reading...") hPa")
+                        LabeledContent("Pression locale", value: "\(sensorManager?.currentPressureHPa?.formatted(.number.precision(.fractionLength(1))) ?? "Lecture...") hPa")
                     }
+
                     HStack {
                         VStack(alignment: .leading) {
-                            Text(.temp)
-                            Text(weather.temperature.converted(to: .celsius).value, format: .number.precision(.fractionLength(1)))
-                                .fontDesign(.rounded)
+                            Text("Température")
+                                .font(.caption2)
                                 .foregroundStyle(.secondary)
+                            Text("\(weather.temperature.converted(to: .celsius).value, format: .number.precision(.fractionLength(0)))°C")
+                                .font(.headline)
+                                .fontDesign(.rounded)
                         }
                         Spacer()
                         VStack(alignment: .leading) {
-                            Text(.wind)
-                            Text(weather.wind.speed.converted(to: .kilometersPerHour).value, format: .number.precision(.fractionLength(1)))
-                                .fontDesign(.rounded)
+                            Text("Vent")
+                                .font(.caption2)
                                 .foregroundStyle(.secondary)
+                            Text("\(weather.wind.speed.converted(to: .kilometersPerHour).value, format: .number.precision(.fractionLength(0))) km/h")
+                                .font(.headline)
+                                .fontDesign(.rounded)
                         }
                         Spacer()
                         VStack(alignment: .leading) {
-                            Text(.pressure)
-                            Text(weather.pressure.converted(to: .hectopascals).value, format: .number.precision(.fractionLength(0)))
-                                .fontDesign(.rounded)
+                            Text("Pression")
+                                .font(.caption2)
                                 .foregroundStyle(.secondary)
+                            Text("\(weather.pressure.converted(to: .hectopascals).value, format: .number.precision(.fractionLength(0))) hPa")
+                                .font(.headline)
+                                .fontDesign(.rounded)
                         }
                     }
-                }
-            } else if let error = weatherManager?.errorMessage {
-                Section(header: HStack {
-                    Text(.weatherError)
-                    Spacer()
-                    Button("Refresh weather", systemImage: "arrow.clockwise", action: refreshWeather)
-                    .labelStyle(.iconOnly)
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.blue)
-                }) {
-                    Text(error).foregroundStyle(.red)
-                }
-            } else {
-                Section(header: HStack {
-                    Text(.weather)
-                    Spacer()
-                    Button("Refresh weather", systemImage: "arrow.clockwise", action: refreshWeather)
-                    .labelStyle(.iconOnly)
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.blue)
-                }) {
-                    Text(.pressRefreshWeather)
-                        .foregroundStyle(.secondary)
+                } header: {
+                    HStack {
+                        Text("Conditions Météo")
+                        Spacer()
+                        Button("Actualiser", systemImage: "arrow.clockwise", action: refreshWeather)
+                            .font(.caption)
+                            .foregroundStyle(.blue)
+                    }
                 }
             }
 
-            Section(header: Text(String(localized: .input))) {
-                TextField(String(localized: .distanceMeters), value: $distance, format: .number)
-                    .keyboardType(.decimalPad)
-            }
-
-            Section(header: Text("Wind Conditions")) {
+            Section {
                 HStack {
-                    Text("Wind Speed (km/h)")
+                    Label("Distance de la cible", systemImage: "ruler")
                     Spacer()
-                    TextField("Speed", value: $manualWindSpeed, format: .number)
+                    TextField("Distance", value: $distance, format: .number)
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
                         .frame(width: 80)
+                    Text("m")
+                        .foregroundStyle(.secondary)
                 }
-                
+            } header: {
+                Text("Distance")
+            }
+
+            Section {
+                HStack {
+                    Label("Vitesse du vent", systemImage: "wind")
+                    Spacer()
+                    TextField("Vitesse", value: $manualWindSpeed, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 70)
+                    Text("km/h")
+                        .foregroundStyle(.secondary)
+                }
+
                 WindClockPicker(windDirectionDegrees: $windDirectionDegrees)
+            } header: {
+                Text("Vent")
             }
 
             // Advanced ELR Module Section
-            Section(header: Label("Très Longue Distance (ELR)", systemImage: "scope")) {
+            Section {
                 Toggle(isOn: $enableELR) {
-                    Text("Activer les effets ELR")
+                    Text("Activer corrections ELR")
                         .bold()
                 }
-                
+
                 if enableELR {
-                    // Incline Angle / Inclinometer
-                    VStack(alignment: .leading, spacing: 8) {
+                    // Incline Angle
+                    VStack(alignment: .leading, spacing: 6) {
                         HStack {
-                            Text("Angle de tir / Pente")
+                            Label("Angle de site (Pente)", systemImage: "level")
                             Spacer()
                             TextField("Angle", value: $inclineAngleDegrees, format: .number.precision(.fractionLength(1)))
                                 .keyboardType(.numbersAndPunctuation)
                                 .multilineTextAlignment(.trailing)
                                 .frame(width: 70)
                             Text("°")
+                                .foregroundStyle(.secondary)
                         }
-                        
+
                         Button {
                             liveInclinometerActive.toggle()
                             if liveInclinometerActive {
@@ -244,27 +250,27 @@ struct CalculatorView: View {
                             }
                         } label: {
                             Label(
-                                liveInclinometerActive ? "Inclinomètre Actif (posé sur le canon)" : "Mesurer l'angle (Capteur)",
+                                liveInclinometerActive ? "Inclinomètre Actif" : "Mesurer l'angle (Capteur)",
                                 systemImage: liveInclinometerActive ? "level.fill" : "level"
                             )
                             .font(.caption)
                             .foregroundStyle(liveInclinometerActive ? .green : .blue)
                         }
-                        .buttonStyle(.borderless)
                     }
 
-                    // Shooting Azimuth / Compass
-                    VStack(alignment: .leading, spacing: 8) {
+                    // Azimuth
+                    VStack(alignment: .leading, spacing: 6) {
                         HStack {
-                            Text("Azimut de tir (Cap)")
+                            Label("Azimut de tir (Cap)", systemImage: "safari")
                             Spacer()
                             TextField("Azimut", value: $shootingAzimuthDegrees, format: .number.precision(.fractionLength(0)))
                                 .keyboardType(.numberPad)
                                 .multilineTextAlignment(.trailing)
                                 .frame(width: 70)
                             Text("°")
+                                .foregroundStyle(.secondary)
                         }
-                        
+
                         Button {
                             liveCompassActive.toggle()
                             if liveCompassActive {
@@ -274,24 +280,25 @@ struct CalculatorView: View {
                             }
                         } label: {
                             Label(
-                                liveCompassActive ? "Boussole Active (viser la cible)" : "Capturer le cap (Boussole)",
+                                liveCompassActive ? "Boussole Active" : "Capturer le cap (Boussole)",
                                 systemImage: liveCompassActive ? "location.north.line.fill" : "safari"
                             )
                             .font(.caption)
                             .foregroundStyle(liveCompassActive ? .green : .blue)
                         }
-                        .buttonStyle(.borderless)
                     }
 
                     if let lat = locationManager?.latitude {
-                        LabeledContent("Latitude actuelle", value: "\(lat.formatted(.number.precision(.fractionLength(2))))°")
+                        LabeledContent("Latitude", value: "\(lat.formatted(.number.precision(.fractionLength(2))))°")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
                 }
+            } header: {
+                Label("Très Longue Distance (ELR)", systemImage: "globe.europe.africa.fill")
             }
 
-            Section(header: Text("Cible Mobile (Moving Target)")) {
+            Section {
                 Toggle(isOn: $enableMovingTarget) {
                     Label("Activer correction cible mobile", systemImage: "figure.run")
                 }
@@ -305,6 +312,7 @@ struct CalculatorView: View {
                             .multilineTextAlignment(.trailing)
                             .frame(width: 60)
                         Text("km/h")
+                            .foregroundStyle(.secondary)
                     }
 
                     Picker("Direction", selection: $targetDirectionRight) {
@@ -312,10 +320,16 @@ struct CalculatorView: View {
                         Text("Droite ➔ Gauche (-90°)").tag(false)
                     }
                 }
+            } header: {
+                Text("Cible Mobile (Moving Target)")
             }
 
             Section {
-                Button(.calculate, action: triggerCalculation)
+                Button(action: triggerCalculation) {
+                    Text("Calculer la trajectoire")
+                        .bold()
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
             }
 
             Section {
@@ -340,58 +354,61 @@ struct CalculatorView: View {
                 }
             } else if displayMode == .turrets {
                 if let result = trajectoryResult {
-                    Section(header: Text("Results for \(Int(distance)) meters")) {
+                    Section {
                         HStack {
-                            Text(.drop)
+                            Text("Chute en cible")
                             Spacer()
-                            Text("\(result.totalDropCM, format: .number.precision(.fractionLength(2))) cm")
+                            Text("\(result.totalDropCM, format: .number.precision(.fractionLength(1))) cm")
                                 .fontDesign(.rounded)
                         }
                         HStack {
-                            Text(.dropMOA)
+                            Text("Correction en MOA")
                             Spacer()
                             Text("\(result.totalDropCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
                                 .fontDesign(.rounded)
                         }
-                        
+
                         let dropClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.totalDropCorrectionMOA)
                         let dropDirectionKey: LocalizedStringResource = result.totalDropCorrectionMOA >= 0 ? .up : .down
                         HStack {
-                            Text(.elevationAdjustment)
+                            Text("Tourelle Élévation")
                             Spacer()
-                            Text("\(dropClicks) \(Text(.clicks)) (\(Text(dropDirectionKey).bold().foregroundStyle(.blue)))")
+                            Text("\(dropClicks) clics (\(Text(dropDirectionKey).bold().foregroundStyle(.blue)))")
+                                .bold()
                         }
                         .fontDesign(.rounded)
-                        
+
                         HStack {
-                            Text(.windage)
+                            Text("Dérive vent")
                             Spacer()
-                            Text("\(result.totalWindageCM, format: .number.precision(.fractionLength(2))) cm")
+                            Text("\(result.totalWindageCM, format: .number.precision(.fractionLength(1))) cm")
                                 .fontDesign(.rounded)
                         }
                         HStack {
-                            Text(.windageMOA)
+                            Text("Correction Dérive")
                             Spacer()
                             Text("\(result.totalWindageCorrectionMOA, format: .number.precision(.fractionLength(2))) MOA")
                                 .fontDesign(.rounded)
                         }
-                        
+
                         let windageClicks = weapon.scopeClickUnit.clicks(forMOACorrection: result.totalWindageCorrectionMOA)
                         let windageDirectionKey: LocalizedStringResource = result.totalWindageCorrectionMOA >= 0 ? .right : .left
                         HStack {
-                            Text(.windageAdjustment)
+                            Text("Tourelle Dérive")
                             Spacer()
-                            Text("\(windageClicks) \(Text(.clicks)) (\(Text(windageDirectionKey).bold().foregroundStyle(.blue)))")
+                            Text("\(windageClicks) clics (\(Text(windageDirectionKey).bold().foregroundStyle(.orange)))")
+                                .bold()
                         }
                         .fontDesign(.rounded)
+
                         HStack {
-                            Text(.velocity)
+                            Text("Vitesse résiduelle")
                             Spacer()
                             Text("\(result.velocityMPS, format: .number.precision(.fractionLength(0))) m/s")
                                 .fontDesign(.rounded)
                         }
                         HStack {
-                            Text(.energy)
+                            Text("Énergie résiduelle")
                             Spacer()
                             Text("\(result.energyJoules, format: .number.precision(.fractionLength(0))) Joules")
                                 .fontDesign(.rounded)
@@ -402,10 +419,12 @@ struct CalculatorView: View {
                             Text("\(result.timeSeconds, format: .number.precision(.fractionLength(2))) s")
                                 .fontDesign(.rounded)
                         }
+                    } header: {
+                        Text("Résultats à \(Int(distance)) mètres")
                     }
 
                     if enableELR || enableMovingTarget {
-                        Section(header: Text("Décomposition des Corrections")) {
+                        Section {
                             if enableELR {
                                 HStack {
                                     Text("Dérive Gyroscopique (Spin Drift)")
@@ -446,26 +465,28 @@ struct CalculatorView: View {
                                         .foregroundStyle(.cyan)
                                 }
                             }
+                        } header: {
+                            Text("Décomposition des Corrections")
                         }
                     }
                 }
 
                 if !trajectoryData.isEmpty {
-                    Section(header: Text(String(localized: .trajectory))) {
+                    Section {
                         Chart(trajectoryData) { point in
                             LineMark(
                                 x: .value("Distance", point.distance),
                                 y: .value("Drop", point.drop)
                             )
                             .interpolationMethod(.catmullRom)
-                            
+
                             AreaMark(
                                 x: .value("Distance", point.distance),
                                 y: .value("Drop", point.drop)
                             )
                             .interpolationMethod(.catmullRom)
                             .foregroundStyle(Gradient(colors: [.blue.opacity(0.3), .blue.opacity(0.0)]))
-                            
+
                             if let selectedDistance, let selectedDrop = trajectoryData.first(where: { abs($0.distance - selectedDistance) < 5.0 })?.drop {
                                 RuleMark(x: .value("Distance", selectedDistance))
                                     .foregroundStyle(.red)
@@ -480,6 +501,8 @@ struct CalculatorView: View {
                         }
                         .chartXSelection(value: $selectedDistance)
                         .frame(height: 200)
+                    } header: {
+                        Text("Trajectoire (Courbe de Flèche)")
                     }
                 }
             } else if displayMode == .pbr {
@@ -490,9 +513,8 @@ struct CalculatorView: View {
                 }
             }
         }
-
-
-        .navigationTitle(String(localized: .calculator))
+        .navigationTitle("Calculateur")
+        .navigationBarTitleDisplayMode(.inline)
         .task {
             if locationManager?.authorizationStatus == .notDetermined {
                 locationManager?.requestLocation()
@@ -558,7 +580,6 @@ struct CalculatorView: View {
         }
     }
 
-
     private func setupDefaultAmmunition() {
         let ammoList = weapon.ammunitions?.sorted(by: { $0.date > $1.date }) ?? []
         if selectedAmmunition == nil || !ammoList.contains(where: { $0.id == selectedAmmunition?.id }) {
@@ -612,22 +633,10 @@ struct CalculatorView: View {
             }
             return dataPoints
         }.value
-        
+
         guard !Task.isCancelled else { return }
-        
+
         self.trajectoryResult = result
         self.trajectoryData = data
     }
 }
-
-#Preview {
-    let sampleWeapon = Weapon(name: "Preview Rifle", calibre: ".308", sightHeightCM: 4.5, zeroRangeMeters: 100.0)
-    NavigationStack {
-        CalculatorView(weapon: sampleWeapon)
-            .environment(\.locationService, LocationManager())
-            .environment(\.weatherService, WeatherManager())
-            .environment(\.sensorService, SensorManager())
-    }
-    .modelContainer(for: Weapon.self, inMemory: true)
-}
-
