@@ -225,8 +225,6 @@ struct RangeCardView: View {
         return nil
     }
 
-
-    
     private func calculateCard() async {
         isCalculating = true
         let calculator = getCalculator()
@@ -242,7 +240,6 @@ struct RangeCardView: View {
                 let dClicks = scopeUnit.clicks(forMOACorrection: result.totalDropCorrectionMOA)
                 let wClicks = scopeUnit.clicks(forMOACorrection: result.totalWindageCorrectionMOA)
 
-                
                 res.append(RangeCardRow(
                     distance: d,
                     dropCM: result.totalDropCM,
