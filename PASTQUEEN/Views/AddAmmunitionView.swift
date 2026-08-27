@@ -18,6 +18,7 @@ struct AddAmmunitionView: View {
     @State private var dragFunction: Int32 = 1
     @State private var muzzleVelocityMPS: Double = 800.0
     @State private var muzzleEnergy: Double = 3500.0
+    @State private var powderSensitivityMPSPerC: Double = 0.0
     @State private var selectedPreset: MarketAmmunition? = nil
 
     private var filteredPresets: [MarketAmmunition] {
@@ -67,6 +68,21 @@ struct AddAmmunitionView: View {
                 }
             }
 
+            Section(header: Text("Sensibilité thermique de la poudre (dv/dT)")) {
+                HStack {
+                    Text("Variation V0 par °C")
+                    Spacer()
+                    TextField("dv/dT", value: $powderSensitivityMPSPerC, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                    Text("m/s / °C")
+                        .foregroundStyle(.secondary)
+                }
+                Text("Ajuste automatiquement la vitesse initiale en fonction de la température ambiante du pas de tir (0 = désactivé).")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+
             Section {
                 Button(.save) {
                     let newAmmunition = Ammunition(
@@ -77,6 +93,7 @@ struct AddAmmunitionView: View {
                         dragFunction: dragFunction,
                         muzzleVelocityMPS: muzzleVelocityMPS,
                         muzzleEnergy: muzzleEnergy,
+                        powderSensitivityMPSPerC: powderSensitivityMPSPerC,
                         date: Date().timeIntervalSince1970
                     )
                     newAmmunition.weapon = weapon
@@ -92,6 +109,7 @@ struct AddAmmunitionView: View {
                 .disabled(!isFormValid)
             }
         }
+
         .onChange(of: selectedPreset) { _, newPreset in
             if let preset = newPreset {
                 name = preset.name

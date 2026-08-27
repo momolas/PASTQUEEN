@@ -59,6 +59,7 @@ struct RangeCardView: View {
             projectileWeightGrains: ammunition.projectileWeightGrains,
             sightHeightCM: weapon.sightHeightCM,
             zeroRangeMeters: weapon.zeroRangeMeters,
+            powderSensitivityMPSPerC: ammunition.powderSensitivityMPSPerC,
             twistRateInches: weapon.twistRateInches,
             twistDirection: weapon.twistDirection,
             inclineAngleDegrees: 0.0,
@@ -69,6 +70,7 @@ struct RangeCardView: View {
         
         return BallisticCalculator(ballistics: settings, weather: weatherData)
     }
+
     
     var body: some View {
         VStack(spacing: 0) {

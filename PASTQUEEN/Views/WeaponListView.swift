@@ -42,8 +42,9 @@ struct WeaponListView: View {
             }
             .onDelete(perform: deleteWeapon)
         }
-        .navigationTitle(String(localized: .ammunitions)) // Localized header
+        .navigationTitle("Mes Armes")
         .navigationBarTitleDisplayMode(.inline)
+
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 NavigationLink(value: "AddWeapon") {
