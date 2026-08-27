@@ -92,6 +92,13 @@ struct DetailView: View {
                         .foregroundStyle(.blue)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
+                
+                NavigationLink(value: TruingConfig(weapon: weapon, ammunition: ammunition)) {
+                    Label("Étalonner la trajectoire (Truing)", systemImage: "gauge.with.dots.needle.bottom.50percent")
+                        .bold()
+                        .foregroundStyle(.indigo)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
             }
         }
         .navigationTitle(String(localized: .details))
@@ -112,11 +119,29 @@ struct DetailView: View {
         .navigationDestination(for: RangeCardConfig.self) { config in
             RangeCardView(weapon: config.weapon, ammunition: config.ammunition)
         }
+        .navigationDestination(for: TruingConfig.self) { config in
+            TruingView(weapon: config.weapon, ammunition: config.ammunition)
+        }
     }
+}
 
+struct TruingConfig: Hashable {
+    let weapon: Weapon
+    let ammunition: Ammunition
+    
+    static func == (lhs: TruingConfig, rhs: TruingConfig) -> Bool {
+        lhs.weapon.id == rhs.weapon.id && lhs.ammunition.id == rhs.ammunition.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(weapon.id)
+        hasher.combine(ammunition.id)
+    }
 }
 
 struct RangeCardConfig: Hashable {
+
+
     let weapon: Weapon
     let ammunition: Ammunition
     

@@ -25,7 +25,20 @@ enum ScopeClickUnit: String, Codable, CaseIterable, Identifiable {
             return Int(round(abs(correctionMOA) / 0.343774677))
         }
     }
+
+    /// Calculates the MOA correction for a given number of clicks.
+    func moaCorrection(forClicks clicks: Int) -> Double {
+        switch self {
+        case .moa14:
+            return Double(clicks) * 0.25
+        case .moa18:
+            return Double(clicks) * 0.125
+        case .mrad10:
+            return Double(clicks) * 0.343774677
+        }
+    }
 }
+
 
 enum TwistDirection: String, Codable, CaseIterable, Identifiable {
     case right = "Right (RH)"
