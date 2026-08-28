@@ -173,9 +173,11 @@ struct QuickHUDView: View {
 
             ToolbarItem(placement: .primaryAction) {
                 NavigationLink(value: QuickHUDRoute.calculator) {
-                    Image(systemName: "slider.horizontal.3")
+                    Label("Calculateur Complet", systemImage: "slider.horizontal.3")
                 }
+                .labelStyle(.iconOnly)
             }
+
         }
         .navigationDestination(for: QuickHUDRoute.self) { route in
             switch route {
