@@ -263,10 +263,11 @@ struct RangeCardView: View {
         let scopeUnit = weapon.scopeClickUnit
 
         let calculated: [RangeCardRow] = await Task.detached {
+            let solution = calculator.solveFullTrajectory(upTo: Double(maxDist))
             var res: [RangeCardRow] = []
             for d in stride(from: step, through: maxDist, by: step) {
                 if Task.isCancelled { break }
-                let result = calculator.solveTrajectory(for: Double(d))
+                let result = calculator.trajectoryResult(for: Double(d), from: solution)
                 let dClicks = scopeUnit.clicks(forMOACorrection: result.totalDropCorrectionMOA)
                 let wClicks = scopeUnit.clicks(forMOACorrection: result.totalWindageCorrectionMOA)
 

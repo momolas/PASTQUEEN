@@ -5,6 +5,7 @@
 
 import Foundation
 import SwiftData
+import Ballistics
 
 enum ScopeClickUnit: String, Codable, CaseIterable, Identifiable {
     case moa14 = "1/4 MOA"
@@ -39,12 +40,15 @@ enum ScopeClickUnit: String, Codable, CaseIterable, Identifiable {
     }
 }
 
+extension TwistDirection: @retroactive Identifiable {
+    public var id: String { rawValue }
 
-enum TwistDirection: String, Codable, CaseIterable, Identifiable {
-    case right = "Right (RH)"
-    case left = "Left (LH)"
-    
-    var id: String { self.rawValue }
+    public var displayName: String {
+        switch self {
+        case .right: return "Droitier (RH)"
+        case .left: return "Gaucher (LH)"
+        }
+    }
 }
 
 @Model

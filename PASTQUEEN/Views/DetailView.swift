@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import Ballistics
 
 struct DetailView: View {
     let weapon: Weapon
@@ -68,7 +69,7 @@ struct DetailView: View {
                 LabeledContent("Calibre", value: weapon.calibre)
                 LabeledContent("Hauteur de visée", value: "\(weapon.sightHeightCM.formatted()) cm")
                 LabeledContent("Distance de zérotage", value: "\(weapon.zeroRangeMeters.formatted()) m")
-                LabeledContent("Pas de rayure", value: "1:\(weapon.twistRateInches.formatted())\" (\(weapon.twistDirection.rawValue))")
+                LabeledContent("Pas de rayure", value: "1:\(weapon.twistRateInches.formatted())\" (\(weapon.twistDirection.displayName))")
                 LabeledContent("Unité de tourelle", value: weapon.scopeClickUnit.rawValue)
             } header: {
                 HStack {

@@ -32,8 +32,28 @@ struct BallisticCalculator: Sendable {
         self.weather = weather
     }
     
+    private var effectiveVelocityMPS: Double {
+        var v0 = ballistics.muzzleVelocityMPS
+        if ballistics.powderSensitivityMPSPerC > 0 {
+            let sensitivityFPSPerDegreeF = ballistics.powderSensitivityMPSPerC * 3.28084 / 1.8
+            let adj = PowderSensitivity.adjustedVelocity(
+                baseVelocity: Measurement(value: ballistics.muzzleVelocityMPS, unit: .metersPerSecond),
+                baseTemperature: Measurement(value: 15.0, unit: .celsius),
+                currentTemperature: Measurement(value: weather.temperature, unit: .celsius),
+                sensitivityFPSPerDegreeF: sensitivityFPSPerDegreeF
+            )
+            v0 = adj.converted(to: .metersPerSecond).value
+        }
+        return v0
+    }
+    
     public func solveTrajectory(for distance: Double) -> TrajectoryResult {
-        guard let point = solveFullTrajectory(upTo: distance).getPoint(at: Measurement(value: distance, unit: UnitLength.meters)) else {
+        let solution = solveFullTrajectory(upTo: distance)
+        return trajectoryResult(for: distance, from: solution)
+    }
+
+    public func trajectoryResult(for distance: Double, from solution: Ballistics) -> TrajectoryResult {
+        guard let point = solution.getPoint(at: Measurement(value: distance, unit: UnitLength.meters)) else {
             return .empty
         }
 
@@ -79,50 +99,33 @@ struct BallisticCalculator: Sendable {
             )
         }
 
-        // --- 1. Spin Drift (Bryan Litz / Miller model) ---
-        // Drift in inches: 1.25 * (Sg + 1.2) * (t)^1.83. Assuming Sg ~ 1.5 normalized to 10" twist:
-        let twistRatio = 10.0 / max(ballistics.twistRateInches, 1.0)
-        let directionMultiplier: Double = (ballistics.twistDirection == .right) ? 1.0 : -1.0
-        let spinDriftInches = 1.25 * (1.5 + 1.2) * pow(timeSeconds, 1.83) * twistRatio * directionMultiplier
-        let spinDriftCM = spinDriftInches * 2.54
+        // --- 1. Spin Drift (from Ballistics 3-DOF solver) ---
+        let spinDriftCM = point.spinDrift?.converted(to: .centimeters).value ?? 0.0
         let spinDriftMOA = moaCorrection(fromCM: spinDriftCM, atDistanceMeters: distance)
 
-        // --- 2. Coriolis Effect (Earth's rotation) ---
-        // Earth angular velocity Omega = 7.2921159e-5 rad/s
-        let omega = 7.2921159e-5
-        let latRad = ballistics.latitudeDegrees * .pi / 180.0
-        let azimuthRad = ballistics.shootingAzimuthDegrees * .pi / 180.0
-
-        // Horizontal Coriolis (Lateral drift in cm)
-        // Deflection = Omega * distance * time * sin(latitude) (meters -> cm)
-        let coriolisHorizMeters = omega * distance * timeSeconds * sin(latRad)
-        let coriolisHorizontalCM = coriolisHorizMeters * 100.0
+        // --- 2. Coriolis Effect (from Ballistics 3-DOF solver) ---
+        let coriolisHorizontalCM = point.coriolisHorizontal?.converted(to: .centimeters).value ?? 0.0
         let coriolisHorizontalMOA = moaCorrection(fromCM: coriolisHorizontalCM, atDistanceMeters: distance)
 
-        // Vertical Coriolis / Eötvös Effect (Elevation change in cm)
-        // Deflection = 2 * Omega * distance * time * cos(latitude) * sin(azimuth) (meters -> cm)
-        let coriolisVertMeters = 2.0 * omega * distance * timeSeconds * cos(latRad) * sin(azimuthRad)
-        let coriolisVerticalCM = coriolisVertMeters * 100.0
+        let coriolisVerticalCM = point.coriolisVertical?.converted(to: .centimeters).value ?? 0.0
         let coriolisVerticalMOA = moaCorrection(fromCM: coriolisVerticalCM, atDistanceMeters: distance)
 
-        // --- 3. Aerodynamic Jump ---
-        // Crosswind component in m/s
-        let windSpeedMPS = weather.windSpeed * (1000.0 / 3600.0)
+        // --- 3. Aerodynamic Jump (via AerodynamicJump utility) ---
         let relativeWindAngleRad = (weather.windDirection - ballistics.shootingAzimuthDegrees) * .pi / 180.0
+        let windSpeedMPS = Measurement(value: weather.windSpeed, unit: UnitSpeed.kilometersPerHour).converted(to: .metersPerSecond).value
         let crosswindMPS = windSpeedMPS * sin(relativeWindAngleRad)
-        // Aerodynamic jump in MOA ~ 0.015 * crosswindMPS * twistRatio * directionMultiplier
-        let aeroJumpMOA = 0.015 * crosswindMPS * twistRatio * directionMultiplier
+        let aeroJumpAngle = AerodynamicJump.jumpAngle(
+            crosswindSpeed: Measurement(value: crosswindMPS, unit: .metersPerSecond),
+            initialVelocity: Measurement(value: effectiveVelocityMPS, unit: .metersPerSecond),
+            twistDirection: ballistics.twistDirection
+        )
+        let aeroJumpMOA = aeroJumpAngle.converted(to: .minutesOfAngle).value
         let aeroJumpCM = cmFromMOA(aeroJumpMOA, atDistanceMeters: distance)
 
         // --- 4. Total Combined Results ---
-        // Eötvös (+ hits higher -> requires less drop correction)
-        // Aero jump (+ pushes up -> requires less drop correction)
         let totalDropCM = baseDropCM - coriolisVerticalCM - aeroJumpCM
         let totalDropCorrectionMOA = baseDropCorrectionMOA - coriolisVerticalMOA - aeroJumpMOA
 
-        // Spin drift (+ pushes right)
-        // Coriolis (+ pushes right)
-        // Lead (+ pushes in direction of movement)
         let totalWindageCM = baseWindageCM + spinDriftCM + coriolisHorizontalCM + leadCM
         let totalWindageCorrectionMOA = baseWindageCorrectionMOA + spinDriftMOA + coriolisHorizontalMOA + leadMOA
 
@@ -151,7 +154,6 @@ struct BallisticCalculator: Sendable {
             totalWindageCorrectionMOA: totalWindageCorrectionMOA
         )
     }
-
     
     private func moaCorrection(fromCM cm: Double, atDistanceMeters dist: Double) -> Double {
         guard dist > 0 else { return 0 }
@@ -176,23 +178,22 @@ struct BallisticCalculator: Sendable {
         default: dragFunc = .g1
         }
 
-        var effectiveVelocityMPS = ballistics.muzzleVelocityMPS
-        if ballistics.powderSensitivityMPSPerC > 0 {
-            let sensitivityFPSPerDegreeF = ballistics.powderSensitivityMPSPerC * 3.28084 / 1.8
-            let adj = PowderSensitivity.adjustedVelocity(
-                baseVelocity: Measurement(value: ballistics.muzzleVelocityMPS, unit: .metersPerSecond),
-                baseTemperature: Measurement(value: 15.0, unit: .celsius),
-                currentTemperature: Measurement(value: weather.temperature, unit: .celsius),
-                sensitivityFPSPerDegreeF: sensitivityFPSPerDegreeF
-            )
-            effectiveVelocityMPS = adj.converted(to: .metersPerSecond).value
-        }
+        let effectiveV0 = effectiveVelocityMPS
+        let twistMeasurement: Measurement<UnitLength>? = ballistics.enableELR
+            ? Measurement(value: ballistics.twistRateInches, unit: .inches)
+            : nil
+        let latitudeMeasurement: Measurement<UnitAngle>? = ballistics.enableELR
+            ? Measurement(value: ballistics.latitudeDegrees, unit: .degrees)
+            : nil
+        let azimuthMeasurement: Measurement<UnitAngle>? = ballistics.enableELR
+            ? Measurement(value: ballistics.shootingAzimuthDegrees, unit: .degrees)
+            : nil
 
         return Ballistics.solve(
             preferredDistanceUnit: .meters,
             dragFunction: dragFunc,
             dragCoefficient: ballistics.ballisticCoefficient,
-            initialVelocity: Measurement(value: effectiveVelocityMPS, unit: UnitSpeed.metersPerSecond),
+            initialVelocity: Measurement(value: effectiveV0, unit: UnitSpeed.metersPerSecond),
             sightHeight: Measurement(value: ballistics.sightHeightCM, unit: UnitLength.centimeters),
             shootingAngle: Measurement(value: ballistics.inclineAngleDegrees, unit: UnitAngle.degrees),
             zeroRange: Measurement(value: ballistics.zeroRangeMeters, unit: UnitLength.meters),
@@ -204,7 +205,11 @@ struct BallisticCalculator: Sendable {
             ),
             windSpeed: Measurement(value: weather.windSpeed, unit: UnitSpeed.kilometersPerHour),
             windAngle: weather.windDirection,
-            weight: Measurement(value: ballistics.projectileWeightGrains, unit: UnitMass.grains)
+            weight: Measurement(value: ballistics.projectileWeightGrains, unit: UnitMass.grains),
+            twist: twistMeasurement,
+            twistDirection: ballistics.twistDirection,
+            latitude: latitudeMeasurement,
+            azimuth: azimuthMeasurement
         )
     }
 

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import Ballistics
 
 struct EditWeaponView: View {
     @Bindable var weapon: Weapon
@@ -88,7 +89,7 @@ struct EditWeaponView: View {
 
                 Picker(selection: $twistDirection) {
                     ForEach(TwistDirection.allCases) { dir in
-                        Text(dir.rawValue).tag(dir)
+                        Text(dir.displayName).tag(dir)
                     }
                 } label: {
                     Label("Sens des rayures", systemImage: "arrow.triangle.2.circlepath")

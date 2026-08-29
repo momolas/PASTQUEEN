@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import Ballistics
 
 struct AddWeaponView: View {
     @Environment(\.modelContext) private var modelContext
@@ -87,7 +88,7 @@ struct AddWeaponView: View {
 
                 Picker(selection: $twistDirection) {
                     ForEach(TwistDirection.allCases) { dir in
-                        Text(dir.rawValue).tag(dir)
+                        Text(dir.displayName).tag(dir)
                     }
                 } label: {
                     Label("Sens des rayures", systemImage: "arrow.triangle.2.circlepath")

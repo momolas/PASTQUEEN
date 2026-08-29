@@ -99,7 +99,7 @@ struct CalculatorView: View {
                 LabeledContent("Calibre", value: weapon.calibre)
                 LabeledContent("Hauteur de visée", value: "\(weapon.sightHeightCM.formatted()) cm")
                 LabeledContent("Zéro", value: "\(weapon.zeroRangeMeters.formatted()) m")
-                LabeledContent("Pas de rayure", value: "1:\(weapon.twistRateInches.formatted()) (\(weapon.twistDirection.rawValue))")
+                LabeledContent("Pas de rayure", value: "1:\(weapon.twistRateInches.formatted()) (\(weapon.twistDirection.displayName))")
             } header: {
                 Text("Configuration Carabine")
             }
