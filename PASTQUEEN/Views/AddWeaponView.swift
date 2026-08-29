@@ -110,13 +110,13 @@ struct AddWeaponView: View {
             }
 
             Section {
-                Button(action: saveWeapon) {
-                    Text("Enregistrer la carabine")
-                        .bold()
-                        .frame(maxWidth: .infinity, alignment: .center)
-                }
-                .disabled(!isFormValid)
+                Button("Enregistrer la carabine", action: saveWeapon)
+                    .buttonStyle(.borderedProminent)
+                    .frame(maxWidth: .infinity)
+                    .disabled(!isFormValid)
             }
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Nouvelle Carabine")
@@ -125,6 +125,11 @@ struct AddWeaponView: View {
                 Button("Annuler") {
                     dismiss()
                 }
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Enregistrer", action: saveWeapon)
+                    .bold()
+                    .disabled(!isFormValid)
             }
         }
     }

@@ -325,12 +325,12 @@ struct CalculatorView: View {
             }
 
             Section {
-                Button(action: triggerCalculation) {
-                    Text("Calculer la trajectoire")
-                        .bold()
-                        .frame(maxWidth: .infinity, alignment: .center)
-                }
+                Button("Calculer la trajectoire", systemImage: "sparkles", action: triggerCalculation)
+                    .buttonStyle(.borderedProminent)
+                    .frame(maxWidth: .infinity)
             }
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
 
             Section {
                 Picker("Mode d'affichage", selection: $displayMode) {

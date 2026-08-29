@@ -143,9 +143,11 @@ struct TruingView: View {
                 Button("Calculer l'étalonnage", systemImage: "wand.and.stars") {
                     performTruing()
                 }
-                .font(.headline)
-                .frame(maxWidth: .infinity, alignment: .center)
+                .buttonStyle(.borderedProminent)
+                .frame(maxWidth: .infinity)
             }
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
 
             if let error = errorMessage {
                 Section {

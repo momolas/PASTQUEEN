@@ -147,13 +147,13 @@ struct AddAmmunitionView: View {
             }
 
             Section {
-                Button(action: saveAmmunition) {
-                    Text("Enregistrer la munition")
-                        .bold()
-                        .frame(maxWidth: .infinity, alignment: .center)
-                }
-                .disabled(!isFormValid)
+                Button("Enregistrer la munition", action: saveAmmunition)
+                    .buttonStyle(.borderedProminent)
+                    .frame(maxWidth: .infinity)
+                    .disabled(!isFormValid)
             }
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Nouvelle Munition")
@@ -162,6 +162,11 @@ struct AddAmmunitionView: View {
                 Button("Annuler") {
                     dismiss()
                 }
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Enregistrer", action: saveAmmunition)
+                    .bold()
+                    .disabled(!isFormValid)
             }
         }
         .onChange(of: selectedPreset) { _, newPreset in

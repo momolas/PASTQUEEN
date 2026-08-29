@@ -125,13 +125,13 @@ struct EditAmmunitionView: View {
             }
 
             Section {
-                Button(action: saveChanges) {
-                    Text("Enregistrer les modifications")
-                        .bold()
-                        .frame(maxWidth: .infinity, alignment: .center)
-                }
-                .disabled(!isFormValid)
+                Button("Enregistrer les modifications", action: saveChanges)
+                    .buttonStyle(.borderedProminent)
+                    .frame(maxWidth: .infinity)
+                    .disabled(!isFormValid)
             }
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Modifier la munition")
@@ -140,6 +140,11 @@ struct EditAmmunitionView: View {
                 Button("Annuler") {
                     dismiss()
                 }
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Enregistrer", action: saveChanges)
+                    .bold()
+                    .disabled(!isFormValid)
             }
         }
         .onAppear {
