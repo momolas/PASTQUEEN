@@ -201,7 +201,9 @@ struct AmmunitionData {
 
         // Savage
         CatalogWeapon(manufacturer: "Savage", name: "B22 Precision", caliber: ".22 LR", twistRateInches: 16.0, twistDirection: .right, sightHeightCM: 4.0, defaultScopeUnit: .moa18, category: "Châssis MDT Rimfire"),
-        CatalogWeapon(manufacturer: "Savage", name: "B22 F / FV-SR", caliber: ".22 LR", twistRateInches: 16.0, twistDirection: .right, sightHeightCM: 3.8, defaultScopeUnit: .moa18, category: "Verrou Rimfire"),
+        CatalogWeapon(manufacturer: "Savage", name: "B22 FV / FV-SR (Canon Lourd)", caliber: ".22 LR", twistRateInches: 16.0, twistDirection: .right, sightHeightCM: 4.0, defaultScopeUnit: .moa18, category: "Canon Lourd Varmint .22"),
+        CatalogWeapon(manufacturer: "Savage", name: "B22 Target Thumbhole (Canon Lourd)", caliber: ".22 LR", twistRateInches: 16.0, twistDirection: .right, sightHeightCM: 4.0, defaultScopeUnit: .moa18, category: "Canon Lourd Varmint .22"),
+        CatalogWeapon(manufacturer: "Savage", name: "B22 F (Canon Standard)", caliber: ".22 LR", twistRateInches: 16.0, twistDirection: .right, sightHeightCM: 3.5, defaultScopeUnit: .moa18, category: "Verrou Rimfire Standard"),
         CatalogWeapon(manufacturer: "Savage", name: "Axis Varmint", caliber: ".308 Win", twistRateInches: 10.0, twistDirection: .right, sightHeightCM: 4.5, defaultScopeUnit: .moa18, category: "Canon Lourd Varmint"),
         CatalogWeapon(manufacturer: "Savage", name: "Axis Varmint", caliber: ".223 Rem", twistRateInches: 9.0, twistDirection: .right, sightHeightCM: 4.5, defaultScopeUnit: .moa18, category: "Canon Lourd Varmint"),
         CatalogWeapon(manufacturer: "Savage", name: "Axis / Axis II", caliber: ".308 Win", twistRateInches: 10.0, twistDirection: .right, sightHeightCM: 3.8, defaultScopeUnit: .moa14, category: "Verrou Standard"),
