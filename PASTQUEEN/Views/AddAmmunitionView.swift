@@ -21,14 +21,7 @@ struct AddAmmunitionView: View {
     @State private var muzzleVelocityMPS: Double = 800.0
     @State private var muzzleEnergy: Double = 3500.0
     @State private var powderSensitivityMPSPerC: Double = 0.0
-    @State private var selectedPreset: MarketAmmunition? = nil
     @State private var isShowingCatalogPicker = false
-
-    private var filteredPresets: [MarketAmmunition] {
-        AmmunitionData.commonLoads.filter { preset in
-            preset.caliber.localizedStandardContains(weapon.calibre) || weapon.calibre.localizedStandardContains(preset.caliber)
-        }
-    }
 
     private var isFormValid: Bool {
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
@@ -47,7 +40,7 @@ struct AddAmmunitionView: View {
                     isShowingCatalogPicker = true
                 } label: {
                     HStack {
-                        Label("Parcourir le catalogue d'usine", systemImage: "books.vertical.fill")
+                        Label("Parcourir le catalogue de munitions", systemImage: "books.vertical.fill")
                             .font(.headline)
                         Spacer()
                         Image(systemName: "chevron.right")
@@ -55,21 +48,10 @@ struct AddAmmunitionView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-
-                if !filteredPresets.isEmpty {
-                    Picker(selection: $selectedPreset) {
-                        Text("Manuel / Personnalisé").tag(nil as MarketAmmunition?)
-                        ForEach(filteredPresets) { preset in
-                            Text("\(preset.manufacturer) • \(preset.name)").tag(preset as MarketAmmunition?)
-                        }
-                    } label: {
-                        Label("Sélection rapide", systemImage: "sparkles")
-                    }
-                }
             } header: {
                 Text("Catalogue Constructeurs")
             } footer: {
-                Text("Choisissez parmi les munitions manufacturées de référence pour pré-remplir la fiche.")
+                Text("Sélectionnez une munition de référence pour pré-remplir le profil balistique (BC, V0, masse, traînée).")
             }
 
             Section {
@@ -188,11 +170,6 @@ struct AddAmmunitionView: View {
         .sheet(isPresented: $isShowingCatalogPicker) {
             AmmunitionCatalogPickerSheet(weaponCaliber: weapon.calibre) { ammo in
                 applyCatalogAmmunition(ammo)
-            }
-        }
-        .onChange(of: selectedPreset) { _, newPreset in
-            if let preset = newPreset {
-                applyCatalogAmmunition(preset)
             }
         }
     }
