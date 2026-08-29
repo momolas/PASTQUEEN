@@ -14,29 +14,24 @@ enum ScopeClickUnit: String, Codable, CaseIterable, Identifiable {
     
     var id: String { self.rawValue }
 
+    /// Bridge to swift-ballistics TurretClick specification
+    var turretClick: TurretClick {
+        switch self {
+        case .moa14: return .oneFourthMOA
+        case .moa18: return .oneEighthMOA
+        case .mrad10: return .pointOneMRAD
+        }
+    }
+
     /// Calculates the number of physical clicks needed for a given MOA correction.
     func clicks(forMOACorrection correctionMOA: Double) -> Int {
-        switch self {
-        case .moa14:
-            return Int(round(abs(correctionMOA) * 4.0))
-        case .moa18:
-            return Int(round(abs(correctionMOA) * 8.0))
-        case .mrad10:
-            // 0.1 MRAD is approximately 0.343774677 MOA
-            return Int(round(abs(correctionMOA) / 0.343774677))
-        }
+        abs(turretClick.clicks(for: Measurement(value: correctionMOA, unit: .minutesOfAngle)))
     }
 
     /// Calculates the MOA correction for a given number of clicks.
     func moaCorrection(forClicks clicks: Int) -> Double {
-        switch self {
-        case .moa14:
-            return Double(clicks) * 0.25
-        case .moa18:
-            return Double(clicks) * 0.125
-        case .mrad10:
-            return Double(clicks) * 0.343774677
-        }
+        let singleClickMOA = turretClick.angleValue.converted(to: .minutesOfAngle).value
+        return Double(clicks) * singleClickMOA
     }
 }
 
