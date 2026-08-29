@@ -33,6 +33,8 @@
 		CDDF00192EE46EB7008DDD15 /* ReticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF001A2EE46EB7008DDD15 /* ReticleView.swift */; };
 		CDDF001B2EE46EB7008DDD15 /* PBRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF001C2EE46EB7008DDD15 /* PBRView.swift */; };
 		CDDF001D2EE46EB7008DDD15 /* QuickHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF001E2EE46EB7008DDD15 /* QuickHUDView.swift */; };
+		CDDF00212EE46EB7008DDD15 /* AmmunitionCatalogPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00222EE46EB7008DDD15 /* AmmunitionCatalogPickerSheet.swift */; };
+		CDDF00232EE46EB7008DDD15 /* WeaponCatalogPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDF00242EE46EB7008DDD15 /* WeaponCatalogPickerSheet.swift */; };
 		CDE935BB2EE46EB7008DDD15 /* BallisticCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE935BA2EE46EB7008DDD15 /* BallisticCalculator.swift */; };
 
 		CDE935BC2EE46EB7008DDD15 /* AmmunitionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE935B92EE46EB7008DDD15 /* AmmunitionData.swift */; };
@@ -69,6 +71,8 @@
 		CDDF001A2EE46EB7008DDD15 /* ReticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReticleView.swift; sourceTree = "<group>"; };
 		CDDF001C2EE46EB7008DDD15 /* PBRView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PBRView.swift; sourceTree = "<group>"; };
 		CDDF001E2EE46EB7008DDD15 /* QuickHUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickHUDView.swift; sourceTree = "<group>"; };
+		CDDF00222EE46EB7008DDD15 /* AmmunitionCatalogPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmmunitionCatalogPickerSheet.swift; sourceTree = "<group>"; };
+		CDDF00242EE46EB7008DDD15 /* WeaponCatalogPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeaponCatalogPickerSheet.swift; sourceTree = "<group>"; };
 		CDE935B92EE46EB7008DDD15 /* AmmunitionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmmunitionData.swift; sourceTree = "<group>"; };
 
 		CDE935BA2EE46EB7008DDD15 /* BallisticCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallisticCalculator.swift; sourceTree = "<group>"; };
@@ -127,6 +131,8 @@
 				CDDF001A2EE46EB7008DDD15 /* ReticleView.swift */,
 				CDDF001C2EE46EB7008DDD15 /* PBRView.swift */,
 				CDDF001E2EE46EB7008DDD15 /* QuickHUDView.swift */,
+				CDDF00222EE46EB7008DDD15 /* AmmunitionCatalogPickerSheet.swift */,
+				CDDF00242EE46EB7008DDD15 /* WeaponCatalogPickerSheet.swift */,
 				CD9973FC28D49B4600C9D3FD /* LaunchView.swift */,
 
 				CD2FBF8F2909504C00387B0B /* DetailView.swift */,
@@ -265,6 +271,8 @@
 				CDDF00192EE46EB7008DDD15 /* ReticleView.swift in Sources */,
 				CDDF001B2EE46EB7008DDD15 /* PBRView.swift in Sources */,
 				CDDF001D2EE46EB7008DDD15 /* QuickHUDView.swift in Sources */,
+				CDDF00212EE46EB7008DDD15 /* AmmunitionCatalogPickerSheet.swift in Sources */,
+				CDDF00232EE46EB7008DDD15 /* WeaponCatalogPickerSheet.swift in Sources */,
 				CD9973FD28D49B4600C9D3FD /* LaunchView.swift in Sources */,
 
 

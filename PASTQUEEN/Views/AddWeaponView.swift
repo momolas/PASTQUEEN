@@ -20,6 +20,7 @@ struct AddWeaponView: View {
     @State private var scopeClickUnit: ScopeClickUnit = .moa18
     @State private var twistRateInches: Double = 10.0
     @State private var twistDirection: TwistDirection = .right
+    @State private var isShowingCatalogPicker = false
 
     private var isFormValid: Bool {
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
@@ -31,6 +32,25 @@ struct AddWeaponView: View {
 
     var body: some View {
         Form {
+            Section {
+                Button {
+                    isShowingCatalogPicker = true
+                } label: {
+                    HStack {
+                        Label("Parcourir le catalogue d'armes", systemImage: "books.vertical.fill")
+                            .font(.headline)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            } header: {
+                Text("Catalogue Constructeurs")
+            } footer: {
+                Text("Sélectionnez une carabine de référence pour pré-remplir le calibre, le pas de rayure et la visée.")
+            }
+
             Section {
                 HStack {
                     Label("Nom de la carabine", systemImage: "pencil")
@@ -132,6 +152,20 @@ struct AddWeaponView: View {
                     .disabled(!isFormValid)
             }
         }
+        .sheet(isPresented: $isShowingCatalogPicker) {
+            WeaponCatalogPickerSheet { weapon in
+                applyCatalogWeapon(weapon)
+            }
+        }
+    }
+
+    private func applyCatalogWeapon(_ weapon: CatalogWeapon) {
+        name = "\(weapon.manufacturer) \(weapon.name)"
+        calibre = weapon.caliber
+        twistRateInches = weapon.twistRateInches
+        twistDirection = weapon.twistDirection
+        sightHeightCM = weapon.sightHeightCM
+        scopeClickUnit = weapon.defaultScopeUnit
     }
 
     private func saveWeapon() {
