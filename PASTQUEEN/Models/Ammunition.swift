@@ -8,7 +8,7 @@ import SwiftData
 
 @Model
 class Ammunition {
-    #Index<Ammunition>([\.date], [\.name])
+    #Index<Ammunition>([\.date], [\.name], [\.projectileManufacturer])
 
     var id: UUID = UUID()
     var name: String = ""

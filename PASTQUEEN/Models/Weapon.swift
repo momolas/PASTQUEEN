@@ -48,7 +48,7 @@ extension TwistDirection: @retroactive Identifiable {
 
 @Model
 class Weapon {
-    #Index<Weapon>([\.name])
+    #Index<Weapon>([\.name], [\.calibre], [\.name, \.calibre])
 
     var id: UUID = UUID()
     var name: String = ""
