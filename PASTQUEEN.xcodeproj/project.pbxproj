@@ -533,7 +533,7 @@
 			repositoryURL = "https://github.com/momolas/swift-ballistics.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.0;
+				minimumVersion = 1.2.2;
 			};
 		};
 

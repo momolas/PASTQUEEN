@@ -14,6 +14,24 @@ enum ScopeClickUnit: String, Codable, CaseIterable, Identifiable {
     
     var id: String { self.rawValue }
 
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let raw = try container.decode(String.self)
+        let normalized = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        if normalized.contains("mrad") || normalized.contains("mil") {
+            self = .mrad10
+        } else if normalized.contains("1/4") || normalized.contains("0.25") || normalized == "moa14" {
+            self = .moa14
+        } else {
+            self = .moa18
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
+
     /// Bridge to swift-ballistics TurretClick specification
     var turretClick: TurretClick {
         switch self {

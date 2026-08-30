@@ -189,7 +189,7 @@ struct BallisticCalculator: Sendable {
             ? Measurement(value: ballistics.shootingAzimuthDegrees, unit: .degrees)
             : nil
 
-        return Ballistics.solve(
+        return Ballistics.solve3DOF(
             preferredDistanceUnit: .meters,
             dragFunction: dragFunc,
             dragCoefficient: ballistics.ballisticCoefficient,
